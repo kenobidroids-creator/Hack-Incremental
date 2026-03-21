@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HACKNODE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+–green: #00ff41;
+–green-dim: #00aa2a;
+–green-dark: #003a0f;
+–amber: #ffb700;
+–red: #ff2d2d;
+–blue: #00d4ff;
+–bg: #050a05;
+–bg2: #080f08;
+–bg3: #0d180d;
+–border: #1a3a1a;
+–text-dim: #4a7a4a;
+–scan-line: rgba(0,255,65,0.03);
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+height: 100%;
+background: var(–bg);
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+overflow: hidden;
+user-select: none;
+}
+
+/* CRT scanline overlay */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background: repeating-linear-gradient(
+0deg,
+transparent,
+transparent 2px,
+var(–scan-line) 2px,
+var(–scan-line) 4px
+);
+pointer-events: none;
+z-index: 9999;
+}
+
+/* Vignette */
+body::after {
+content: ‘’;
+position: fixed;
+inset: 0;
+background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+pointer-events: none;
+z-index: 9998;
+}
+
+#app {
+display: flex;
+flex-direction: column;
+height: 100vh;
+max-width: 480px;
+margin: 0 auto;
+border-left: 1px solid var(–border);
+border-right: 1px solid var(–border);
+}
+
+/* ── HEADER ── */
+#header {
+padding: 8px 12px;
+background: var(–bg2);
+border-bottom: 1px solid var(–border);
+display: flex;
+flex-direction: column;
+gap: 6px;
+flex-shrink: 0;
+}
+
+#header-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+#logo {
+font-family: ‘Orbitron’, monospace;
+font-size: 16px;
+font-weight: 900;
+letter-spacing: 4px;
+color: var(–green);
+text-shadow: 0 0 10px var(–green), 0 0 20px var(–green);
+}
+
+#alias-display {
+font-size: 11px;
+color: var(–green-dim);
+}
+
+#alias-display span {
+color: var(–amber);
+}
+
+#stats-row {
+display: flex;
+gap: 12px;
+font-size: 10px;
+color: var(–text-dim);
+}
+
+#stats-row .stat-val {
+color: var(–green);
+}
+
+/* ── HEAT BAR ── */
+#heat-bar-wrap {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 10px;
+}
+
+#heat-label {
+color: var(–text-dim);
+width: 36px;
+flex-shrink: 0;
+}
+
+#heat-track {
+flex: 1;
+height: 6px;
+background: var(–bg3);
+border: 1px solid var(–border);
+border-radius: 2px;
+overflow: hidden;
+}
+
+#heat-fill {
+height: 100%;
+width: 0%;
+background: var(–green);
+transition: width 0.3s, background 0.3s;
+border-radius: 2px;
+}
+
+#heat-pct {
+width: 32px;
+text-align: right;
+color: var(–green);
+font-size: 10px;
+}
+
+/* ── TERMINAL ── */
+#terminal {
+flex: 1;
+overflow-y: auto;
+padding: 10px 12px;
+background: var(–bg);
+font-size: 12px;
+line-height: 1.7;
+scroll-behavior: smooth;
+}
+
+#terminal::-webkit-scrollbar { width: 4px; }
+#terminal::-webkit-scrollbar-track { background: var(–bg); }
+#terminal::-webkit-scrollbar-thumb { background: var(–green-dark); border-radius: 2px; }
+
+.log-line { display: block; word-break: break-all; }
+.log-sys { color: var(–text-dim); }
+.log-cmd { color: var(–green); }
+.log-ok { color: var(–green); }
+.log-warn { color: var(–amber); }
+.log-err { color: var(–red); }
+.log-info { color: var(–blue); }
+.log-dim { color: var(–text-dim); }
+.log-sep { color: var(–border); }
+
+/* ── COMMAND INPUT AREA ── */
+#cmd-area {
+background: var(–bg2);
+border-top: 1px solid var(–border);
+padding: 10px 12px;
+flex-shrink: 0;
+}
+
+#cmd-display {
+font-size: 12px;
+min-height: 20px;
+margin-bottom: 8px;
+color: var(–green-dim);
+display: flex;
+align-items: center;
+gap: 4px;
+}
+
+#cmd-prompt { color: var(–text-dim); }
+#cmd-text { color: var(–green); }
+#cmd-cursor {
+width: 8px;
+height: 14px;
+background: var(–green);
+display: inline-block;
+animation: blink 1s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── PROGRESS BAR ── */
+#progress-wrap {
+display: none;
+margin-bottom: 8px;
+gap: 8px;
+align-items: center;
+font-size: 10px;
+}
+
+#progress-wrap.active { display: flex; }
+
+#progress-label { color: var(–text-dim); min-width: 60px; }
+
+#progress-track {
+flex: 1;
+height: 8px;
+background: var(–bg3);
+border: 1px solid var(–border);
+border-radius: 2px;
+overflow: hidden;
+}
+
+#progress-fill {
+height: 100%;
+width: 0%;
+background: linear-gradient(90deg, var(–green-dark), var(–green));
+transition: width 0.1s;
+border-radius: 2px;
+box-shadow: 0 0 6px var(–green);
+}
+
+#progress-pct {
+color: var(–green);
+width: 36px;
+text-align: right;
+}
+
+/* ── ACTION BUTTON ── */
+#tap-btn {
+width: 100%;
+padding: 14px;
+background: var(–bg3);
+border: 1px solid var(–green-dark);
+border-radius: 4px;
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 13px;
+letter-spacing: 2px;
+cursor: pointer;
+transition: all 0.1s;
+text-transform: uppercase;
+position: relative;
+overflow: hidden;
+}
+
+#tap-btn:active {
+background: var(–green-dark);
+transform: scale(0.98);
+box-shadow: 0 0 12px var(–green);
+}
+
+#tap-btn.idle-mode {
+border-color: var(–text-dim);
+color: var(–text-dim);
+font-size: 11px;
+}
+
+#tap-btn.no-mission {
+border-color: var(–border);
+color: var(–text-dim);
+}
+
+/* ── BOTTOM NAV ── */
+#bottom-nav {
+display: flex;
+border-top: 1px solid var(–border);
+background: var(–bg2);
+flex-shrink: 0;
+}
+
+.nav-btn {
+flex: 1;
+padding: 12px 4px;
+background: transparent;
+border: none;
+border-right: 1px solid var(–border);
+color: var(–text-dim);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 10px;
+letter-spacing: 1px;
+cursor: pointer;
+text-transform: uppercase;
+transition: color 0.2s, background 0.2s;
+}
+
+.nav-btn:last-child { border-right: none; }
+.nav-btn.active { color: var(–green); background: var(–bg3); }
+.nav-btn:active { background: var(–green-dark); color: var(–green); }
+
+/* ── PANELS ── */
+#panel {
+display: none;
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+max-width: 480px;
+margin: 0 auto;
+background: var(–bg2);
+border-top: 2px solid var(–green-dark);
+max-height: 65vh;
+overflow-y: auto;
+z-index: 100;
+}
+
+#panel.open { display: block; }
+#panel::-webkit-scrollbar { width: 4px; }
+#panel::-webkit-scrollbar-thumb { background: var(–green-dark); }
+
+.panel-header {
+padding: 12px;
+border-bottom: 1px solid var(–border);
+font-family: ‘Orbitron’, monospace;
+font-size: 12px;
+letter-spacing: 3px;
+color: var(–green-dim);
+display: flex;
+justify-content: space-between;
+align-items: center;
+position: sticky;
+top: 0;
+background: var(–bg2);
+z-index: 1;
+}
+
+.panel-close {
+background: none;
+border: none;
+color: var(–text-dim);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 16px;
+cursor: pointer;
+padding: 0 4px;
+}
+
+/* ── MISSIONS ── */
+.mission-card {
+margin: 10px 12px;
+padding: 12px;
+border: 1px solid var(–border);
+border-radius: 4px;
+background: var(–bg);
+cursor: pointer;
+transition: border-color 0.2s, background 0.2s;
+}
+
+.mission-card:active { background: var(–bg3); border-color: var(–green-dark); }
+.mission-card.active-mission { border-color: var(–green); background: var(–bg3); }
+.mission-card.locked { opacity: 0.4; cursor: not-allowed; }
+
+.mission-title {
+font-size: 12px;
+color: var(–green);
+margin-bottom: 4px;
+display: flex;
+justify-content: space-between;
+}
+
+.mission-type-tag {
+font-size: 9px;
+padding: 1px 6px;
+border-radius: 2px;
+background: var(–green-dark);
+color: var(–green);
+}
+
+.mission-type-tag.exfil { background: #001a3a; color: var(–blue); }
+.mission-type-tag.crack { background: #2a0000; color: var(–red); }
+
+.mission-desc { font-size: 10px; color: var(–text-dim); margin-bottom: 6px; }
+
+.mission-meta {
+display: flex;
+gap: 12px;
+font-size: 10px;
+}
+
+.mission-meta span { color: var(–text-dim); }
+.mission-meta .val { color: var(–amber); }
+
+/* ── UPGRADES ── */
+.upgrade-section {
+padding: 10px 12px 4px;
+font-size: 10px;
+color: var(–text-dim);
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+
+.upgrade-card {
+margin: 6px 12px;
+padding: 10px 12px;
+border: 1px solid var(–border);
+border-radius: 4px;
+background: var(–bg);
+cursor: pointer;
+transition: all 0.15s;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.upgrade-card:active { background: var(–bg3); }
+.upgrade-card.maxed { opacity: 0.5; cursor: not-allowed; }
+.upgrade-card.cant-afford { opacity: 0.6; }
+
+.upgrade-info { flex: 1; }
+.upgrade-name { font-size: 12px; color: var(–green); margin-bottom: 2px; }
+.upgrade-desc { font-size: 10px; color: var(–text-dim); }
+
+.upgrade-cost {
+text-align: right;
+font-size: 11px;
+}
+
+.upgrade-cost .cost-val { color: var(–amber); }
+.upgrade-cost .tier-dots { color: var(–text-dim); font-size: 9px; }
+
+/* ── PRESTIGE ── */
+#prestige-section {
+margin: 12px;
+padding: 16px;
+border: 1px solid var(–red);
+border-radius: 4px;
+background: rgba(255,45,45,0.05);
+}
+
+#prestige-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 13px;
+color: var(–red);
+margin-bottom: 8px;
+letter-spacing: 2px;
+}
+
+#prestige-desc { font-size: 11px; color: var(–text-dim); margin-bottom: 12px; line-height: 1.6; }
+
+#prestige-btn {
+width: 100%;
+padding: 12px;
+background: transparent;
+border: 1px solid var(–red);
+border-radius: 4px;
+color: var(–red);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 12px;
+letter-spacing: 3px;
+cursor: pointer;
+transition: all 0.2s;
+text-transform: uppercase;
+}
+
+#prestige-btn:active { background: rgba(255,45,45,0.2); }
+#prestige-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+#rep-display {
+text-align: center;
+margin: 12px;
+font-size: 11px;
+color: var(–text-dim);
+}
+
+#rep-display .rep-val {
+color: var(–amber);
+font-size: 14px;
+font-family: ‘Orbitron’, monospace;
+}
+
+/* ── OFFLINE MODAL ── */
+#offline-modal {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.85);
+z-index: 1000;
+align-items: center;
+justify-content: center;
+}
+
+#offline-modal.show { display: flex; }
+
+#offline-box {
+background: var(–bg2);
+border: 1px solid var(–green-dark);
+border-radius: 4px;
+padding: 20px;
+max-width: 320px;
+width: 90%;
+}
+
+#offline-box h2 {
+font-family: ‘Orbitron’, monospace;
+font-size: 13px;
+color: var(–green);
+letter-spacing: 3px;
+margin-bottom: 12px;
+}
+
+#offline-log {
+font-size: 11px;
+line-height: 1.8;
+color: var(–text-dim);
+margin-bottom: 16px;
+max-height: 200px;
+overflow-y: auto;
+}
+
+#offline-log .hi { color: var(–green); }
+
+#offline-ok {
+width: 100%;
+padding: 12px;
+background: var(–green-dark);
+border: 1px solid var(–green);
+border-radius: 4px;
+color: var(–green);
+font-family: ‘Share Tech Mono’, monospace;
+font-size: 12px;
+letter-spacing: 2px;
+cursor: pointer;
+}
+
+/* ── FLASH FX ── */
+.credit-flash {
+position: fixed;
+pointer-events: none;
+font-family: ‘Orbitron’, monospace;
+font-size: 13px;
+color: var(–amber);
+text-shadow: 0 0 8px var(–amber);
+z-index: 500;
+animation: floatUp 1.2s ease-out forwards;
+}
+
+@keyframes floatUp {
+0% { opacity: 1; transform: translateY(0); }
+100% { opacity: 0; transform: translateY(-40px); }
+}
+
+/* Glitch on prestige */
+@keyframes glitch {
+0%,100% { transform: translate(0); filter: none; }
+20% { transform: translate(-4px, 2px); filter: hue-rotate(90deg); }
+40% { transform: translate(4px, -2px); filter: hue-rotate(180deg) brightness(2); }
+60% { transform: translate(-2px, 4px); filter: hue-rotate(270deg); }
+80% { transform: translate(2px, -4px); filter: brightness(3); }
+}
+
+.glitching { animation: glitch 0.4s ease forwards; }
+
+/* Boot sequence */
+#boot-screen {
+position: fixed;
+inset: 0;
+background: var(–bg);
+z-index: 2000;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+gap: 16px;
+}
+
+#boot-logo {
+font-family: ‘Orbitron’, monospace;
+font-size: 28px;
+font-weight: 900;
+letter-spacing: 8px;
+color: var(–green);
+text-shadow: 0 0 20px var(–green), 0 0 40px var(–green);
+animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse { 50% { text-shadow: 0 0 40px var(–green), 0 0 80px var(–green); } }
+
+#boot-status { font-size: 11px; color: var(–text-dim); letter-spacing: 2px; }
+</style>
+
+</head>
+<body>
+
+<!-- Boot Screen -->
+
+<div id="boot-screen">
+  <div id="boot-logo">HACKNODE</div>
+  <div id="boot-status">initializing...</div>
+</div>
+
+<!-- Offline Modal -->
+
+<div id="offline-modal">
+  <div id="offline-box">
+    <h2>// SYSTEM RECONNECT</h2>
+    <div id="offline-log"></div>
+    <button id="offline-ok" onclick="closeOfflineModal()">[ CONTINUE ]</button>
+  </div>
+</div>
+
+<!-- Main App -->
+
+<div id="app">
+
+  <!-- Header -->
+
+  <div id="header">
+    <div id="header-top">
+      <div id="logo">HACKNODE</div>
+      <div id="alias-display">alias: <span id="alias-text">ghost_r00t</span></div>
+    </div>
+    <div id="stats-row">
+      <span>CREDS: $<span id="stat-credits" class="stat-val">0</span></span>
+      <span>BW: <span id="stat-bw" class="stat-val">56</span>kb/s</span>
+      <span>REP: <span id="stat-rep" class="stat-val">×1.0</span></span>
+      <span>RUNS: <span id="stat-runs" class="stat-val">0</span></span>
+    </div>
+    <div id="heat-bar-wrap">
+      <span id="heat-label">TRACE</span>
+      <div id="heat-track"><div id="heat-fill"></div></div>
+      <span id="heat-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- Terminal Log -->
+
+  <div id="terminal"></div>
+
+  <!-- Command Area -->
+
+  <div id="cmd-area">
+    <div id="progress-wrap">
+      <span id="progress-label">SCANNING</span>
+      <div id="progress-track"><div id="progress-fill"></div></div>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div id="cmd-display">
+      <span id="cmd-prompt">root@hacknode:~$</span>&nbsp;
+      <span id="cmd-text"></span>
+      <span id="cmd-cursor"></span>
+    </div>
+    <button id="tap-btn" onclick="handleTap()">[ TAP TO EXECUTE ]</button>
+  </div>
+
+  <!-- Bottom Nav -->
+
+  <div id="bottom-nav">
+    <button class="nav-btn active" id="nav-terminal" onclick="showPanel('none')">TERMINAL</button>
+    <button class="nav-btn" id="nav-missions" onclick="showPanel('missions')">MISSIONS</button>
+    <button class="nav-btn" id="nav-upgrades" onclick="showPanel('upgrades')">UPGRADES</button>
+    <button class="nav-btn" id="nav-system" onclick="showPanel('system')">SYSTEM</button>
+  </div>
+
+</div>
+
+<!-- Sliding Panel -->
+
+<div id="panel">
+  <div class="panel-header">
+    <span id="panel-title">MISSIONS</span>
+    <button class="panel-close" onclick="showPanel('none')">✕</button>
+  </div>
+  <div id="panel-content"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// GAME STATE
+// ════════════════════════════════════════════════
+
+const SAVE_KEY = 'hacknode_v1';
+
+const DEFAULT_STATE = {
+  credits: 0,
+  rep: 1.0,
+  prestigeCount: 0,
+  alias: 'ghost_r00t',
+
+  // Resources
+  bandwidth: 56, // kb/s
+
+  // Heat
+  heat: 0, // 0-100
+
+  // Current mission
+  activeMission: null,    // mission id
+  missionProgress: 0,     // 0-100
+  missionRunning: false,
+
+  // Typing automation tier (0=1char, 1=1word, 2=full cmd, 3=auto)
+  typingTier: 0,
+
+  // Upgrades purchased (id -> level)
+  upgrades: {},
+
+  // Completed missions count
+  missionsCompleted: 0,
+
+  // Offline tracking
+  lastSeen: Date.now(),
+};
+
+let G = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+// Typing state
+let typingState = {
+  command: '',
+  typed: 0,
+  words: [],
+  chunkSize: 1, // chars per tap
+};
+
+let autoTickInterval = null;
+let heatDecayInterval = null;
+let tapCooldown = false;
+
+// ════════════════════════════════════════════════
+// MISSIONS DATA
+// ════════════════════════════════════════════════
+
+const MISSIONS = [
+  {
+    id: 'nmap_local',
+    name: 'NETWORK SCAN: LOCAL',
+    type: 'recon',
+    typeTag: 'RECON',
+    desc: 'Map the local subnet. Find open ports.',
+    command: 'nmap -sV 192.168.1.0/24',
+    taps: 22,
+    heatPerTick: 0.4,
+    heatOnComplete: 5,
+    duration: 100,
+    reward: { credits: 120, mult: true },
+    unlockAt: 0,
+  },
+  {
+    id: 'hydra_ssh',
+    name: 'BRUTE FORCE: SSH',
+    type: 'crack',
+    typeTag: 'CRACK',
+    desc: 'Dictionary attack on SSH. 10,000 passwords.',
+    command: 'hydra -l admin -P rockyou.txt ssh://10.0.0.1',
+    taps: 40,
+    heatPerTick: 0.8,
+    heatOnComplete: 10,
+    duration: 100,
+    reward: { credits: 380, mult: true },
+    unlockAt: 1,
+  },
+  {
+    id: 'scp_exfil',
+    name: 'EXFIL: CORP DATABASE',
+    type: 'exfil',
+    typeTag: 'EXFIL',
+    desc: 'Copy 2.4GB of financial records.',
+    command: 'scp -r /var/db/corp ./exfil/',
+    taps: 30,
+    heatPerTick: 1.2,
+    heatOnComplete: 15,
+    duration: 100,
+    reward: { credits: 750, mult: true },
+    unlockAt: 3,
+  },
+  {
+    id: 'metasploit_run',
+    name: 'EXPLOIT: ZERO-DAY',
+    type: 'crack',
+    typeTag: 'CRACK',
+    desc: 'Deploy CVE-2024-9999. High risk, high reward.',
+    command: 'msfconsole -x "use exploit/ms17_010; run"',
+    taps: 55,
+    heatPerTick: 1.8,
+    heatOnComplete: 20,
+    duration: 100,
+    reward: { credits: 1800, mult: true },
+    unlockAt: 6,
+  },
+  {
+    id: 'worm_deploy',
+    name: 'DEPLOY: BOTNET NODE',
+    type: 'exfil',
+    typeTag: 'EXFIL',
+    desc: 'Install persistent worm. Passive credit drip.',
+    command: 'python3 worm.py --target 45.33.32.156 --persist',
+    taps: 45,
+    heatPerTick: 1.0,
+    heatOnComplete: 8,
+    duration: 100,
+    reward: { credits: 500, passive: 15, mult: true },
+    unlockAt: 8,
+  },
+];
+
+// ════════════════════════════════════════════════
+// UPGRADES DATA
+// ════════════════════════════════════════════════
+
+const UPGRADES = [
+  // Bandwidth
+  {
+    id: 'bw1', section: 'BANDWIDTH',
+    name: 'DSL Connection',
+    desc: 'Upgrade from 56k → 1Mb/s',
+    maxLevel: 1,
+    cost: (lvl) => 500,
+    apply: () => { G.bandwidth = 1000; },
+    condition: () => true,
+  },
+  {
+    id: 'bw2', section: 'BANDWIDTH',
+    name: 'Cable Modem',
+    desc: 'Upgrade to 10Mb/s. Exfil speed ×3',
+    maxLevel: 1,
+    cost: () => 2500,
+    apply: () => { G.bandwidth = 10000; },
+    condition: () => (G.upgrades['bw1']||0) >= 1,
+  },
+  {
+    id: 'bw3', section: 'BANDWIDTH',
+    name: 'Fiber Optic',
+    desc: 'Upgrade to 100Mb/s. Crack speed ×5',
+    maxLevel: 1,
+    cost: () => 12000,
+    apply: () => { G.bandwidth = 100000; },
+    condition: () => (G.upgrades['bw2']||0) >= 1,
+  },
+  {
+    id: 'bw4', section: 'BANDWIDTH',
+    name: 'Dark Fiber Lease',
+    desc: '1Gb/s dedicated. All speeds ×10',
+    maxLevel: 1,
+    cost: () => 60000,
+    apply: () => { G.bandwidth = 1000000; },
+    condition: () => (G.upgrades['bw3']||0) >= 1,
+  },
+
+  // Typing / Automation
+  {
+    id: 'type1', section: 'SCRIPTING',
+    name: 'Tab Autocomplete',
+    desc: 'Each tap completes a full word',
+    maxLevel: 1,
+    cost: () => 300,
+    apply: () => { G.typingTier = 1; updateChunkSize(); },
+    condition: () => true,
+  },
+  {
+    id: 'type2', section: 'SCRIPTING',
+    name: 'Macro Hotkeys',
+    desc: 'Each tap runs the full command',
+    maxLevel: 1,
+    cost: () => 1500,
+    apply: () => { G.typingTier = 2; updateChunkSize(); },
+    condition: () => (G.upgrades['type1']||0) >= 1,
+  },
+  {
+    id: 'type3', section: 'SCRIPTING',
+    name: 'Cron Scheduler',
+    desc: 'Commands execute automatically (idle!)',
+    maxLevel: 1,
+    cost: () => 8000,
+    apply: () => { G.typingTier = 3; updateChunkSize(); startAutoTick(); },
+    condition: () => (G.upgrades['type2']||0) >= 1,
+  },
+
+  // Security / Heat
+  {
+    id: 'vpn1', section: 'SECURITY',
+    name: 'VPN Layer',
+    desc: 'Trace gain rate -25%',
+    maxLevel: 1,
+    cost: () => 800,
+    apply: () => {},
+    condition: () => true,
+  },
+  {
+    id: 'vpn2', section: 'SECURITY',
+    name: 'Tor Routing',
+    desc: 'Trace gain rate -50%',
+    maxLevel: 1,
+    cost: () => 4000,
+    apply: () => {},
+    condition: () => (G.upgrades['vpn1']||0) >= 1,
+  },
+  {
+    id: 'decoy1', section: 'SECURITY',
+    name: 'Decoy Server',
+    desc: 'Trace drains 2× faster when idle',
+    maxLevel: 1,
+    cost: () => 2000,
+    apply: () => {},
+    condition: () => (G.upgrades['vpn1']||0) >= 1,
+  },
+];
+
+// ════════════════════════════════════════════════
+// AUDIO ENGINE
+// ════════════════════════════════════════════════
+
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, gain = 0.15) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(); osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playKeyClick() {
+  playTone(800 + Math.random()*400, 'square', 0.04, 0.08);
+}
+
+function playSuccess() {
+  [440,554,659].forEach((f,i) => setTimeout(() => playTone(f,'sine',0.2,0.12), i*80));
+}
+
+function playFail() {
+  playTone(180, 'sawtooth', 0.3, 0.15);
+}
+
+function playPrestige() {
+  [220,277,330,440,554,659,880].forEach((f,i) =>
+    setTimeout(() => playTone(f,'sine',0.4,0.1), i*60));
+}
+
+function playModem() {
+  [1200,2400,1800,2400,3600].forEach((f,i) =>
+    setTimeout(() => playTone(f,'square',0.15,0.06), i*120));
+}
+
+// ════════════════════════════════════════════════
+// TERMINAL LOG
+// ════════════════════════════════════════════════
+
+const terminal = document.getElementById('terminal');
+
+function log(text, cls = 'log-ok') {
+  const el = document.createElement('span');
+  el.className = `log-line ${cls}`;
+  el.textContent = text;
+  terminal.appendChild(el);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+function logSep() {
+  log('─'.repeat(38), 'log-sep');
+}
+
+// ════════════════════════════════════════════════
+// TYPING SYSTEM
+// ════════════════════════════════════════════════
+
+function updateChunkSize() {
+  const tier = G.typingTier;
+  if (tier === 0) typingState.chunkSize = 1;
+  else if (tier === 1) typingState.chunkSize = -1; // word mode
+  else if (tier === 2) typingState.chunkSize = -2; // full command
+  else typingState.chunkSize = -3; // auto
+}
+
+function initTypingForMission(mission) {
+  typingState.command = mission.command;
+  typingState.typed = 0;
+  typingState.words = mission.command.split(' ');
+  updateChunkSize();
+  renderCmdDisplay();
+  updateTapButton();
+}
+
+function renderCmdDisplay() {
+  const full = typingState.command;
+  const typed = typingState.typed;
+  document.getElementById('cmd-text').textContent = full.slice(0, typed);
+}
+
+function getTypedChunk() {
+  const { command, typed, words, chunkSize } = typingState;
+
+  if (chunkSize === 1) {
+    // one char at a time
+    return Math.min(typed + 1, command.length);
+  } else if (chunkSize === -1) {
+    // word at a time
+    let pos = typed;
+    // find end of next word
+    const rest = command.slice(pos);
+    const spaceIdx = rest.indexOf(' ');
+    if (spaceIdx === -1) return command.length;
+    return pos + spaceIdx + 1;
+  } else {
+    // full command
+    return command.length;
+  }
+}
+
+function tapTypeProgress() {
+  if (!G.activeMission || !G.missionRunning) return false;
+  if (typingState.typed >= typingState.command.length) return false;
+
+  const newTyped = getTypedChunk();
+  const charsAdded = newTyped - typingState.typed;
+  typingState.typed = newTyped;
+  renderCmdDisplay();
+  playKeyClick();
+
+  // Each char/word typed = progress
+  const mission = MISSIONS.find(m => m.id === G.activeMission);
+  const progressPerChar = 100 / mission.taps;
+  const chunkProgress = progressPerChar * (G.typingTier === 0 ? 1 : (G.typingTier === 1 ? 5 : mission.taps));
+  addProgress(Math.min(chunkProgress, 100 - G.missionProgress));
+
+  // Heat
+  addHeat(mission.heatPerTick * (getHeatMult()));
+
+  return true;
+}
+
+// ════════════════════════════════════════════════
+// MISSION SYSTEM
+// ════════════════════════════════════════════════
+
+function selectMission(id) {
+  if (G.missionRunning) {
+    log('> ABORT current mission first', 'log-warn');
+    return;
+  }
+  const mission = MISSIONS.find(m => m.id === id);
+  if (!mission) return;
+  if (G.missionsCompleted < mission.unlockAt) return;
+
+  G.activeMission = id;
+  G.missionProgress = 0;
+  G.missionRunning = true;
+  typingState.typed = 0;
+  initTypingForMission(mission);
+
+  logSep();
+  log(`> INITIATING: ${mission.name}`, 'log-info');
+  log(`> CMD: ${mission.command}`, 'log-dim');
+  logSep();
+
+  showPanel('none');
+  updateProgress(0);
+  document.getElementById('progress-wrap').classList.add('active');
+  document.getElementById('progress-label').textContent = mission.typeTag;
+  playModem();
+}
+
+function addProgress(amount) {
+  G.missionProgress = Math.min(100, G.missionProgress + amount);
+  updateProgress(G.missionProgress);
+  if (G.missionProgress >= 100) {
+    completeMission();
+  }
+}
+
+function updateProgress(pct) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = Math.floor(pct) + '%';
+}
+
+function completeMission() {
+  const mission = MISSIONS.find(m => m.id === G.activeMission);
+  if (!mission) return;
+
+  const earned = Math.floor(mission.reward.credits * G.rep);
+  G.credits += earned;
+  G.missionsCompleted++;
+
+  if (mission.reward.passive) {
+    // Passive credit drip (simplified: bonus credits)
+    G.credits += mission.reward.passive * 10;
+    log(`> WORM ACTIVE: +${mission.reward.passive * 10} passive credits`, 'log-ok');
+  }
+
+  log(`> ✓ MISSION COMPLETE: ${mission.name}`, 'log-ok');
+  log(`> CREDITS EARNED: +$${earned}`, 'log-ok');
+  playSuccess();
+  showCreditFloat(earned);
+
+  G.missionRunning = false;
+  G.activeMission = null;
+  G.missionProgress = 0;
+  typingState.typed = 0;
+  typingState.command = '';
+
+  document.getElementById('cmd-text').textContent = '';
+  document.getElementById('progress-wrap').classList.remove('active');
+  updateTapButton();
+  updateUI();
+
+  // Auto-start if idle
+  if (G.typingTier >= 3) {
+    setTimeout(() => { if (!G.missionRunning) autoStartBestMission(); }, 1500);
+  }
+}
+
+function autoStartBestMission() {
+  const available = MISSIONS.filter(m => G.missionsCompleted >= m.unlockAt);
+  if (!available.length) return;
+  const best = available[available.length - 1];
+  selectMission(best.id);
+}
+
+function abortMission() {
+  if (!G.activeMission) return;
+  log('> MISSION ABORTED — erasing logs...', 'log-warn');
+  G.missionRunning = false;
+  G.activeMission = null;
+  G.missionProgress = 0;
+  typingState.typed = 0;
+  typingState.command = '';
+  document.getElementById('cmd-text').textContent = '';
+  document.getElementById('progress-wrap').classList.remove('active');
+  updateTapButton();
+}
+
+// ════════════════════════════════════════════════
+// TAP BUTTON
+// ════════════════════════════════════════════════
+
+function handleTap() {
+  if (tapCooldown) return;
+
+  if (!G.activeMission) {
+    log('> No active mission. Select a mission first.', 'log-warn');
+    showPanel('missions');
+    return;
+  }
+
+  if (G.heat >= 100) {
+    log('> TRACE DETECTED — wait for heat to clear', 'log-err');
+    playFail();
+    return;
+  }
+
+  const didType = tapTypeProgress();
+
+  // Brief cooldown to prevent spam on auto-fire
+  tapCooldown = true;
+  setTimeout(() => tapCooldown = false, 50);
+}
+
+function updateTapButton() {
+  const btn = document.getElementById('tap-btn');
+
+  if (!G.activeMission) {
+    btn.textContent = '[ SELECT MISSION ]';
+    btn.className = 'no-mission';
+    return;
+  }
+
+  if (G.typingTier >= 3) {
+    btn.textContent = '[ AUTO-EXECUTING ]';
+    btn.className = 'idle-mode';
+    return;
+  }
+
+  if (G.typingTier === 2) {
+    btn.textContent = '[ TAP TO RUN COMMAND ]';
+    btn.className = '';
+    return;
+  }
+
+  if (G.typingTier === 1) {
+    btn.textContent = '[ TAP TO AUTOCOMPLETE ]';
+    btn.className = '';
+    return;
+  }
+
+  btn.textContent = '[ TAP TO TYPE ]';
+  btn.className = '';
+}
+
+// ════════════════════════════════════════════════
+// AUTO TICK (tier 3 idle)
+// ════════════════════════════════════════════════
+
+function startAutoTick() {
+  if (autoTickInterval) return;
+  log('> SCHEDULER ONLINE — running autonomously', 'log-info');
+  autoTickInterval = setInterval(() => {
+    if (!G.missionRunning) {
+      autoStartBestMission();
+      return;
+    }
+    if (G.heat >= 100) return;
+    const mission = MISSIONS.find(m => m.id === G.activeMission);
+    if (!mission) return;
+
+    // Auto-type
+    if (typingState.typed < typingState.command.length) {
+      const newTyped = Math.min(typingState.typed + 3, typingState.command.length);
+      typingState.typed = newTyped;
+      renderCmdDisplay();
+    }
+
+    const bwMult = getBandwidthMult();
+    addProgress(2 * bwMult);
+    addHeat(mission.heatPerTick * 0.5 * getHeatMult());
+    updateUI();
+  }, 400);
+}
+
+function getBandwidthMult() {
+  if (G.bandwidth >= 1000000) return 8;
+  if (G.bandwidth >= 100000) return 4;
+  if (G.bandwidth >= 10000) return 2;
+  if (G.bandwidth >= 1000) return 1.5;
+  return 1;
+}
+
+// ════════════════════════════════════════════════
+// HEAT SYSTEM
+// ════════════════════════════════════════════════
+
+function getHeatMult() {
+  let mult = 1;
+  if ((G.upgrades['vpn1']||0) >= 1) mult *= 0.75;
+  if ((G.upgrades['vpn2']||0) >= 1) mult *= 0.5;
+  return mult;
+}
+
+function addHeat(amount) {
+  G.heat = Math.min(100, G.heat + amount);
+  updateHeatDisplay();
+  if (G.heat >= 100) {
+    log('> ⚠ TRACE DETECTED — connection burned!', 'log-err');
+    playFail();
+    abortMission();
+    G.heat = 80; // partial reset
+  }
+}
+
+function updateHeatDisplay() {
+  const pct = G.heat;
+  const fill = document.getElementById('heat-fill');
+  fill.style.width = pct + '%';
+  document.getElementById('heat-pct').textContent = Math.floor(pct) + '%';
+
+  if (pct >= 70) fill.style.background = 'var(--red)';
+  else if (pct >= 40) fill.style.background = 'var(--amber)';
+  else fill.style.background = 'var(--green)';
+}
+
+// Heat decay
+setInterval(() => {
+  if (G.heat <= 0) return;
+  const decayMult = (G.upgrades['decoy1']||0) >= 1 && !G.missionRunning ? 2 : 1;
+  G.heat = Math.max(0, G.heat - 0.5 * decayMult);
+  updateHeatDisplay();
+}, 500);
+
+// ════════════════════════════════════════════════
+// UPGRADES SYSTEM
+// ════════════════════════════════════════════════
+
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u => u.id === id);
+  if (!upg) return;
+  const lvl = G.upgrades[id] || 0;
+  if (lvl >= upg.maxLevel) { log('> Already maxed.', 'log-dim'); return; }
+  if (!upg.condition()) { log('> Prerequisites not met.', 'log-warn'); return; }
+
+  const cost = upg.cost(lvl);
+  if (G.credits < cost) {
+    log(`> Insufficient credits. Need $${cost}`, 'log-warn');
+    playFail();
+    return;
+  }
+
+  G.credits -= cost;
+  G.upgrades[id] = lvl + 1;
+  upg.apply();
+
+  log(`> INSTALLED: ${upg.name}`, 'log-ok');
+  log(`> Cost: $${cost}`, 'log-dim');
+  playSuccess();
+  updateUI();
+  renderPanel('upgrades');
+}
+
+// ════════════════════════════════════════════════
+// PRESTIGE SYSTEM
+// ════════════════════════════════════════════════
+
+function canPrestige() {
+  return G.credits >= 10000 || G.missionsCompleted >= 10;
+}
+
+function doPrestige() {
+  if (!canPrestige()) return;
+  if (!confirm('BURN THIS IDENTITY?\n\nAll credits and progress lost.\nReputation multiplier increases.\n\nContinue?')) return;
+
+  const newRep = parseFloat((G.rep + 0.5).toFixed(1));
+  const count = G.prestigeCount + 1;
+
+  const aliases = ['null_byte','d3m0n','ph4ntom','zero_cool','acid_burn','c3rb3rus','h4x0r_7','spectr3'];
+  const newAlias = aliases[count % aliases.length];
+
+  // Glitch effect
+  document.getElementById('app').classList.add('glitching');
+  setTimeout(() => document.getElementById('app').classList.remove('glitching'), 400);
+
+  playPrestige();
+
+  // Reset
+  const savedUpgrades = {};
+  G = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  G.rep = newRep;
+  G.prestigeCount = count;
+  G.alias = newAlias;
+  G.lastSeen = Date.now();
+
+  document.getElementById('alias-text').textContent = newAlias;
+  terminal.innerHTML = '';
+
+  logSep();
+  log(`> IDENTITY BURNED. REP: ×${newRep.toFixed(1)}`, 'log-warn');
+  log(`> NEW ALIAS: ${newAlias}`, 'log-ok');
+  log(`> All systems reinitializing...`, 'log-dim');
+  logSep();
+
+  updateChunkSize();
+  updateUI();
+  updateTapButton();
+  save();
+}
+
+// ════════════════════════════════════════════════
+// UI RENDERING
+// ════════════════════════════════════════════════
+
+function updateUI() {
+  document.getElementById('stat-credits').textContent = formatNum(G.credits);
+  document.getElementById('stat-bw').textContent = formatBW(G.bandwidth);
+  document.getElementById('stat-rep').textContent = '×' + G.rep.toFixed(1);
+  document.getElementById('stat-runs').textContent = G.prestigeCount;
+  document.getElementById('alias-text').textContent = G.alias;
+  save();
+}
+
+function formatNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+  return Math.floor(n).toString();
+}
+
+function formatBW(kb) {
+  if (kb >= 1000000) return (kb/1000000).toFixed(0) + 'Gb';
+  if (kb >= 1000) return (kb/1000).toFixed(0) + 'Mb';
+  return kb + 'kb';
+}
+
+// ════════════════════════════════════════════════
+// PANELS
+// ════════════════════════════════════════════════
+
+let currentPanel = 'none';
+
+function showPanel(name) {
+  const panel = document.getElementById('panel');
+  const navBtns = document.querySelectorAll('.nav-btn');
+
+  navBtns.forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-terminal').classList.remove('active');
+
+  if (name === 'none' || name === currentPanel) {
+    panel.classList.remove('open');
+    currentPanel = 'none';
+    document.getElementById('nav-terminal').classList.add('active');
+    return;
+  }
+
+  currentPanel = name;
+  panel.classList.add('open');
+  document.getElementById(`nav-${name}`)?.classList.add('active');
+  document.getElementById('panel-title').textContent = name.toUpperCase();
+  renderPanel(name);
+}
+
+function renderPanel(name) {
+  const content = document.getElementById('panel-content');
+  content.innerHTML = '';
+
+  if (name === 'missions') renderMissions(content);
+  else if (name === 'upgrades') renderUpgrades(content);
+  else if (name === 'system') renderSystem(content);
+}
+
+function renderMissions(container) {
+  MISSIONS.forEach(m => {
+    const locked = G.missionsCompleted < m.unlockAt;
+    const isActive = G.activeMission === m.id;
+    const card = document.createElement('div');
+    card.className = `mission-card ${locked ? 'locked' : ''} ${isActive ? 'active-mission' : ''}`;
+
+    const reward = Math.floor(m.reward.credits * G.rep);
+    card.innerHTML = `
+      <div class="mission-title">
+        ${m.name}
+        <span class="mission-type-tag ${m.type}">${m.typeTag}</span>
+      </div>
+      <div class="mission-desc">${locked ? `🔒 Complete ${m.unlockAt} missions to unlock` : m.desc}</div>
+      <div class="mission-meta">
+        <span>REWARD: <span class="val">$${formatNum(reward)}</span></span>
+        <span>TRACE: <span class="val">${m.heatOnComplete}%</span></span>
+        ${isActive ? '<span class="val">► ACTIVE</span>' : ''}
+      </div>
+    `;
+    if (!locked && !isActive) card.onclick = () => selectMission(m.id);
+    container.appendChild(card);
+  });
+
+  if (G.missionRunning) {
+    const abortBtn = document.createElement('button');
+    abortBtn.style.cssText = 'margin:10px 12px;padding:10px;width:calc(100% - 24px);background:transparent;border:1px solid var(--red);color:var(--red);font-family:Share Tech Mono,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px;';
+    abortBtn.textContent = '[ ABORT CURRENT MISSION ]';
+    abortBtn.onclick = () => { abortMission(); showPanel('none'); };
+    container.appendChild(abortBtn);
+  }
+}
+
+function renderUpgrades(container) {
+  let lastSection = '';
+  UPGRADES.forEach(upg => {
+    if (!upg.condition()) return;
+
+    if (upg.section !== lastSection) {
+      lastSection = upg.section;
+      const sec = document.createElement('div');
+      sec.className = 'upgrade-section';
+      sec.textContent = '// ' + upg.section;
+      container.appendChild(sec);
+    }
+
+    const lvl = G.upgrades[upg.id] || 0;
+    const maxed = lvl >= upg.maxLevel;
+    const cost = maxed ? 0 : upg.cost(lvl);
+    const canAfford = G.credits >= cost;
+
+    const card = document.createElement('div');
+    card.className = `upgrade-card ${maxed ? 'maxed' : ''} ${!canAfford && !maxed ? 'cant-afford' : ''}`;
+    card.innerHTML = `
+      <div class="upgrade-info">
+        <div class="upgrade-name">${upg.name}</div>
+        <div class="upgrade-desc">${upg.desc}</div>
+      </div>
+      <div class="upgrade-cost">
+        ${maxed
+          ? '<span style="color:var(--green-dim)">INSTALLED</span>'
+          : `<div class="cost-val">$${formatNum(cost)}</div>`
+        }
+      </div>
+    `;
+    if (!maxed) card.onclick = () => buyUpgrade(upg.id);
+    container.appendChild(card);
+  });
+}
+
+function renderSystem(container) {
+  container.innerHTML = `
+    <div id="rep-display">
+      REPUTATION MULTIPLIER<br>
+      <span class="rep-val">×${G.rep.toFixed(1)}</span>
+    </div>
+    <div id="prestige-section">
+      <div id="prestige-title">// BURN IDENTITY</div>
+      <div id="prestige-desc">
+        Wipe your alias, credits, and progress.<br>
+        Keep your <span style="color:var(--amber)">Reputation multiplier</span> (+×0.5).<br>
+        All rewards scale permanently.<br><br>
+        Requirement: $10,000+ or 10 missions completed.<br>
+        Missions completed: <span style="color:var(--green)">${G.missionsCompleted}</span>
+      </div>
+      <button id="prestige-btn" onclick="doPrestige()" ${canPrestige() ? '' : 'disabled'}>
+        [ BURN THIS IDENTITY ]
+      </button>
+    </div>
+    <div style="margin:12px;padding:12px;border:1px solid var(--border);border-radius:4px;background:var(--bg);font-size:10px;color:var(--text-dim);">
+      <div style="color:var(--green-dim);margin-bottom:8px;letter-spacing:2px;">// SYSTEM INFO</div>
+      <div>Version: 0.1.0-mvp</div>
+      <div>Prestige Runs: ${G.prestigeCount}</div>
+      <div>Total Missions: ${G.missionsCompleted}</div>
+      <div>Current Alias: ${G.alias}</div>
+      <div style="margin-top:8px;"><button onclick="if(confirm('Reset ALL data?')){localStorage.removeItem('${SAVE_KEY}');location.reload();}" style="background:none;border:1px solid var(--border);color:var(--text-dim);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:2px;">WIPE SAVE</button></div>
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════════════
+// CREDIT FLOAT FX
+// ════════════════════════════════════════════════
+
+function showCreditFloat(amount) {
+  const el = document.createElement('div');
+  el.className = 'credit-flash';
+  el.textContent = '+$' + formatNum(amount);
+  const btn = document.getElementById('tap-btn');
+  const rect = btn.getBoundingClientRect();
+  el.style.left = (rect.left + rect.width/2 - 30) + 'px';
+  el.style.top = (rect.top - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+// ════════════════════════════════════════════════
+// SAVE / LOAD
+// ════════════════════════════════════════════════
+
+function save() {
+  G.lastSeen = Date.now();
+  localStorage.setItem(SAVE_KEY, JSON.stringify(G));
+}
+
+function load() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) return false;
+  try {
+    const saved = JSON.parse(raw);
+    G = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), saved);
+    return true;
+  } catch(e) { return false; }
+}
+
+// ════════════════════════════════════════════════
+// OFFLINE GAINS
+// ════════════════════════════════════════════════
+
+function calcOfflineGains(secondsAway) {
+  if (secondsAway < 10) return null;
+  const mins = Math.floor(secondsAway / 60);
+  const cappedMins = Math.min(mins, 480); // 8hr cap
+
+  // Base rate: estimate credits/min from last mission tier
+  const missionIdx = Math.min(Math.floor(G.missionsCompleted / 2), MISSIONS.length - 1);
+  const baseMission = MISSIONS[missionIdx];
+  const credPerMin = (baseMission.reward.credits * G.rep) / 3;
+  const earned = Math.floor(credPerMin * cappedMins * 0.3); // 30% efficiency offline
+
+  return { mins: cappedMins, earned };
+}
+
+function showOfflineModal(gains) {
+  if (!gains || gains.earned <= 0) return;
+  G.credits += gains.earned;
+
+  const logEl = document.getElementById('offline-log');
+  logEl.innerHTML = `
+    <div>Time away: <span class="hi">${gains.mins} min</span></div>
+    <div>Passive credits earned: <span class="hi">+$${formatNum(gains.earned)}</span></div>
+    <div style="margin-top:8px;color:#2a4a2a;">// Botnet nodes kept running.</div>
+    <div style="color:#2a4a2a;">// Logs compressed for review.</div>
+  `;
+  document.getElementById('offline-modal').classList.add('show');
+}
+
+function closeOfflineModal() {
+  document.getElementById('offline-modal').classList.remove('show');
+  updateUI();
+}
+
+// ════════════════════════════════════════════════
+// BOOT SEQUENCE
+// ════════════════════════════════════════════════
+
+const bootLines = [
+  'HACKNODE OS v0.1.0',
+  'Loading kernel modules...',
+  'Initializing network stack...',
+  'Mounting virtual filesystem...',
+  'Starting anonymization layer...',
+  'System ready.',
+];
+
+async function boot() {
+  const bootStatus = document.getElementById('boot-status');
+  const bootScreen = document.getElementById('boot-screen');
+
+  const hasSave = load();
+
+  for (const line of bootLines) {
+    bootStatus.textContent = line;
+    await delay(280);
+  }
+
+  await delay(400);
+  bootScreen.style.transition = 'opacity 0.5s';
+  bootScreen.style.opacity = '0';
+  await delay(500);
+  bootScreen.style.display = 'none';
+
+  // Restore state
+  if (hasSave) {
+    const secondsAway = Math.floor((Date.now() - G.lastSeen) / 1000);
+    const gains = calcOfflineGains(secondsAway);
+
+    updateChunkSize();
+    if (G.typingTier >= 3) startAutoTick();
+
+    // Restore active mission display
+    G.missionRunning = false;
+    G.activeMission = null;
+
+    updateUI();
+    updateTapButton();
+    updateHeatDisplay();
+
+    log('> Connection restored.', 'log-dim');
+    log(`> Welcome back, ${G.alias}`, 'log-ok');
+    if (G.missionsCompleted > 0) {
+      log(`> ${G.missionsCompleted} missions on record.`, 'log-dim');
+    }
+
+    if (gains) showOfflineModal(gains);
+  } else {
+    // First run
+    updateUI();
+    updateTapButton();
+    await introSequence();
+  }
+}
+
+async function introSequence() {
+  const lines = [
+    ['> Booting HACKNODE OS...', 'log-dim', 200],
+    ['> Alias: ghost_r00t', 'log-ok', 150],
+    ['> Location: UNKNOWN', 'log-dim', 150],
+    ['> Status: UNTRACEABLE', 'log-ok', 200],
+    ['─'.repeat(38), 'log-sep', 300],
+    ['> Ready. Select a MISSION to begin.', 'log-info', 100],
+    ['> Tap [MISSIONS] to choose your target.', 'log-dim', 0],
+  ];
+  for (const [text, cls, wait] of lines) {
+    log(text, cls);
+    if (wait) await delay(wait);
+  }
+}
+
+function delay(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+
+boot();
+
+// Auto-save every 30s
+setInterval(() => save(), 30000);
+
+// Passive credit drip if worm deployed
+setInterval(() => {
+  if ((G.upgrades['worm']||0) >= 1 || G.missionsCompleted >= 5) {
+    // Small passive trickle post-worm deploy
+    if (G.missionsCompleted >= 5) {
+      G.credits += 0.5 * G.rep;
+      updateUI();
+    }
+  }
+}, 2000);
+
+</script>
+
+</body>
+</html>
