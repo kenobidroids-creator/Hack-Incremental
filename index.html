@@ -91,8 +91,11 @@ flex-shrink: 0;
 }
 
 #header-top {
+display: -webkit-flex;
 display: flex;
+-webkit-justify-content: space-between;
 justify-content: space-between;
+-webkit-align-items: center;
 align-items: center;
 }
 
@@ -115,9 +118,11 @@ color: var(–amber);
 }
 
 #stats-row {
+display: -webkit-flex;
 display: flex;
 gap: 12px;
 font-size: 10px;
+color: #4a7a4a;
 color: var(–text-dim);
 }
 
@@ -127,7 +132,9 @@ color: var(–green);
 
 /* ── HEAT BAR ── */
 #heat-bar-wrap {
+display: -webkit-flex;
 display: flex;
+-webkit-align-items: center;
 align-items: center;
 gap: 8px;
 font-size: 10px;
@@ -203,8 +210,11 @@ flex-shrink: 0;
 font-size: 12px;
 min-height: 20px;
 margin-bottom: 8px;
+color: #00aa2a;
 color: var(–green-dim);
+display: -webkit-flex;
 display: flex;
+-webkit-align-items: center;
 align-items: center;
 gap: 4px;
 }
@@ -226,11 +236,12 @@ animation: blink 1s step-end infinite;
 display: none;
 margin-bottom: 8px;
 gap: 8px;
+-webkit-align-items: center;
 align-items: center;
 font-size: 10px;
 }
 
-#progress-wrap.active { display: flex; }
+#progress-wrap.active { display: -webkit-flex; display: flex; }
 
 #progress-label { color: var(–text-dim); min-width: 60px; }
 
@@ -258,39 +269,71 @@ width: 36px;
 text-align: right;
 }
 
+/* Global button reset for Safari */
+button {
+-webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+border-radius: 4px;
+-webkit-tap-highlight-color: transparent;
+touch-action: manipulation;
+}
+
 /* ── ACTION BUTTON ── */
 #tap-btn {
 width: 100%;
 padding: 14px;
+background: #0d180d;
 background: var(–bg3);
+border: 1px solid #003a0f;
 border: 1px solid var(–green-dark);
 border-radius: 4px;
+color: #00ff41;
 color: var(–green);
 font-family: ‘Share Tech Mono’, monospace;
 font-size: 13px;
 letter-spacing: 2px;
 cursor: pointer;
+-webkit-transition: all 0.1s;
 transition: all 0.1s;
 text-transform: uppercase;
 position: relative;
 overflow: hidden;
+-webkit-appearance: none;
+appearance: none;
+-webkit-tap-highlight-color: transparent;
+touch-action: manipulation;
+display: block;
+box-sizing: border-box;
 }
 
 #tap-btn:active {
+background: #003a0f;
 background: var(–green-dark);
+-webkit-transform: scale(0.98);
 transform: scale(0.98);
+box-shadow: 0 0 12px #00ff41;
 box-shadow: 0 0 12px var(–green);
 }
 
 #tap-btn.idle-mode {
+border-color: #4a7a4a;
 border-color: var(–text-dim);
+color: #4a7a4a;
 color: var(–text-dim);
 font-size: 11px;
 }
 
 #tap-btn.no-mission {
+border-color: #1a3a1a;
 border-color: var(–border);
+color: #4a7a4a;
 color: var(–text-dim);
+}
+
+#tap-btn.locked-out {
+opacity: 0.4;
+pointer-events: none;
 }
 
 /* ── BOTTOM NAV ── */
@@ -304,18 +347,26 @@ flex-shrink: 0;
 }
 
 .nav-btn {
+-webkit-flex: 1;
 flex: 1;
 padding: 12px 4px;
 background: transparent;
 border: none;
+border-right: 1px solid #1a3a1a;
 border-right: 1px solid var(–border);
+color: #4a7a4a;
 color: var(–text-dim);
 font-family: ‘Share Tech Mono’, monospace;
 font-size: 10px;
 letter-spacing: 1px;
 cursor: pointer;
 text-transform: uppercase;
+-webkit-transition: color 0.2s, background 0.2s;
 transition: color 0.2s, background 0.2s;
+-webkit-appearance: none;
+appearance: none;
+-webkit-tap-highlight-color: transparent;
+touch-action: manipulation;
 }
 
 .nav-btn:last-child { border-right: none; }
@@ -1277,7 +1328,18 @@ function completeMission() {
 
   document.getElementById('cmd-text').textContent = '';
   document.getElementById('progress-wrap').classList.remove('active');
-  updateTapButton();
+
+  // Lock out the tap button for 900ms so rapid tappers
+  // don't accidentally open missions panel / select a mission
+  const btn = document.getElementById('tap-btn');
+  btn.classList.add('locked-out');
+  tapCooldown = true;
+  setTimeout(() => {
+    btn.classList.remove('locked-out');
+    tapCooldown = false;
+    updateTapButton();
+  }, 900);
+
   updateUI();
 
   // Auto-start if idle
@@ -1312,12 +1374,29 @@ function abortMission() {
 // TAP BUTTON
 // ════════════════════════════════════════════════
 
+let noMissionTapCount = 0;
+let noMissionTapTimer = null;
+
 function handleTap() {
   if (tapCooldown) return;
 
   if (!G.activeMission) {
-    log('> No active mission. Select a mission first.', 'log-warn');
-    showPanel('missions');
+    // Require a deliberate double-tap to open missions panel
+    // This prevents accidental panel open when spamming the tap button
+    noMissionTapCount++;
+    clearTimeout(noMissionTapTimer);
+    if (noMissionTapCount >= 2) {
+      noMissionTapCount = 0;
+      showPanel('missions');
+    } else {
+      // Flash the button text to signal "tap again to open missions"
+      const btn = document.getElementById('tap-btn');
+      btn.textContent = '[ TAP AGAIN → MISSIONS ]';
+      noMissionTapTimer = setTimeout(() => {
+        noMissionTapCount = 0;
+        updateTapButton();
+      }, 1200);
+    }
     return;
   }
 
@@ -1327,9 +1406,9 @@ function handleTap() {
     return;
   }
 
-  const didType = tapTypeProgress();
+  tapTypeProgress();
 
-  // Brief cooldown to prevent spam on auto-fire
+  // Brief cooldown to prevent double-fire
   tapCooldown = true;
   setTimeout(() => tapCooldown = false, 50);
 }
