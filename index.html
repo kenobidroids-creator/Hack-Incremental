@@ -28,41 +28,44 @@
 
 html, body {
 height: 100%;
+background: #050a05;
 background: var(–bg);
 color: var(–green);
 font-family: ‘Share Tech Mono’, monospace;
 overflow: hidden;
+-webkit-user-select: none;
 user-select: none;
 }
 
-/* CRT scanline overlay */
-body::before {
-content: ‘’;
+/* CRT and vignette are real divs now for Safari compat */
+
+#crt-overlay {
 position: fixed;
-inset: 0;
+top: 0; left: 0; right: 0; bottom: 0;
 background: repeating-linear-gradient(
 0deg,
 transparent,
 transparent 2px,
-var(–scan-line) 2px,
-var(–scan-line) 4px
+rgba(0,255,65,0.03) 2px,
+rgba(0,255,65,0.03) 4px
 );
 pointer-events: none;
 z-index: 9999;
 }
 
-/* Vignette */
-body::after {
-content: ‘’;
+#vignette-overlay {
 position: fixed;
-inset: 0;
-background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
+top: 0; left: 0; right: 0; bottom: 0;
+background: -webkit-radial-gradient(center, ellipse, transparent 60%, rgba(0,0,0,0.75) 100%);
+background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.75) 100%);
 pointer-events: none;
 z-index: 9998;
 }
 
 #app {
+display: -webkit-flex;
 display: flex;
+-webkit-flex-direction: column;
 flex-direction: column;
 height: 100vh;
 height: 100dvh;
@@ -78,9 +81,12 @@ position: relative;
 padding: 8px 12px;
 background: var(–bg2);
 border-bottom: 1px solid var(–border);
+display: -webkit-flex;
 display: flex;
+-webkit-flex-direction: column;
 flex-direction: column;
 gap: 6px;
+-webkit-flex-shrink: 0;
 flex-shrink: 0;
 }
 
@@ -159,8 +165,10 @@ font-size: 10px;
 
 /* ── TERMINAL ── */
 #terminal {
+-webkit-flex: 1;
 flex: 1;
 overflow-y: auto;
+-webkit-overflow-scrolling: touch;
 padding: 10px 12px;
 background: var(–bg);
 font-size: 12px;
@@ -187,6 +195,7 @@ scroll-behavior: smooth;
 background: var(–bg2);
 border-top: 1px solid var(–border);
 padding: 10px 12px;
+-webkit-flex-shrink: 0;
 flex-shrink: 0;
 }
 
@@ -286,9 +295,11 @@ color: var(–text-dim);
 
 /* ── BOTTOM NAV ── */
 #bottom-nav {
+display: -webkit-flex;
 display: flex;
 border-top: 1px solid var(–border);
 background: var(–bg2);
+-webkit-flex-shrink: 0;
 flex-shrink: 0;
 }
 
@@ -314,17 +325,20 @@ transition: color 0.2s, background 0.2s;
 /* ── PANELS ── */
 #panel {
 display: none;
-position: absolute;
+position: fixed;
 bottom: 0;
-left: 0;
-right: 0;
+left: 50%;
+-webkit-transform: translateX(-50%);
+transform: translateX(-50%);
+width: 100%;
 max-width: 480px;
-margin: 0 auto;
+background: #080f08;
 background: var(–bg2);
 border-top: 2px solid var(–green-dark);
 max-height: 65vh;
 overflow-y: auto;
-z-index: 100;
+z-index: 200;
+-webkit-overflow-scrolling: touch;
 }
 
 #panel.open { display: block; }
@@ -494,14 +508,16 @@ font-family: ‘Orbitron’, monospace;
 #offline-modal {
 display: none;
 position: fixed;
-inset: 0;
+top: 0; left: 0; right: 0; bottom: 0;
 background: rgba(0,0,0,0.85);
 z-index: 1000;
+-webkit-align-items: center;
 align-items: center;
+-webkit-justify-content: center;
 justify-content: center;
 }
 
-#offline-modal.show { display: flex; }
+#offline-modal.show { display: -webkit-flex; display: flex; }
 
 #offline-box {
 background: var(–bg2);
@@ -575,12 +591,17 @@ animation: floatUp 1.2s ease-out forwards;
 /* Boot sequence */
 #boot-screen {
 position: fixed;
-inset: 0;
+top: 0; left: 0; right: 0; bottom: 0;
+background: #050a05;
 background: var(–bg);
 z-index: 2000;
+display: -webkit-flex;
 display: flex;
+-webkit-align-items: center;
 align-items: center;
+-webkit-justify-content: center;
 justify-content: center;
+-webkit-flex-direction: column;
 flex-direction: column;
 gap: 16px;
 }
@@ -602,6 +623,11 @@ animation: pulse 1s ease-in-out infinite;
 
 </head>
 <body style="background:#050a05;color:#00ff41;">
+
+<!-- CRT & Vignette overlays as real elements for Safari -->
+
+<div id="crt-overlay"></div>
+<div id="vignette-overlay"></div>
 
 <!-- Boot Screen -->
 
