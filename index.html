@@ -65,10 +65,12 @@ z-index: 9998;
 display: flex;
 flex-direction: column;
 height: 100vh;
+height: 100dvh;
 max-width: 480px;
 margin: 0 auto;
 border-left: 1px solid var(–border);
 border-right: 1px solid var(–border);
+position: relative;
 }
 
 /* ── HEADER ── */
@@ -703,9 +705,11 @@ const DEFAULT_STATE = {
   heat: 0, // 0-100
 
   // Current mission
-  activeMission: null,    // mission id
-  missionProgress: 0,     // 0-100
+  activeMission: null,
+  missionProgress: 0,
   missionRunning: false,
+  missionTapsDone: 0,
+  missionTapsTotal: 0,
 
   // Typing automation tier (0=1char, 1=1word, 2=full cmd, 3=auto)
   typingTier: 0,
@@ -738,18 +742,110 @@ let tapCooldown = false;
 // MISSIONS DATA
 // ════════════════════════════════════════════════
 
-const MISSIONS = [
+// ════════════════════════════════════════════════
+// PROCEDURAL GENERATION
+// ════════════════════════════════════════════════
+
+function randIP() {
+  return `${rnd(10,220)}.${rnd(0,255)}.${rnd(0,255)}.${rnd(1,254)}`;
+}
+function randSubnet() {
+  return `${rnd(10,192)}.${rnd(0,255)}.${rnd(0,255)}.0/24`;
+}
+function randPort() {
+  const ports = [22, 23, 80, 443, 3306, 5432, 8080, 8443, 27017, 6379];
+  return ports[rnd(0, ports.length-1)];
+}
+function randUser() {
+  const users = ['admin','root','user','ubuntu','postgres','deploy','svc_acc','dbadmin'];
+  return users[rnd(0, users.length-1)];
+}
+function randCVE() {
+  return `CVE-${rnd(2020,2024)}-${rnd(1000,99999)}`;
+}
+function randHash() {
+  const chars = '0123456789abcdef';
+  return Array.from({length: 8}, () => chars[rnd(0,15)]).join('');
+}
+function randFileSize() {
+  // In KB, weighted toward sizes that feel real for bandwidth
+  const sizes = [512, 1024, 2048, 4096, 8192, 16384, 51200, 102400, 512000, 2457600];
+  return sizes[rnd(0, sizes.length - 1)];
+}
+function rnd(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function formatFileSize(kb) {
+  if (kb >= 1024*1024) return (kb/1024/1024).toFixed(1) + 'GB';
+  if (kb >= 1024) return (kb/1024).toFixed(1) + 'MB';
+  return kb + 'KB';
+}
+
+// Calculate how many taps an exfil mission needs based on current bandwidth
+// fileSizeKB / bandwidth(kb/s) = seconds, each tap = ~0.5s equivalent
+function calcExfilTaps(fileSizeKB) {
+  const bw = G.bandwidth; // kb/s
+  const seconds = fileSizeKB / bw; // real time to transfer
+  // Scale: 1 tap = roughly 2% progress, but clamp to reasonable range
+  // More taps when bandwidth is slow, fewer when fast
+  const rawTaps = Math.ceil(seconds / 2);
+  return Math.max(8, Math.min(rawTaps, 120));
+}
+
+// Generate a fresh procedural mission instance
+function generateMission(template) {
+  const ip = randIP();
+  const subnet = randSubnet();
+  const port = randPort();
+  const user = randUser();
+  const cve = randCVE();
+  const hash = randHash();
+  const fileSize = randFileSize();
+  const fileSizeStr = formatFileSize(fileSize);
+
+  const commands = {
+    nmap_local:     `nmap -sV -p ${port} ${subnet}`,
+    hydra_ssh:      `hydra -l ${user} -P rockyou.txt ssh://${ip}`,
+    scp_exfil:      `scp -r ${user}@${ip}:/var/db/corp ./exfil/`,
+    metasploit_run: `msfconsole -x "use exploit/ms17_010; set RHOST ${ip}; run"`,
+    worm_deploy:    `python3 worm.py --target ${ip} --persist --hash ${hash}`,
+  };
+
+  const descs = {
+    nmap_local:     `Scan subnet ${subnet}. Find open port ${port}.`,
+    hydra_ssh:      `Brute force SSH on ${ip} as '${user}'.`,
+    scp_exfil:      `Exfil ${fileSizeStr} from ${ip}. BW: ${formatBW(G.bandwidth)}/s`,
+    metasploit_run: `Deploy ${cve} against ${ip}. High risk.`,
+    worm_deploy:    `Deploy persistent node on ${ip}. [${hash}]`,
+  };
+
+  // For exfil, taps depend on file size vs bandwidth
+  let taps = template.taps;
+  if (template.id === 'scp_exfil') {
+    taps = calcExfilTaps(fileSize);
+  }
+
+  return {
+    ...template,
+    command: commands[template.id] || template.command,
+    desc: descs[template.id] || template.desc,
+    taps,
+    _fileSize: fileSize,
+  };
+}
+
+const MISSION_TEMPLATES = [
   {
     id: 'nmap_local',
-    name: 'NETWORK SCAN: LOCAL',
+    name: 'NETWORK SCAN',
     type: 'recon',
     typeTag: 'RECON',
-    desc: 'Map the local subnet. Find open ports.',
-    command: 'nmap -sV 192.168.1.0/24',
-    taps: 22,
+    desc: '',
+    command: '',
+    taps: 20,
     heatPerTick: 0.4,
     heatOnComplete: 5,
-    duration: 100,
     reward: { credits: 120, mult: true },
     unlockAt: 0,
   },
@@ -758,12 +854,11 @@ const MISSIONS = [
     name: 'BRUTE FORCE: SSH',
     type: 'crack',
     typeTag: 'CRACK',
-    desc: 'Dictionary attack on SSH. 10,000 passwords.',
-    command: 'hydra -l admin -P rockyou.txt ssh://10.0.0.1',
-    taps: 40,
+    desc: '',
+    command: '',
+    taps: 38,
     heatPerTick: 0.8,
     heatOnComplete: 10,
-    duration: 100,
     reward: { credits: 380, mult: true },
     unlockAt: 1,
   },
@@ -772,12 +867,11 @@ const MISSIONS = [
     name: 'EXFIL: CORP DATABASE',
     type: 'exfil',
     typeTag: 'EXFIL',
-    desc: 'Copy 2.4GB of financial records.',
-    command: 'scp -r /var/db/corp ./exfil/',
-    taps: 30,
+    desc: '',
+    command: '',
+    taps: 30, // overridden by calcExfilTaps
     heatPerTick: 1.2,
     heatOnComplete: 15,
-    duration: 100,
     reward: { credits: 750, mult: true },
     unlockAt: 3,
   },
@@ -786,12 +880,11 @@ const MISSIONS = [
     name: 'EXPLOIT: ZERO-DAY',
     type: 'crack',
     typeTag: 'CRACK',
-    desc: 'Deploy CVE-2024-9999. High risk, high reward.',
-    command: 'msfconsole -x "use exploit/ms17_010; run"',
-    taps: 55,
+    desc: '',
+    command: '',
+    taps: 52,
     heatPerTick: 1.8,
     heatOnComplete: 20,
-    duration: 100,
     reward: { credits: 1800, mult: true },
     unlockAt: 6,
   },
@@ -800,16 +893,18 @@ const MISSIONS = [
     name: 'DEPLOY: BOTNET NODE',
     type: 'exfil',
     typeTag: 'EXFIL',
-    desc: 'Install persistent worm. Passive credit drip.',
-    command: 'python3 worm.py --target 45.33.32.156 --persist',
-    taps: 45,
+    desc: '',
+    command: '',
+    taps: 42,
     heatPerTick: 1.0,
     heatOnComplete: 8,
-    duration: 100,
     reward: { credits: 500, passive: 15, mult: true },
     unlockAt: 8,
   },
 ];
+
+// Active generated missions (regenerated each time you pick one)
+let MISSIONS = MISSION_TEMPLATES.map(t => generateMission(t));
 
 // ════════════════════════════════════════════════
 // UPGRADES DATA
@@ -1027,22 +1122,32 @@ function getTypedChunk() {
 
 function tapTypeProgress() {
   if (!G.activeMission || !G.missionRunning) return false;
-  if (typingState.typed >= typingState.command.length) return false;
 
-  const newTyped = getTypedChunk();
-  const charsAdded = newTyped - typingState.typed;
-  typingState.typed = newTyped;
-  renderCmdDisplay();
+  const mission = MISSIONS.find(m => m.id === G.activeMission);
+  if (!mission) return false;
+
+  // Advance typing display
+  if (typingState.typed < typingState.command.length) {
+    const newTyped = getTypedChunk();
+    typingState.typed = newTyped;
+    renderCmdDisplay();
+  }
+
   playKeyClick();
 
-  // Each char/word typed = progress
-  const mission = MISSIONS.find(m => m.id === G.activeMission);
-  const progressPerChar = 100 / mission.taps;
-  const chunkProgress = progressPerChar * (G.typingTier === 0 ? 1 : (G.typingTier === 1 ? 5 : mission.taps));
-  addProgress(Math.min(chunkProgress, 100 - G.missionProgress));
+  // Progress is purely tap-count based — no char math
+  G.missionTapsDone = (G.missionTapsDone || 0) + 1;
+  const total = G.missionTapsTotal || mission.taps;
+  const newPct = Math.min(100, (G.missionTapsDone / total) * 100);
+  G.missionProgress = newPct;
+  updateProgress(newPct);
 
-  // Heat
-  addHeat(mission.heatPerTick * (getHeatMult()));
+  // Heat per tap
+  addHeat(mission.heatPerTick * getHeatMult());
+
+  if (newPct >= 100) {
+    completeMission();
+  }
 
   return true;
 }
@@ -1056,12 +1161,19 @@ function selectMission(id) {
     log('> ABORT current mission first', 'log-warn');
     return;
   }
-  const mission = MISSIONS.find(m => m.id === id);
-  if (!mission) return;
-  if (G.missionsCompleted < mission.unlockAt) return;
+  const template = MISSION_TEMPLATES.find(m => m.id === id);
+  if (!template) return;
+  if (G.missionsCompleted < template.unlockAt) return;
+
+  // Generate fresh procedural instance every run
+  const mission = generateMission(template);
+  const idx = MISSIONS.findIndex(m => m.id === id);
+  if (idx >= 0) MISSIONS[idx] = mission;
 
   G.activeMission = id;
   G.missionProgress = 0;
+  G.missionTapsTotal = mission.taps;
+  G.missionTapsDone = 0;
   G.missionRunning = true;
   typingState.typed = 0;
   initTypingForMission(mission);
@@ -1069,6 +1181,11 @@ function selectMission(id) {
   logSep();
   log(`> INITIATING: ${mission.name}`, 'log-info');
   log(`> CMD: ${mission.command}`, 'log-dim');
+  if (mission.id === 'scp_exfil') {
+    log(`> FILE SIZE: ${formatFileSize(mission._fileSize)} @ ${formatBW(G.bandwidth)}/s`, 'log-dim');
+    const etaSecs = Math.ceil(mission._fileSize / G.bandwidth);
+    log(`> ETA: ~${etaSecs < 60 ? etaSecs+'s' : Math.ceil(etaSecs/60)+'m'}`, 'log-dim');
+  }
   logSep();
 
   showPanel('none');
@@ -1079,9 +1196,10 @@ function selectMission(id) {
 }
 
 function addProgress(amount) {
+  // Direct progress injection (used by auto-tick only)
   G.missionProgress = Math.min(100, G.missionProgress + amount);
   updateProgress(G.missionProgress);
-  if (G.missionProgress >= 100) {
+  if (G.missionProgress >= 100 && G.missionRunning) {
     completeMission();
   }
 }
@@ -1092,6 +1210,7 @@ function updateProgress(pct) {
 }
 
 function completeMission() {
+  if (!G.missionRunning) return; // guard double-fire
   const mission = MISSIONS.find(m => m.id === G.activeMission);
   if (!mission) return;
 
@@ -1113,6 +1232,8 @@ function completeMission() {
   G.missionRunning = false;
   G.activeMission = null;
   G.missionProgress = 0;
+  G.missionTapsDone = 0;
+  G.missionTapsTotal = 0;
   typingState.typed = 0;
   typingState.command = '';
 
@@ -1140,6 +1261,8 @@ function abortMission() {
   G.missionRunning = false;
   G.activeMission = null;
   G.missionProgress = 0;
+  G.missionTapsDone = 0;
+  G.missionTapsTotal = 0;
   typingState.typed = 0;
   typingState.command = '';
   document.getElementById('cmd-text').textContent = '';
@@ -1220,17 +1343,27 @@ function startAutoTick() {
     const mission = MISSIONS.find(m => m.id === G.activeMission);
     if (!mission) return;
 
-    // Auto-type
+    // Auto-type animation
     if (typingState.typed < typingState.command.length) {
-      const newTyped = Math.min(typingState.typed + 3, typingState.command.length);
-      typingState.typed = newTyped;
+      typingState.typed = Math.min(typingState.typed + 3, typingState.command.length);
       renderCmdDisplay();
     }
 
+    // Auto-tap equivalent, scaled by bandwidth
     const bwMult = getBandwidthMult();
-    addProgress(2 * bwMult);
+    const tapsPerTick = bwMult; // faster bandwidth = more virtual taps per interval
+    const total = G.missionTapsTotal || mission.taps;
+    G.missionTapsDone = (G.missionTapsDone || 0) + tapsPerTick;
+    const newPct = Math.min(100, (G.missionTapsDone / total) * 100);
+    G.missionProgress = newPct;
+    updateProgress(newPct);
+
     addHeat(mission.heatPerTick * 0.5 * getHeatMult());
     updateUI();
+
+    if (newPct >= 100 && G.missionRunning) {
+      completeMission();
+    }
   }, 400);
 }
 
