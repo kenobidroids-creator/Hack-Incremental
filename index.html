@@ -12,9 +12,11 @@
   :root{--g:#00ff41;--gd:#00aa2a;--gk:#003a0f;--a:#ffb700;--r:#ff2d2d;--b:#00d4ff;--p:#cc44ff;--bg:#050a05;--b2:#080f08;--b3:#0d180d;--br:#1a3a1a;--dim:#4a7a4a;}
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{height:100%;background:#050a05;color:#00ff41;font-family:'Share Tech Mono',monospace;overflow:hidden;-webkit-user-select:none;user-select:none;}
+  :root{--nav-h:44px;--safe-b:env(safe-area-inset-bottom,0px);}
   #crt{position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.022) 2px,rgba(0,255,65,.022) 4px);}
   #vig{position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.8) 100%);}
-  #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;border-left:1px solid #1a3a1a;border-right:1px solid #1a3a1a;}
+  /* App fills viewport, padded so content never hides behind fixed botnav */
+  #app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;border-left:1px solid #1a3a1a;border-right:1px solid #1a3a1a;padding-bottom:calc(var(--nav-h) + var(--safe-b));box-sizing:border-box;}
   /* HEADER */
   #hdr{padding:6px 12px;background:#080f08;border-bottom:1px solid #1a3a1a;display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
   #hdr-top{display:flex;justify-content:space-between;align-items:center;}
@@ -81,18 +83,16 @@
   #tapbtn.locked{opacity:.3;pointer-events:none;}
   #tapbtn.interrupt{border-color:#ff2d2d;color:#ff2d2d;background:#1a0000;animation:pred .6s ease-in-out infinite;}
   @keyframes pred{50%{box-shadow:0 0 15px #ff2d2d;}}
-  /* NAV */
-  #botnav{display:flex;border-top:1px solid #1a3a1a;background:#080f08;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0px);position:relative;z-index:160;}
+  /* NAV — fixed at bottom, always visible above browser chrome */
+  #botnav{display:flex;border-top:1px solid #1a3a1a;background:#080f08;padding-bottom:var(--safe-b);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:200;}
   .nb{flex:1;padding:12px 2px 10px;background:transparent;border:none;border-right:1px solid #1a3a1a;border-top:2px solid transparent;color:#4a7a4a;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;transition:color .2s,background .2s,border-top-color .2s;}
   .nb:last-child{border-right:none;}.nb.act{color:#00ff41;background:#0d180d;border-top-color:#00ff41;}.nb:active{background:#003a0f;color:#00ff41;}
-  /* PANEL */
-  /* PANEL — in-flow flex child, sits above botnav, never overlaps it */
-  #panel{flex-shrink:0;background:#080f08;border-top:2px solid #003a0f;max-height:0;overflow:hidden;transition:max-height .25s cubic-bezier(.4,0,.2,1);}
-  #panel.on{max-height:58vh;}
-  /* Panel height for spacer calc: 58vh ≈ panel max height */
+  /* PANEL — fixed above botnav, never covers it, slides via max-height */
+  #panel{display:block;position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#080f08;border-top:2px solid #003a0f;z-index:190;bottom:calc(var(--nav-h) + var(--safe-b));max-height:0;overflow:hidden;transition:max-height .25s cubic-bezier(.4,0,.2,1);}
+  #panel.on{max-height:58dvh;}
   .phdr{padding:10px 12px;border-bottom:1px solid #1a3a1a;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:#00aa2a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#080f08;}
   .pclose{background:none;border:none;color:#4a7a4a;font-size:16px;cursor:pointer;font-family:'Share Tech Mono',monospace;padding:0 4px;-webkit-appearance:none;appearance:none;}
-  #panel-content{max-height:calc(58vh - 42px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+  #panel-content{max-height:calc(58dvh - 42px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
   #panel-content::-webkit-scrollbar{width:3px;}#panel-content::-webkit-scrollbar-thumb{background:#003a0f;}
   /* FACTION CHOICE */
   .faction-card{margin:10px;padding:14px;border:1px solid #1a3a1a;border-radius:4px;cursor:pointer;transition:all .2s;}
@@ -279,20 +279,20 @@
     <button id="tapbtn" onclick="handleTap()">[ SELECT TOOL ]</button>
   </div>
 
-  <div id="panel-spacer" style="display:none;"></div>
-  <div id="panel">
-    <div class="phdr"><span id="panel-title">OPS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
-    <div id="panel-content"></div>
-  </div>
-  <div id="botnav">
-    <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERM</button>
-    <button class="nb" id="nb-missions" onclick="showPanel('missions')">OPS</button>
-    <button class="nb" id="nb-map" onclick="showPanel('map')">MAP</button>
-    <button class="nb" id="nb-market" onclick="showPanel('market')">MKT</button>
-    <button class="nb" id="nb-upgrades" onclick="showPanel('upgrades')">HW</button>
-    <button class="nb" id="nb-system" onclick="showPanel('system')">SYS</button>
-    <button class="nb" id="nb-snd" onclick="toggleSound()" style="flex:0.7;font-size:9px;">SND</button>
-  </div>
+</div>
+
+<div id="panel">
+  <div class="phdr"><span id="panel-title">OPS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
+  <div id="panel-content"></div>
+</div>
+<div id="botnav">
+  <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERM</button>
+  <button class="nb" id="nb-missions" onclick="showPanel('missions')">OPS</button>
+  <button class="nb" id="nb-map" onclick="showPanel('map')">MAP</button>
+  <button class="nb" id="nb-market" onclick="showPanel('market')">MKT</button>
+  <button class="nb" id="nb-upgrades" onclick="showPanel('upgrades')">HW</button>
+  <button class="nb" id="nb-system" onclick="showPanel('system')">SYS</button>
+  <button class="nb" id="nb-snd" onclick="toggleSound()" style="flex:0.7;font-size:9px;">SND</button>
 </div>
 
 <script>
