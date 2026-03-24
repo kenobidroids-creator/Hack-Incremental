@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en" style="background:#050a05;">
 <head>
 <meta charset="UTF-8">
@@ -178,44 +179,45 @@
   .tpane.act{display:block;}
   .tpane::-webkit-scrollbar{width:3px;}.tpane::-webkit-scrollbar-thumb{background:#003a0f;border-radius:2px;}
 
-  /* SECTOR MAP */
-  .sector-tab{display:inline-block;padding:3px 8px;margin:0 3px 6px 0;font-size:9px;border:1px solid #1a3a1a;border-radius:2px;cursor:pointer;color:#4a7a4a;-webkit-tap-highlight-color:transparent;}
-  .sector-tab.act{border-color:#00ff41;color:#00ff41;background:#0d180d;}
-  .sector-tab.locked{opacity:.3;cursor:not-allowed;}
-  .sector-tab.rival-cipher{border-color:#330055;color:#cc44ff;}
-  .sector-tab.rival-ghost{border-color:#003a55;color:#00d4ff;}
+/* SECTOR MAP */
+.sector-tab{display:inline-block;padding:3px 8px;margin:0 3px 6px 0;font-size:9px;border:1px solid #1a3a1a;border-radius:2px;cursor:pointer;color:#4a7a4a;-webkit-tap-highlight-color:transparent;}
+.sector-tab.act{border-color:#00ff41;color:#00ff41;background:#0d180d;}
+.sector-tab.locked{opacity:.3;cursor:not-allowed;}
+.sector-tab.rival-cipher{border-color:#330055;color:#cc44ff;}
+.sector-tab.rival-ghost{border-color:#003a55;color:#00d4ff;}
 
-  /* SCRIPTS PANEL */
-  .script-card{margin:6px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;display:flex;justify-content:space-between;align-items:center;gap:8px;}
-  .script-card.deployed{border-color:#00aa2a;background:#030803;}
-  .script-info{flex:1;}
-  .script-name{font-size:11px;color:#00ff41;margin-bottom:2px;}
-  .script-desc{font-size:10px;color:#4a7a4a;}
-  .script-stats{font-size:9px;color:#4a7a4a;margin-top:2px;}
-  .script-btn{padding:5px 10px;background:transparent;border:1px solid #003a0f;color:#00aa2a;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:3px;-webkit-appearance:none;appearance:none;flex-shrink:0;}
-  .script-btn.active{border-color:#ff2d2d;color:#ff2d2d;}
-  .slot-bar{margin:8px 10px 4px;padding:8px 12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;}
-  .slot-track{display:flex;gap:3px;margin-top:4px;}
-  .slot-pip{width:12px;height:12px;border:1px solid #1a3a1a;border-radius:2px;background:#0d180d;}
-  .slot-pip.used{background:#00ff41;border-color:#00aa2a;}
-  .slot-pip.used.mining{background:#ffb700;border-color:#aa7700;}
+/* SCRIPTS PANEL */
+.script-card{margin:6px 10px;padding:9px 12px;border:1px solid #1a3a1a;border-radius:4px;background:#050a05;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.script-card.deployed{border-color:#00aa2a;background:#030803;}
+.script-info{flex:1;}
+.script-name{font-size:11px;color:#00ff41;margin-bottom:2px;}
+.script-desc{font-size:10px;color:#4a7a4a;}
+.script-stats{font-size:9px;color:#4a7a4a;margin-top:2px;}
+.script-btn{padding:5px 10px;background:transparent;border:1px solid #003a0f;color:#00aa2a;font-family:‘Share Tech Mono’,monospace;font-size:9px;letter-spacing:1px;cursor:pointer;border-radius:3px;-webkit-appearance:none;appearance:none;flex-shrink:0;}
+.script-btn.active{border-color:#ff2d2d;color:#ff2d2d;}
+.slot-bar{margin:8px 10px 4px;padding:8px 12px;border:1px solid #1a3a1a;border-radius:4px;font-size:10px;color:#4a7a4a;}
+.slot-track{display:flex;gap:3px;margin-top:4px;}
+.slot-pip{width:12px;height:12px;border:1px solid #1a3a1a;border-radius:2px;background:#0d180d;}
+.slot-pip.used{background:#00ff41;border-color:#00aa2a;}
+.slot-pip.used.mining{background:#ffb700;border-color:#aa7700;}
 
-  /* RIVAL NODE */
-  .rival-card{margin:6px 10px;padding:8px 12px;border:1px solid #330055;border-radius:4px;background:rgba(204,68,255,.04);cursor:pointer;font-size:10px;}
-  .rival-card.ghost-rival{border-color:#003a55;background:rgba(0,212,255,.04);}
-  .rival-card:active{opacity:.7;}
+/* RIVAL NODE */
+.rival-card{margin:6px 10px;padding:8px 12px;border:1px solid #330055;border-radius:4px;background:rgba(204,68,255,.04);cursor:pointer;font-size:10px;}
+.rival-card.ghost-rival{border-color:#003a55;background:rgba(0,212,255,.04);}
+.rival-card:active{opacity:.7;}
 
-  /* NEWS */
-  .news-item{padding:8px 0;border-bottom:1px solid #1a3a1a;font-size:11px;color:#4a7a4a;line-height:1.6;}
-  .news-item .nh{color:#ffb700;font-size:10px;letter-spacing:1px;margin-bottom:2px;}
-  .news-item.alert .nh{color:#ff2d2d;}
+/* NEWS */
+.news-item{padding:8px 0;border-bottom:1px solid #1a3a1a;font-size:11px;color:#4a7a4a;line-height:1.6;}
+.news-item .nh{color:#ffb700;font-size:10px;letter-spacing:1px;margin-bottom:2px;}
+.news-item.alert .nh{color:#ff2d2d;}
 
-  /* BOOT */
-  #boot{position:fixed;inset:0;background:#050a05;z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-  #bootlogo{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:8px;color:#00ff41;text-shadow:0 0 20px #00ff41,0 0 40px #00ff41;animation:glow 1s ease-in-out infinite;}
-  @keyframes glow{50%{text-shadow:0 0 40px #00ff41,0 0 80px #00ff41;}}
-  #bootstatus{font-size:11px;color:#4a7a4a;letter-spacing:2px;}
+/* BOOT */
+#boot{position:fixed;inset:0;background:#050a05;z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+#bootlogo{font-family:‘Orbitron’,monospace;font-size:28px;font-weight:900;letter-spacing:8px;color:#00ff41;text-shadow:0 0 20px #00ff41,0 0 40px #00ff41;animation:glow 1s ease-in-out infinite;}
+@keyframes glow{50%{text-shadow:0 0 40px #00ff41,0 0 80px #00ff41;}}
+#bootstatus{font-size:11px;color:#4a7a4a;letter-spacing:2px;}
 </style>
+
 </head>
 <body style="background:#050a05;color:#00ff41;">
 <div id="crt"></div><div id="vig"></div>
@@ -1765,33 +1767,46 @@ function updateQdisp(){
 }
 
 // ═══════════════════════════════════════════════
-// TAP
+// TAP — all button interaction routed through handleTap()
+// updateTapBtn only changes label/style, never sets btn.onclick
+// (setting btn.onclick=null blocks the HTML onclick attr on mobile Safari)
 // ═══════════════════════════════════════════════
 function handleTap(){
   if(tapCD||intState.active)return;
+
+  // Not running: navigate or continue chain
+  if(!G.missionRunning){
+    if(G.activeMissionChain&&G.typingTier<3){
+      // Manual CONTINUE between chain steps
+      const step=G.activeMissionChain.steps[G.activeMissionChain.currentStep];
+      if(step){step.status='pending';advanceMissionChain();}
+    } else {
+      // Open OPS to select a mission
+      showPanel('missions');
+    }
+    return;
+  }
+
   if(G.phase==='process'){if(tapPS())return;return;}
-  if(!G.missionRunning||!G.activeMission)return;
+  if(!G.activeMission)return;
   if(G.trace>=100){log('> TRACE DETECTED — lay low','err');playFail();return;}
   tapType(); tapCD=true; setTimeout(()=>tapCD=false,40);
 }
 
 function updateTapBtn(){
   const btn=el('tapbtn');
+  // Only update text and className — never touch btn.onclick.
+  // The HTML onclick="handleTap()" attribute must stay intact for mobile.
   if(G.typingTier>=3&&G.activeMissionChain&&!G.missionRunning){
-    btn.textContent='[ CRON: ADVANCING... ]';btn.className='idle';btn.onclick=null;return;
+    btn.textContent='[ CRON: ADVANCING... ]';btn.className='idle';return;
   }
   if(!G.missionRunning){
     if(G.activeMissionChain){
-      const label=G.typingTier>=3?'[ CRON WILL CONTINUE ]':'[ CONTINUE MISSION ]';
-      btn.textContent=label; btn.className='';
-      btn.onclick=G.typingTier>=3?null:()=>{
-        const step=G.activeMissionChain?.steps[G.activeMissionChain.currentStep];
-        if(step){step.status='pending';advanceMissionChain();}
-      };
+      btn.textContent=G.typingTier>=3?'[ CRON WILL CONTINUE ]':'[ CONTINUE MISSION ]';
+      btn.className='';
     } else {
       btn.textContent=G.typingTier>=3?'[ CRON READY — OPEN OPS ]':'[ SELECT TOOL ]';
       btn.className='none';
-      btn.onclick=()=>showPanel('missions');
     }
     return;
   }
@@ -1800,14 +1815,13 @@ function updateTapBtn(){
     const t=allT.find(t=>t.id===G.activeMission);
     const hasPS=G.missionQueue.length>0&&PS.typed<PS.command.length;
     btn.textContent=hasPS?'[ TAP TO PRE-STAGE ]':`[ ${dTag(t?.driver||'cpu')} PROCESSING... ]`;
-    btn.className=hasPS?'':'proc'; btn.onclick=null; return;
+    btn.className=hasPS?'':'proc'; return;
   }
-  if(G.typingTier>=3){btn.textContent='[ AUTO-EXECUTING ]';btn.className='idle';btn.onclick=null;return;}
-  if(G.typingTier===2){btn.textContent='[ TAP TO RUN COMMAND ]';btn.className='';btn.onclick=null;return;}
+  if(G.typingTier>=3){btn.textContent='[ AUTO-EXECUTING ]';btn.className='idle';return;}
+  if(G.typingTier===2){btn.textContent='[ TAP TO RUN COMMAND ]';btn.className='';return;}
   btn.textContent=G.typingTier===1?'[ TAP TO AUTOCOMPLETE ]':'[ TAP TO TYPE ]';
-  btn.className=''; btn.onclick=null;
+  btn.className='';
 }
-
 // ═══════════════════════════════════════════════
 // AUTO TICK — Cron Scheduler
 // Does two things:
@@ -4572,5 +4586,6 @@ setInterval(()=>{
   tryUnlockSectors();
 },10000);
 </script>
+
 </body>
 </html>
