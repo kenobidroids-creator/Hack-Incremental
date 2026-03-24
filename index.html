@@ -3055,6 +3055,7 @@ function calcOff(secs){
 
   const totalEarned=agentEarned+Math.floor(marketEarned);
   if(totalEarned>0)G.credits+=totalEarned;
+  // Always return result so caller can show the return modal
   return{mins,agentEarned,agentLevel,marketEarned:Math.floor(marketEarned),marketLog,totalEarned};
 }
 
@@ -4567,12 +4568,34 @@ setInterval(()=>{
 },rnd(180000,300000));
 // Sector progress bar update
 setInterval(()=>{
-  // Update owned count in sector progress
   const owned=countOwnedInSector(G.currentSector);
   if(!G.sectorProgress[G.currentSector])G.sectorProgress[G.currentSector]={missions:0,owned:0};
   G.sectorProgress[G.currentSector].owned=owned;
   tryUnlockSectors();
 },10000);
+
+// ── Page lifecycle — critical for iOS Safari ──
+// Safari uses page cache: returning to a tab doesn't trigger a fresh load,
+// so boot() never runs again. We handle returns via visibilitychange.
+let _hiddenAt=0;
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    // Page going background — stamp the time and save
+    _hiddenAt=Date.now();
+    G.lastSeen=_hiddenAt;
+    save();
+  } else {
+    // Page returning from background
+    const secsAway=_hiddenAt>0?Math.floor((Date.now()-_hiddenAt)/1000):0;
+    _hiddenAt=0;
+    if(secsAway>=60){
+      const g=calcOff(secsAway);
+      if(g)setTimeout(()=>{showOffModal(g);updateUI();},300);
+    }
+  }
+});
+// pagehide fires on iOS when tab is killed — ensure lastSeen is saved
+window.addEventListener('pagehide',()=>{G.lastSeen=Date.now();save();});
 </script>
 
 </body>
