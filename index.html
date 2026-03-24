@@ -86,12 +86,13 @@
   .nb{flex:1;padding:12px 2px 10px;background:transparent;border:none;border-right:1px solid #1a3a1a;border-top:2px solid transparent;color:#4a7a4a;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:0px;cursor:pointer;text-transform:uppercase;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;transition:color .2s,background .2s,border-top-color .2s;}
   .nb:last-child{border-right:none;}.nb.act{color:#00ff41;background:#0d180d;border-top-color:#00ff41;}.nb:active{background:#003a0f;color:#00ff41;}
   /* PANEL */
-  #panel{display:block;position:fixed;bottom:calc(44px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:#080f08;border-top:2px solid #003a0f;max-height:58vh;z-index:150;transition:transform .22s cubic-bezier(.4,0,.2,1);}
-  #panel.on{transform:translateX(-50%) translateY(0%);}
+  /* PANEL — in-flow flex child, sits above botnav, never overlaps it */
+  #panel{flex-shrink:0;background:#080f08;border-top:2px solid #003a0f;max-height:0;overflow:hidden;transition:max-height .25s cubic-bezier(.4,0,.2,1);}
+  #panel.on{max-height:58vh;}
   /* Panel height for spacer calc: 58vh ≈ panel max height */
   .phdr{padding:10px 12px;border-bottom:1px solid #1a3a1a;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:#00aa2a;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#080f08;}
   .pclose{background:none;border:none;color:#4a7a4a;font-size:16px;cursor:pointer;font-family:'Share Tech Mono',monospace;padding:0 4px;-webkit-appearance:none;appearance:none;}
-  #panel-content{height:calc(58vh - 42px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+  #panel-content{max-height:calc(58vh - 42px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
   #panel-content::-webkit-scrollbar{width:3px;}#panel-content::-webkit-scrollbar-thumb{background:#003a0f;}
   /* FACTION CHOICE */
   .faction-card{margin:10px;padding:14px;border:1px solid #1a3a1a;border-radius:4px;cursor:pointer;transition:all .2s;}
@@ -278,7 +279,11 @@
     <button id="tapbtn" onclick="handleTap()">[ SELECT TOOL ]</button>
   </div>
 
-  <div id="panel-spacer" style="flex-shrink:0;height:0;transition:height .2s ease;"></div>
+  <div id="panel-spacer" style="display:none;"></div>
+  <div id="panel">
+    <div class="phdr"><span id="panel-title">OPS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
+    <div id="panel-content"></div>
+  </div>
   <div id="botnav">
     <button class="nb act" id="nb-terminal" onclick="showPanel('none')">TERM</button>
     <button class="nb" id="nb-missions" onclick="showPanel('missions')">OPS</button>
@@ -288,11 +293,6 @@
     <button class="nb" id="nb-system" onclick="showPanel('system')">SYS</button>
     <button class="nb" id="nb-snd" onclick="toggleSound()" style="flex:0.7;font-size:9px;">SND</button>
   </div>
-</div>
-
-<div id="panel">
-  <div class="phdr"><span id="panel-title">OPS</span><button class="pclose" onclick="showPanel('none')">✕</button></div>
-  <div id="panel-content"></div>
 </div>
 
 <script>
@@ -2286,23 +2286,19 @@ let curPanel='none';
 let opsTab='missions'; // 'missions' | 'contracts'
 function showPanel(name){
   const panel=el('panel');
-  const spacer=el('panel-spacer');
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('act'));
   el('nb-terminal').classList.remove('act');
 
   // Toggle: tapping the current panel's nav button closes it
   if(name===curPanel&&name!=='none'){
     panel.classList.remove('on');
-    if(spacer)spacer.style.height='0';
     curPanel='none'; el('nb-terminal').classList.add('act');
-    // Scroll terminals back to bottom when panel closes
     ['term','term-msg','term-news'].forEach(id=>{const t=el(id);if(t)t.scrollTop=t.scrollHeight;});
     return;
   }
 
   if(name==='none'){
     panel.classList.remove('on');
-    if(spacer)spacer.style.height='0';
     curPanel='none'; el('nb-terminal').classList.add('act');
     ['term','term-msg','term-news'].forEach(id=>{const t=el(id);if(t)t.scrollTop=t.scrollHeight;});
     return;
@@ -2310,16 +2306,8 @@ function showPanel(name){
 
   curPanel=name; panel.classList.add('on');
   el(`nb-${name}`)?.classList.add('act');
-
-  // Set spacer height = panel height so terminal shifts up cleanly
-  if(spacer){
-    requestAnimationFrame(()=>{
-      const ph=panel.getBoundingClientRect().height;
-      spacer.style.height=ph+'px';
-      // Scroll all terminal panes to bottom so latest content visible
-      ['term','term-msg','term-news'].forEach(id=>{const t=el(id);if(t)t.scrollTop=t.scrollHeight;});
-    });
-  }
+  // Scroll terminals to bottom so latest content stays visible above panel
+  ['term','term-msg','term-news'].forEach(id=>{const t=el(id);if(t)t.scrollTop=t.scrollHeight;});
 
   if(name==='map') onTutMapOpened();
   if(name==='upgrades') onTutHWOpened();
